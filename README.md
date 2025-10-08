@@ -28,9 +28,10 @@ Subscription-based education platform for wildlife photographers and conservatio
    ```
 
 2. **Configure environment variables**
-   Copy `.env.example` to `.env.local` and fill in values:
+   Copy `.env.example` to both `.env.local` (used by Next.js) and `.env` (loaded by the Prisma CLI):
    ```bash
    cp .env.example .env.local
+   cp .env.example .env
    ```
    - Generate `NEXTAUTH_SECRET` (use `openssl rand -base64 32`).
    - Create Stripe prices for `$15/month` and `$150/year` and paste their IDs.

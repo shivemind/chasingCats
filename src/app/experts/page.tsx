@@ -62,7 +62,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
           </Link>
         </div>
 
-        <form className="mt-12 grid gap-4 rounded-3xl border border-night/10 bg-sand/60 p-6 md:grid-cols-3">
+        <form className="mt-12 grid gap-4 rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6 md:grid-cols-3">
           <label className="text-sm font-semibold text-night">
             Species
             <select
@@ -94,7 +94,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
             </select>
           </label>
           <div className="flex items-end gap-3">
-            <button type="submit" className="w-full rounded-full bg-night px-6 py-3 text-sm font-semibold text-sand">
+            <button type="submit" className="w-full rounded-full bg-night px-6 py-3 text-sm font-semibold text-[#F5F1E3]">
               Filter sessions
             </button>
             <Link href="/experts" className="text-sm font-semibold text-brand hover:text-brand-dark">

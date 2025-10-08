@@ -26,7 +26,7 @@ export default async function FieldPage() {
           </div>
           <Link
             href="/ask"
-            className="rounded-full bg-night px-6 py-3 text-sm font-semibold uppercase tracking-wide text-sand transition hover:bg-brand-dark"
+            className="rounded-full bg-night px-6 py-3 text-sm font-semibold uppercase tracking-wide text-[#F5F1E3] transition hover:bg-brand-dark"
           >
             Submit a topic request
           </Link>

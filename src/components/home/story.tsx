@@ -15,7 +15,7 @@ export function StorySection() {
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
             href="/join"
-            className="rounded-full bg-night px-6 py-3 text-sm font-semibold uppercase tracking-wide text-sand transition hover:bg-brand-dark"
+            className="rounded-full bg-night px-6 py-3 text-sm font-semibold uppercase tracking-wide text-[#F5F1E3] transition hover:bg-brand-dark"
           >
             Join the club
           </Link>

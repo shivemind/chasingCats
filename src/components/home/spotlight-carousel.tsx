@@ -26,12 +26,12 @@ const spotlightItems = [
 
 export function SpotlightCarousel() {
   return (
-    <section className="bg-night text-sand">
+    <section className="bg-night text-[#F5F1E3]">
       <div className="container-section py-20">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-xl">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Your next live experience</h2>
-            <p className="mt-4 text-base text-sand/70">
+            <p className="mt-4 text-base text-[#F5F1E3]/70">
               We host monthly live talks and workshops. RSVP, drop your questions in advance, and catch the replay in the archive.
             </p>
           </div>
@@ -44,8 +44,8 @@ export function SpotlightCarousel() {
                 >
                   <p className="text-xs uppercase tracking-[0.3em] text-accent/80">Featured</p>
                   <h3 className="mt-4 text-xl font-semibold text-white">{item.title}</h3>
-                  <p className="mt-2 text-sm text-sand/70">{item.description}</p>
-                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-sand/60">{item.date}</p>
+                  <p className="mt-2 text-sm text-[#F5F1E3]/70">{item.description}</p>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-[#F5F1E3]/60">{item.date}</p>
                   <Link
                     href={item.href}
                     className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-white"

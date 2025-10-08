@@ -60,7 +60,7 @@ export default async function AccountPage() {
 
         <div className="mt-16 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-8">
-            <div className="rounded-3xl border border-night/10 bg-sand/50 p-8">
+            <div className="rounded-3xl border border-night/10 bg-[#F5F1E3]/50 p-8">
               <h2 className="text-lg font-semibold text-night">Membership</h2>
               <p className="mt-2 text-sm text-night/70">
                 Status:{' '}
@@ -110,7 +110,7 @@ export default async function AccountPage() {
                   </p>
                 ) : (
                   user.questions.map((question) => (
-                    <div key={question.id} className="rounded-2xl bg-sand/60 p-4">
+                    <div key={question.id} className="rounded-2xl bg-[#F5F1E3]/60 p-4">
                       <p className="text-sm font-medium text-night">{question.question}</p>
                       {question.content ? (
                         <p className="mt-1 text-xs text-night/60">Linked content: {question.content.title}</p>
@@ -136,7 +136,7 @@ export default async function AccountPage() {
                   </li>
                 ) : (
                   user.watchStatuses.map((watch) => (
-                    <li key={watch.id} className="rounded-2xl border border-night/10 bg-sand/60 p-4">
+                    <li key={watch.id} className="rounded-2xl border border-night/10 bg-[#F5F1E3]/60 p-4">
                       <Link href={`/${watch.content.slug}`} className="font-semibold text-night">
                         {watch.content.title}
                       </Link>
@@ -149,7 +149,7 @@ export default async function AccountPage() {
               </ul>
             </div>
 
-            <div className="rounded-3xl border border-night/10 bg-sand/50 p-8">
+            <div className="rounded-3xl border border-night/10 bg-[#F5F1E3]/50 p-8">
               <h2 className="text-lg font-semibold text-night">Member perks</h2>
               <ul className="mt-4 space-y-3 text-sm text-night/70">
                 <li>Invite a friend: share your referral code for a free month.</li>

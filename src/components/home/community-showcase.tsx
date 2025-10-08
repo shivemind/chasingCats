@@ -31,7 +31,7 @@ export function CommunityShowcase() {
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {highlights.map((item) => (
-            <article key={item.title} className="rounded-3xl border border-night/10 bg-sand/60 p-6">
+            <article key={item.title} className="rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-dark/60">{item.category}</p>
               <h3 className="mt-4 text-lg font-semibold text-night">{item.title}</h3>
               <p className="mt-3 text-sm text-night/70">{item.description}</p>

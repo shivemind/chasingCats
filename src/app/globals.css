@@ -2,19 +2,23 @@
 
 :root {
   color-scheme: light;
-  background-color: theme('colors.sand');
+  background-color: #f9f4ef;
 }
 
 body {
-  @apply bg-sand text-night font-sans antialiased;
+  background-color: #f9f4ef;
+  color: #0C1412;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  @apply text-brand transition-colors duration-200;
+  color: #0E7C7B;
+  transition: color 0.2s ease;
 }
 
 a:hover {
-  @apply text-brand-dark;
+  color: #095859;
 }
 
 .container-section {
@@ -22,9 +26,11 @@ a:hover {
 }
 
 .section-heading {
-  @apply text-3xl font-semibold tracking-tight text-night sm:text-4xl;
+  @apply text-3xl font-semibold tracking-tight sm:text-4xl;
+  color: #0C1412;
 }
 
 .section-subtitle {
-  @apply mt-4 max-w-2xl text-lg text-night/70;
+  @apply mt-4 max-w-2xl text-lg;
+  color: rgb(12 20 18 / 0.7);
 }

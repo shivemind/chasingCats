@@ -44,7 +44,7 @@ export default async function AskPage() {
               ))}
             </div>
           </div>
-          <aside className="space-y-6 rounded-3xl border border-night/10 bg-sand/60 p-6">
+          <aside className="space-y-6 rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6">
             <h2 className="text-lg font-semibold text-night">Latest community questions</h2>
             <div className="space-y-4">
               {questions.map((question) => (

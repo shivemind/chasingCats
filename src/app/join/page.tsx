@@ -37,7 +37,7 @@ export default function JoinPage() {
             description:
               'Invite a friend for one month free, access merch drops, and claim partner discounts on gear and travel.'
           }].map((item) => (
-            <div key={item.title} className="rounded-3xl border border-night/10 bg-sand/60 p-6">
+            <div key={item.title} className="rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6">
               <h3 className="text-lg font-semibold text-night">{item.title}</h3>
               <p className="mt-3 text-sm text-night/70">{item.description}</p>
             </div>

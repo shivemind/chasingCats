@@ -5,15 +5,20 @@ import { WatchToggle } from '@/components/content/watch-toggle';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+interface ContentRouteParams {
+  slug: string[];
+}
+
 interface ContentPageProps {
-  params: { slug: string[] };
+  params: Promise<ContentRouteParams>;
 }
 
 export async function generateMetadata({ params }: ContentPageProps) {
-  const slug = params.slug.join('/');
+  const { slug } = await params;
+  const slugPath = slug.join('/');
 
   const content = await prisma.content.findUnique({
-    where: { slug }
+    where: { slug: slugPath }
   });
 
   if (!content) {
@@ -27,13 +32,14 @@ export async function generateMetadata({ params }: ContentPageProps) {
 }
 
 export default async function ContentPage({ params }: ContentPageProps) {
-  const slug = params.slug.join('/');
+  const { slug } = await params;
+  const slugPath = slug.join('/');
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ?? '';
 
   const content = await prisma.content.findUnique({
-    where: { slug },
+    where: { slug: slugPath },
     include: {
       comments: {
         include: { author: true },
@@ -65,7 +71,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <p className="mt-4 text-night/70">{content.excerpt}</p>
             </div>
             <div className="aspect-video w-full overflow-hidden rounded-3xl border border-night/10 bg-night/80">
-              <div className="flex h-full items-center justify-center text-sand/70">
+              <div className="flex h-full items-center justify-center text-[#F5F1E3]/70">
                 {content.videoUrl ? 'Video player placeholder' : 'Audio/Article placeholder'}
               </div>
             </div>
@@ -77,7 +83,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
               />
             </div>
             <div className="prose prose-lg max-w-none text-night" dangerouslySetInnerHTML={{ __html: content.body }} />
-            <section className="rounded-3xl border border-night/10 bg-sand/60 p-6">
+            <section className="rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6">
               <h2 className="text-lg font-semibold text-night">Discussion</h2>
               {content.comments.length === 0 ? (
                 <p className="mt-3 text-sm text-night/70">Discussion coming soon. Add your voice in the community area.</p>
@@ -98,7 +104,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <h2 className="text-lg font-semibold text-night">Ask about this session</h2>
               <QuestionForm />
             </div>
-            <div className="rounded-3xl border border-night/10 bg-sand/60 p-6">
+            <div className="rounded-3xl border border-night/10 bg-[#F5F1E3]/60 p-6">
               <h2 className="text-lg font-semibold text-night">You might also like</h2>
               <ul className="mt-4 space-y-3 text-sm text-night/70">
                 {content.relatedContent.length === 0 ? (
