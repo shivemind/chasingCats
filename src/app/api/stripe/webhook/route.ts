@@ -5,10 +5,12 @@ import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const body = await request.text();
-  const signature = headers().get('stripe-signature');
+  const headerList = await headers();
+  const signature = headerList.get('stripe-signature');
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {

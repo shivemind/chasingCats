@@ -37,6 +37,9 @@ Subscription-based education platform for wildlife photographers and conservatio
    - Create Stripe prices for `$15/month` and `$150/year` and paste their IDs.
    - Update success/cancel URLs for your deployment (defaults work locally).
 
+   Prisma commands such as `npx prisma db push` only read from `.env`, while the Next.js runtime loads `.env.local`. Keeping the
+   two files in sync avoids `DATABASE_URL` errors when running CLI tasks.
+
 3. **Provision the database**
    ```bash
    npx prisma db push
