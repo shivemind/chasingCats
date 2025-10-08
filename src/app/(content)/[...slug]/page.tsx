@@ -5,20 +5,15 @@ import { WatchToggle } from '@/components/content/watch-toggle';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
-interface ContentRouteParams {
-  slug: string[];
-}
-
 interface ContentPageProps {
-  params: Promise<ContentRouteParams>;
+  params: { slug: string[] };
 }
 
 export async function generateMetadata({ params }: ContentPageProps) {
-  const { slug } = await params;
-  const slugPath = slug.join('/');
+  const slug = params.slug.join('/');
 
   const content = await prisma.content.findUnique({
-    where: { slug: slugPath }
+    where: { slug }
   });
 
   if (!content) {
@@ -32,14 +27,13 @@ export async function generateMetadata({ params }: ContentPageProps) {
 }
 
 export default async function ContentPage({ params }: ContentPageProps) {
-  const { slug } = await params;
-  const slugPath = slug.join('/');
+  const slug = params.slug.join('/');
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ?? '';
 
   const content = await prisma.content.findUnique({
-    where: { slug: slugPath },
+    where: { slug },
     include: {
       comments: {
         include: { author: true },
