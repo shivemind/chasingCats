@@ -16,17 +16,9 @@ const config: Config = {
           dark: '#095859',
           light: '#3DAAA8'
         },
-        sand: {
-          DEFAULT: '#F5F1E3',
-          '50': '#FBF8EE',
-          '100': '#F5F1E3'
-        },
-        night: {
-          DEFAULT: '#0C1412'
-        },
-        accent: {
-          DEFAULT: '#F9982F'
-        }
+        sand: '#F5F1E3',
+        night: '#0C1412',
+        accent: '#F9982F'
       },
       boxShadow: {
         card: '0 18px 35px -15px rgba(14, 124, 123, 0.4)'
