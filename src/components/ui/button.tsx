@@ -12,7 +12,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants: Record<typeof variant, string> = {
       primary: 'bg-brand text-white shadow-card hover:bg-brand-dark',
-      secondary: 'bg-night text-[#F5F1E3] hover:bg-brand-dark',
+      secondary: 'bg-night text-sand hover:bg-brand-dark',
       ghost: 'bg-transparent text-night hover:bg-night/5'
     } as const;
 

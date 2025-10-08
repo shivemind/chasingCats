@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#F5F1E3] via-white to-[#F5F1E3]">
+    <section className="relative overflow-hidden bg-gradient-to-br from-sand via-white to-sand">
       <div className="container-section grid gap-10 py-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-dark shadow-sm">
@@ -43,10 +43,10 @@ export function Hero() {
         </div>
         <div className="relative rounded-3xl border border-night/10 bg-white/90 p-6 shadow-card">
           <div className="aspect-video w-full overflow-hidden rounded-2xl bg-night/90">
-            <div className="flex h-full w-full items-center justify-center text-[#F5F1E3]/60">
+            <div className="flex h-full w-full items-center justify-center text-sand/60">
               <div className="text-center">
                 <p className="text-sm uppercase tracking-widest text-accent">Preview</p>
-                <p className="mt-3 text-xl font-semibold text-[#F5F1E3]">
+                <p className="mt-3 text-xl font-semibold text-sand">
                   Watch: &ldquo;Tracking Clouded Leopards in Borneo&rdquo;
                 </p>
               </div>
@@ -55,7 +55,7 @@ export function Hero() {
           <p className="mt-6 text-sm text-night/70">
             Members unlock the full archive, including expedition recaps, gear breakdowns, and live workshop recordings.
           </p>
-          <div className="mt-6 flex items-center gap-4 rounded-xl bg-[#F5F1E3]/60 p-4">
+          <div className="mt-6 flex items-center gap-4 rounded-xl bg-sand/60 p-4">
             <Image
               src="/images/rachel-sebastian.svg"
               alt="Rachel and Sebastian"

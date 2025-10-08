@@ -20,7 +20,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#F5F1E3]/90 backdrop-blur">
+    <header className="sticky top-0 z-50 bg-sand/90 backdrop-blur">
       <div className="container-section flex h-16 items-center justify-between">
         <Link href="/" className="text-xl font-semibold text-night">
           Chasing Cats Club
@@ -80,7 +80,7 @@ export function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="border-t border-night/10 bg-[#F5F1E3]/95 px-6 py-4 md:hidden">
+        <div className="border-t border-night/10 bg-sand/95 px-6 py-4 md:hidden">
           <nav className="flex flex-col gap-4">
             {navigation.map((item) => (
               <Link

@@ -35,9 +35,9 @@ export function EventPromo() {
               </Link>
             </div>
           </div>
-          <div className="rounded-3xl bg-night/90 p-8 text-[#F5F1E3]">
+          <div className="rounded-3xl bg-night/90 p-8 text-sand">
             <h3 className="text-lg font-semibold">What you&apos;ll learn</h3>
-            <ul className="mt-5 space-y-4 text-sm text-[#F5F1E3]/80">
+            <ul className="mt-5 space-y-4 text-sm text-sand/80">
               <li>How claw structure informs species identification in the field</li>
               <li>Reading scratch marks and tree sign to locate elusive cats</li>
               <li>Photography setups for capturing paw detail ethically</li>
