@@ -2,23 +2,19 @@
 
 :root {
   color-scheme: light;
-  background-color: #F5F1E3;
+  background-color: theme('colors.sand');
 }
 
 body {
-  background-color: #F5F1E3;
-  color: #0C1412;
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+  @apply bg-sand text-night font-sans antialiased;
 }
 
 a {
-  color: #0E7C7B;
-  transition: color 0.2s ease;
+  @apply text-brand transition-colors duration-200;
 }
 
 a:hover {
-  color: #095859;
+  @apply text-brand-dark;
 }
 
 .container-section {
@@ -26,11 +22,9 @@ a:hover {
 }
 
 .section-heading {
-  @apply text-3xl font-semibold tracking-tight sm:text-4xl;
-  color: #0C1412;
+  @apply text-3xl font-semibold tracking-tight text-night sm:text-4xl;
 }
 
 .section-subtitle {
-  @apply mt-4 max-w-2xl text-lg;
-  color: rgb(12 20 18 / 0.7);
+  @apply mt-4 max-w-2xl text-lg text-night/70;
 }

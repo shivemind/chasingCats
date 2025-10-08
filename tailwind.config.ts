@@ -11,12 +11,12 @@ const config: Config = {
         sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans]
       },
       colors: {
-        brand: '#0E7C7B',
-        'brand-dark': '#095859',
-        'brand-light': '#3DAAA8',
+        brand: {
+          DEFAULT: '#0E7C7B',
+          dark: '#095859',
+          light: '#3DAAA8'
+        },
         sand: '#F5F1E3',
-        'sand-50': '#FBF8EE',
-        'sand-100': '#F5F1E3',
         night: '#0C1412',
         accent: '#F9982F'
       },
