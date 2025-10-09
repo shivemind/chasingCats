@@ -34,11 +34,12 @@ export async function POST(request: Request) {
     if (userId && customerId) {
       let currentPeriodEnd: Date | undefined;
       if (subscriptionId) {
-        const subscriptionResponse: Stripe.Response<Stripe.Subscription> =
-          await stripe.subscriptions.retrieve(subscriptionId);
+        const subscription = (await stripe.subscriptions.retrieve(
+          subscriptionId
+        )) as Stripe.Subscription;
 
-        currentPeriodEnd = subscriptionResponse.data.current_period_end
-          ? new Date(subscriptionResponse.data.current_period_end * 1000)
+        currentPeriodEnd = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000)
           : undefined;
       }
 
