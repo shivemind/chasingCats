@@ -33,23 +33,50 @@ export async function POST(request: Request) {
 
     if (userId && customerId) {
       let currentPeriodEnd: Date | undefined;
-      if (subscriptionId) {
-        const subscription = (await stripe.subscriptions.retrieve(
-          subscriptionId
-        )) as Stripe.Subscription;
 
-        currentPeriodEnd = subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000)
-          : undefined;
+      if (subscriptionId) {
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+        let invoiceId: string | undefined;
+        const latestInvoice = subscription.latest_invoice;
+        if (typeof latestInvoice === 'string') {
+          invoiceId = latestInvoice;
+        } else if (latestInvoice) {
+          invoiceId = latestInvoice.id;
+        }
+
+        if (!invoiceId) {
+          try {
+            const upcoming = await stripe.invoices.retrieveUpcoming({
+              customer: customerId,
+              subscription: subscriptionId
+            });
+            invoiceId = upcoming.id;
+          } catch {
+            // Ignore missing upcoming invoice errors; we'll fall back to undefined
+          }
+        }
+
+        if (invoiceId) {
+          const invoice = await stripe.invoices.retrieve(invoiceId);
+          const firstLine = invoice.lines?.data?.[0];
+          const periodEnd = firstLine?.period?.end ?? invoice.period_end;
+
+          if (typeof periodEnd === 'number') {
+            currentPeriodEnd = new Date(periodEnd * 1000);
+          }
+        }
       }
 
+      const plan = session.metadata?.plan === 'annual' ? 'ANNUAL' : 'MONTHLY';
+
       await prisma.membership.upsert({
-        where: { userId },
+        where: { stripeCustomerId: customerId },
         update: {
-          stripeCustomerId: customerId,
+          userId,
           stripeSubscription: subscriptionId ?? undefined,
           status: 'ACTIVE',
-          plan: session.metadata?.plan === 'annual' ? 'ANNUAL' : 'MONTHLY',
+          plan,
           currentPeriodEnd
         },
         create: {
@@ -57,7 +84,7 @@ export async function POST(request: Request) {
           stripeCustomerId: customerId,
           stripeSubscription: subscriptionId ?? undefined,
           status: 'ACTIVE',
-          plan: session.metadata?.plan === 'annual' ? 'ANNUAL' : 'MONTHLY',
+          plan,
           currentPeriodEnd
         }
       });

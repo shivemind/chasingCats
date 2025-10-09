@@ -17,7 +17,8 @@ const plans = [
       'Monthly live talks + AMAs',
       'Field intel drops and gear guides',
       'Member forum and comment threads'
-    ]
+    ],
+    highlight: false
   },
   {
     id: 'annual',
@@ -74,16 +75,19 @@ export function PricingTable() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {plans.map((plan) => (
-        <div
-          key={plan.id}
-          className={`rounded-3xl border ${
-            plan.highlight ? 'border-brand bg-white shadow-card ring-2 ring-brand/20' : 'border-night/10 bg-white'
+      {plans.map((plan) => {
+        const isHighlight = Boolean(plan.highlight);
+
+        return (
+          <div
+            key={plan.id}
+            className={`rounded-3xl border ${
+            isHighlight ? 'border-brand bg-white shadow-card ring-2 ring-brand/20' : 'border-night/10 bg-white'
           } p-8`}
         >
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-night">{plan.name}</h3>
-            {plan.highlight ? (
+            {isHighlight ? (
               <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
                 Most popular
               </span>
@@ -106,7 +110,7 @@ export function PricingTable() {
             type="button"
             fullWidth
             className="mt-8"
-            variant={plan.highlight ? 'primary' : 'secondary'}
+            variant={isHighlight ? 'primary' : 'secondary'}
             onClick={() => handleCheckout(plan.id)}
             disabled={isLoading}
           >
@@ -118,7 +122,8 @@ export function PricingTable() {
           </Button>
           {selectedPlan === plan.id && error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
