@@ -5,6 +5,10 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './prisma';
 
 if (!process.env.NEXTAUTH_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NEXTAUTH_SECRET is required in production.');
+  }
+
   process.env.NEXTAUTH_SECRET = 'development-secret';
 }
 

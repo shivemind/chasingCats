@@ -45,18 +45,6 @@ export async function POST(request: Request) {
           invoiceId = latestInvoice.id;
         }
 
-        if (!invoiceId) {
-          try {
-            const upcoming = await stripe.invoices.retrieveUpcoming({
-              customer: customerId,
-              subscription: subscriptionId
-            });
-            invoiceId = upcoming.id;
-          } catch {
-            // Ignore missing upcoming invoice errors; we'll fall back to undefined
-          }
-        }
-
         if (invoiceId) {
           const invoice = await stripe.invoices.retrieve(invoiceId);
           const firstLine = invoice.lines?.data?.[0];
