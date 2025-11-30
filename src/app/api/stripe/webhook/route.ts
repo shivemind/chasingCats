@@ -36,8 +36,24 @@ export async function POST(request: Request) {
 
       if (subscriptionId) {
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        const cpe = (subscription as { current_period_end?: number }).current_period_end;
-        currentPeriodEnd = typeof cpe === 'number' ? new Date(cpe * 1000) : undefined;
+
+        let invoiceId: string | undefined;
+        const latestInvoice = subscription.latest_invoice;
+        if (typeof latestInvoice === 'string') {
+          invoiceId = latestInvoice;
+        } else if (latestInvoice) {
+          invoiceId = latestInvoice.id;
+        }
+
+        if (invoiceId) {
+          const invoice = await stripe.invoices.retrieve(invoiceId);
+          const firstLine = invoice.lines?.data?.[0];
+          const periodEnd = firstLine?.period?.end ?? invoice.period_end;
+
+          if (typeof periodEnd === 'number') {
+            currentPeriodEnd = new Date(periodEnd * 1000);
+          }
+        }
       }
 
       const plan = session.metadata?.plan === 'annual' ? 'ANNUAL' : 'MONTHLY';

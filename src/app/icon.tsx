@@ -26,6 +26,9 @@ export default function Icon() {
             width: '140px',
             borderRadius: '32px',
             backgroundColor: '#0E7C7B',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             boxShadow: '0 18px 35px -15px rgba(12, 20, 18, 0.45)'
           }}
         >
