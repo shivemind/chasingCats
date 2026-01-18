@@ -109,7 +109,7 @@ export default function RegisterPage() {
             </div>
           </div>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          <Button type="submit" disabled={isSubmitting} fullWidth>
+          <Button type="submit" disabled={isSubmitting} aria-busy={isSubmitting} fullWidth>
             {isSubmitting ? 'Creating account…' : 'Create account'}
           </Button>
         </form>

@@ -77,14 +77,34 @@ export function PricingTable() {
     <div className="grid gap-6 md:grid-cols-2">
       {plans.map((plan) => {
         const isHighlight = Boolean(plan.highlight);
+        const isPlanLoading = isLoading && selectedPlan === plan.id;
+        const isDisabled = isLoading;
 
         return (
           <div
             key={plan.id}
-            className={`rounded-3xl border ${
+            role="button"
+            tabIndex={0}
+            aria-disabled={isDisabled}
+            onClick={() => {
+              if (!isDisabled) {
+                void handleCheckout(plan.id);
+              }
+            }}
+            onKeyDown={(event) => {
+              if (isDisabled) {
+                return;
+              }
+
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                void handleCheckout(plan.id);
+              }
+            }}
+            className={`rounded-3xl border transition hover:-translate-y-1 hover:shadow-card ${
             isHighlight ? 'border-brand bg-white shadow-card ring-2 ring-brand/20' : 'border-night/10 bg-white'
-          } p-8`}
-        >
+          } ${isDisabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} p-8`}
+          >
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-night">{plan.name}</h3>
             {isHighlight ? (
@@ -111,11 +131,14 @@ export function PricingTable() {
             fullWidth
             className="mt-8"
             variant={isHighlight ? 'primary' : 'secondary'}
-            onClick={() => handleCheckout(plan.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              void handleCheckout(plan.id);
+            }}
             disabled={isLoading}
           >
             {session?.user
-              ? isLoading && selectedPlan === plan.id
+              ? isPlanLoading
                 ? 'Redirecting…'
                 : 'Start membership'
               : 'Create an account'}
