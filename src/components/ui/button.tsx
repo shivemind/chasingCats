@@ -7,7 +7,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', fullWidth, ...props }, ref) => {
+  ({ className, variant = 'primary', fullWidth, children, ...props }, ref) => {
     const base = 'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand';
 
     const variants = {
@@ -22,7 +22,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(base, variantStyles, fullWidth && 'w-full', className)}
         {...props}
-      />
+      >
+        {children}
+      </button>
     );
   }
 );
