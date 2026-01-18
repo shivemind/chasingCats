@@ -7,8 +7,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  // If Vercel gives you POSTGRES_URL_NON_POOLING later, you can add:
-  // directUrl = env("POSTGRES_URL_NON_POOLING")
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // optional if you ever add that env
 }
 
 model User {
