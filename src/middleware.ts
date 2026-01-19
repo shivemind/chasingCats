@@ -1,24 +1,14 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// middleware.ts
 
-const protectedPaths = ['/account', '/experts', '/field', '/ask', '/library', '/community'];
+export { auth as middleware } from 'next-auth/middleware';
 
-export function middleware(request: NextRequest) {
-  const sessionToken = request.cookies.get('next-auth.session-token') ?? request.cookies.get('__Secure-next-auth.session-token');
-
-  const { pathname } = request.nextUrl;
-
-  if (protectedPaths.some((path) => pathname.startsWith(path))) {
-    if (!sessionToken) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  return NextResponse.next();
-}
-
+// Only protect authenticated / member areas.
+// Everything else should be public.
 export const config = {
-  matcher: ['/account/:path*', '/experts/:path*', '/field/:path*', '/ask/:path*', '/library/:path*', '/community/:path*']
+  matcher: [
+    '/account/:path*',
+    '/profile/:path*',
+    '/watch/:path*',
+    '/ask/:path*',
+  ]
 };

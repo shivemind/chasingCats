@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const registerSchema = z
@@ -109,9 +108,14 @@ export default function RegisterPage() {
             </div>
           </div>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          <Button type="submit" disabled={isSubmitting} fullWidth>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="inline-flex w-full items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {isSubmitting ? 'Creating account…' : 'Create account'}
-          </Button>
+          </button>
         </form>
         <p className="mt-6 text-sm text-night/70">
           Already have an account?{' '}
