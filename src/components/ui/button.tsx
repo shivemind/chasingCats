@@ -15,8 +15,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: 'bg-night text-[#F5F1E3] hover:bg-brand-dark',
       ghost: 'bg-transparent text-night hover:bg-night/5'
     } as const;
-    const isValidVariant = Boolean(variant) && Object.prototype.hasOwnProperty.call(variants, variant);
-    const variantStyles = isValidVariant ? variants[variant as keyof typeof variants] : variants.primary;
+    const variantStyles = variants[variant] ?? variants.primary;
 
     return (
       <button
