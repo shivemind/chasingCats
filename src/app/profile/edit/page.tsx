@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { ProfileForm } from '@/components/profile/profile-form';
 
@@ -9,7 +8,7 @@ export const metadata = {
 };
 
 export default async function EditProfilePage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/login?callbackUrl=/profile/edit');
