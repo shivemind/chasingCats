@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { QuestionForm } from '@/components/ask/question-form';
 import { WatchToggle } from '@/components/content/watch-toggle';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 
 interface ContentRouteParams {
   slug: string[];
@@ -35,7 +34,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
   const { slug } = await params;
   const slugPath = slug.join('/');
 
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const userId = session?.user?.id ?? '';
 
   const content = await prisma.content.findUnique({
