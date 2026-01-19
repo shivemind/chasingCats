@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import Link from 'next/link';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ManageSubscriptionButton } from '@/components/account/manage-subscription-button';
 
@@ -33,7 +32,7 @@ async function getAccountData(userId: string) {
 }
 
 export default async function AccountPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/login?callbackUrl=/account');

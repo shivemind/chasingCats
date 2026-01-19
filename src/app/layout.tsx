@@ -5,8 +5,7 @@ import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { AuthSessionProvider } from '@/components/providers/session-provider';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
