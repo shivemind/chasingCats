@@ -4,10 +4,8 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/prisma';
 
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
-
 if (!process.env.NEXTAUTH_SECRET) {
-  if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
+  if (process.env.NODE_ENV === 'production') {
     throw new Error('NEXTAUTH_SECRET is required in production.');
   }
 
@@ -31,22 +29,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        const email = typeof credentials?.email === 'string' ? credentials.email : '';
-        const password = typeof credentials?.password === 'string' ? credentials.password : '';
-
-        if (!email || !password) {
+        if (!credentials?.email || !credentials.password) {
           return null;
         }
 
         const user = await prisma.user.findUnique({
-          where: { email }
+          where: { email: credentials.email }
         });
 
         if (!user?.hashedPassword) {
           return null;
         }
 
-        const isValid = await bcrypt.compare(password, user.hashedPassword);
+        const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
 
         if (!isValid) {
           return null;
