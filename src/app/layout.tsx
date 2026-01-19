@@ -28,7 +28,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col bg-[#F5F1E3] text-night">
+      <body
+      className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-[#F5F1E3] text-night`}>
+
         <AuthSessionProvider session={session}>
           <Navbar />
           <main className="flex-1 pb-24">{children}</main>
