@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { AuthSessionProvider } from '@/components/providers/session-provider';
 import { auth } from '@/auth';
+import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
