@@ -1,25 +1,50 @@
+// src/auth.ts
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * IMPORTANT:
+ * - Do NOT force NEXTAUTH_URL to localhost in prod (causes signout/login callback weirdness)
+ * - On Vercel, VERCEL_URL is available and changes per deployment (preview URLs)
+ * - Prefer explicit NEXTAUTH_URL on Production, but safely infer from VERCEL_URL when missing
+ */
+
+const isProd = process.env.NODE_ENV === "production";
+
+// Secret must exist in production
 if (!process.env.NEXTAUTH_SECRET) {
-  if (process.env.NODE_ENV === "production") {
+  if (isProd) {
     throw new Error("NEXTAUTH_SECRET is required in production.");
   }
   process.env.NEXTAUTH_SECRET = "development-secret";
 }
 
+/**
+ * Base URL inference (for redirect/callback correctness)
+ * - If NEXTAUTH_URL is set, use it (best for Production)
+ * - Else, if on Vercel, infer https://<deployment-host>
+ * - Else, fall back to localhost for local dev only
+ *
+ * NOTE: We set it on process.env so NextAuth/Auth.js picks it up consistently.
+ */
 if (!process.env.NEXTAUTH_URL) {
-  process.env.NEXTAUTH_URL = "http://localhost:3000";
+  if (process.env.VERCEL_URL) {
+    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+  } else {
+    process.env.NEXTAUTH_URL = "http://localhost:3000";
+  }
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
+
   pages: { signIn: "/login" },
+
   providers: [
     Credentials({
       name: "Credentials",
@@ -27,14 +52,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
-        // ✅ Strict runtime validation so TS knows these are strings
+        // Strict runtime validation so TS (and runtime) treat these as strings
         const email =
-          typeof credentials?.email === "string" ? credentials.email : null;
+          typeof credentials?.email === "string" ? credentials.email.trim() : "";
         const password =
-          typeof credentials?.password === "string"
-            ? credentials.password
-            : null;
+          typeof credentials?.password === "string" ? credentials.password : "";
 
         if (!email || !password) return null;
 
@@ -47,27 +71,33 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const isValid = await bcrypt.compare(password, user.hashedPassword);
         if (!isValid) return null;
 
+        // NextAuth/Auth.js expects a "User" object; Prisma user is usually fine.
         return user;
       },
     }),
   ],
+
   callbacks: {
     async session({ token, session }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.membershipStatus = token.membershipStatus as
+      if (session.user) {
+        // These token fields are added in jwt() below
+        (session.user as any).id = token.id as string | undefined;
+        (session.user as any).role = token.role as string | undefined;
+        (session.user as any).membershipStatus = token.membershipStatus as
           | string
           | null
           | undefined;
       }
       return session;
     },
+
     async jwt({ token }) {
-      if (!token.email) return token;
+      // token.email can be string | null | undefined depending on provider/flow
+      const email = typeof token.email === "string" ? token.email : null;
+      if (!email) return token;
 
       const user = await prisma.user.findUnique({
-        where: { email: token.email },
+        where: { email },
         include: {
           memberships: {
             orderBy: { createdAt: "desc" },
@@ -77,13 +107,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       });
 
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.membershipStatus = user.memberships[0]?.status ?? null;
+        (token as any).id = user.id;
+        (token as any).role = user.role;
+        (token as any).membershipStatus = user.memberships[0]?.status ?? null;
       }
 
       return token;
     },
   },
 });
-
