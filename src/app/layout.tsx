@@ -5,10 +5,11 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { AuthSessionProvider } from '@/components/providers/session-provider';
 import { auth } from '@/auth';
+import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -27,7 +28,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col bg-[#F5F1E3] text-night">
+      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-[#F5F1E3] text-night`}>
         <AuthSessionProvider session={session}>
           <Navbar />
           <main className="flex-1 pb-24">{children}</main>

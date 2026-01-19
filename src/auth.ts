@@ -29,26 +29,31 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
-          return null;
-        }
+  if (!credentials) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+  const email = credentials.email as string | undefined;
+  const password = credentials.password as string | undefined;
 
-        if (!user?.hashedPassword) {
-          return null;
-        }
+  if (!email || !password) {
+    return null;
+  }
 
-        const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+  const user = await prisma.user.findUnique({
+    where: { email }
+  });
 
-        if (!isValid) {
-          return null;
-        }
+  if (!user?.hashedPassword) {
+    return null;
+  }
 
-        return user;
-      }
+  const isValid = await bcrypt.compare(password, user.hashedPassword);
+
+  if (!isValid) {
+    return null;
+  }
+
+  return user;
+}
     })
   ],
   callbacks: {
@@ -85,3 +90,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }
   }
 });
+
+export const GET = handlers.GET;
+export const POST = handlers.POST;
