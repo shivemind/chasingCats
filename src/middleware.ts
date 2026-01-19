@@ -1,19 +1,14 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+// middleware.ts
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+export { auth as middleware } from 'next-auth/middleware';
 
-  if (!token) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
-}
-
+// Only protect authenticated / member areas.
+// Everything else should be public.
 export const config = {
-  matcher: ['/account/:path*', '/profile/:path*', '/watch/:path*', '/ask/:path*']
+  matcher: [
+    '/account/:path*',
+    '/profile/:path*',
+    '/watch/:path*',
+    '/ask/:path*',
+  ]
 };
