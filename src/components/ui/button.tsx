@@ -7,21 +7,25 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', fullWidth, ...props }, ref) => {
+  ({ className, variant = 'primary', fullWidth, children, ...props }, ref) => {
     const base = 'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand';
 
-    const variants: Record<typeof variant, string> = {
+    const variants = {
       primary: 'bg-brand text-white shadow-card hover:bg-brand-dark',
       secondary: 'bg-night text-[#F5F1E3] hover:bg-brand-dark',
       ghost: 'bg-transparent text-night hover:bg-night/5'
     } as const;
+    const isValidVariant = Boolean(variant) && Object.prototype.hasOwnProperty.call(variants, variant);
+    const variantStyles = isValidVariant ? variants[variant as keyof typeof variants] : variants.primary;
 
     return (
       <button
         ref={ref}
-        className={cn(base, variants[variant], fullWidth && 'w-full', className)}
+        className={cn(base, variantStyles, fullWidth && 'w-full', className)}
         {...props}
-      />
+      >
+        {children}
+      </button>
     );
   }
 );

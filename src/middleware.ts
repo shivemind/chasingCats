@@ -1,24 +1,19 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-const protectedPaths = ['/account', '/experts', '/field', '/ask', '/library', '/community'];
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-export function middleware(request: NextRequest) {
-  const sessionToken = request.cookies.get('next-auth.session-token') ?? request.cookies.get('__Secure-next-auth.session-token');
-
-  const { pathname } = request.nextUrl;
-
-  if (protectedPaths.some((path) => pathname.startsWith(path))) {
-    if (!sessionToken) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+  if (!token) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/account/:path*', '/experts/:path*', '/field/:path*', '/ask/:path*', '/library/:path*', '/community/:path*']
+  matcher: ['/account/:path*', '/profile/:path*', '/watch/:path*', '/ask/:path*']
 };

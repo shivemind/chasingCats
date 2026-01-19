@@ -1,8 +1,11 @@
+@config '../../tailwind.config.ts';
 @import 'tailwindcss';
 
 :root {
   color-scheme: light;
   background-color: #f9f4ef;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 body {
