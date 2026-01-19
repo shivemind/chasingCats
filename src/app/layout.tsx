@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -27,7 +26,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const session = await auth();
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en">
       <body className="flex min-h-screen flex-col bg-[#F5F1E3] text-night">
         <AuthSessionProvider session={session}>
           <Navbar />
