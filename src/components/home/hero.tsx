@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export function Hero() {
   return (
@@ -7,13 +6,13 @@ export function Hero() {
       <div className="container-section grid gap-10 py-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-dark shadow-sm">
-            Conservation-first storytelling
+            Learn More About Wild Cats
           </div>
           <h1 className="mt-6 text-4xl font-semibold tracking-tight text-night sm:text-5xl lg:text-6xl">
-            A home for cat nerds, expedition dreamers, and conservation storytellers.
+            A home for wild cat nerds
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-night/70">
-            Join Rachel &amp; Sebastian for deep-dive workshops, live expedition briefings, expert interviews, and a private community focused on photographing and protecting the world&apos;s wild cats.
+            Join our community of cat nerds to deepen your knowledge about wild cats. Hear from experts, guides, conservationists and photographers.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
             <Link
@@ -53,21 +52,8 @@ export function Hero() {
             </div>
           </div>
           <p className="mt-6 text-sm text-night/70">
-            Members unlock the full archive, including expedition recaps, gear breakdowns, and live workshop recordings.
+            Members unlock the full archive, including hours of cat talks with experts, field insights, and photo lectures.
           </p>
-          <div className="mt-6 flex items-center gap-4 rounded-xl bg-[#F5F1E3]/60 p-4">
-            <Image
-              src="/images/rachel-sebastian.svg"
-              alt="Rachel and Sebastian"
-              width={48}
-              height={48}
-              className="h-12 w-12 rounded-full object-cover"
-            />
-            <div>
-              <p className="text-sm font-semibold text-night">Meet your guides</p>
-              <p className="text-sm text-night/70">Wildlife pros, expedition leaders, conservation storytellers.</p>
-            </div>
-          </div>
         </div>
       </div>
     </section>

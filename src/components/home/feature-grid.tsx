@@ -1,20 +1,18 @@
 const features = [
   {
-    title: 'Learn from the Experts',
-    description:
-      'Live talks and intimate workshops with biologists, conservationists, and photographers who are shaping the future of big cat protection.',
+    title: 'Monthly Expert Talks',
+    description: 'Deep dives on cat topics and your chance to ask the experts.',
     icon: '🎓'
   },
   {
-    title: 'Dial in Your Photo + Field Skills',
-    description:
-      'Camera trapping, remote expedition planning, low-light shooting, fieldcraft, and storytelling techniques from Sebastian and Rachel.',
+    title: 'Courses & Lectures',
+    description: 'Camera trapping, fieldcraft, editing, photo ethics.',
     icon: '📷'
   },
   {
-    title: 'Exclusive Deals &amp; Merch',
-    description: 'Member-only merch drops, partner discounts, and access to 1:1 editing + coaching sessions.',
-    icon: '🎁'
+    title: 'Access to Pros',
+    description: 'Anything cat or photo related? Ask us!',
+    icon: '💬'
   }
 ];
 

@@ -24,7 +24,7 @@ export function CommunityShowcase() {
     <section className="bg-white">
       <div className="container-section py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="section-heading">Community pulse</h2>
+          <h2 className="section-heading">In Case You Missed It</h2>
           <p className="section-subtitle">
             See what you&apos;ve missed, mark sessions as watched, and get nudged toward the stories you&apos;ll love next.
           </p>

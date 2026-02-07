@@ -16,11 +16,15 @@ body {
 }
 
 a {
-  color: #0E7C7B;
   transition: color 0.2s ease;
 }
 
-a:hover {
+/* Only apply brand color to plain text links, not styled CTAs */
+a:not([class*="bg-"]):not([class*="text-"]) {
+  color: #0E7C7B;
+}
+
+a:not([class*="bg-"]):not([class*="text-"]):hover {
   color: #095859;
 }
 

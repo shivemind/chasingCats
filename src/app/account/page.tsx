@@ -57,7 +57,26 @@ export default async function AccountPage() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-night/10 bg-brand/10 p-6 text-center">
+            <p className="text-3xl font-bold text-brand-dark">{user.watchStatuses.filter(w => w.watched).length}</p>
+            <p className="mt-1 text-sm font-medium text-night/70">Episodes watched</p>
+          </div>
+          <div className="rounded-2xl border border-night/10 bg-brand/10 p-6 text-center">
+            <p className="text-3xl font-bold text-brand-dark">{user.watchStatuses.filter(w => w.watched && w.content.type === 'COURSE').length}</p>
+            <p className="mt-1 text-sm font-medium text-night/70">Completed classes</p>
+          </div>
+          <div className="rounded-2xl border border-night/10 bg-[#F5F1E3]/60 p-6 text-center">
+            <p className="text-3xl font-bold text-night">{user.questions.length}</p>
+            <p className="mt-1 text-sm font-medium text-night/70">Questions asked</p>
+          </div>
+          <div className="rounded-2xl border border-night/10 bg-[#F5F1E3]/60 p-6 text-center">
+            <p className="text-3xl font-bold text-night">{user.watchStatuses.length}</p>
+            <p className="mt-1 text-sm font-medium text-night/70">In your watchlist</p>
+          </div>
+        </div>
+
+        <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-8">
             <div className="rounded-3xl border border-night/10 bg-[#F5F1E3]/50 p-8">
               <h2 className="text-lg font-semibold text-night">Membership</h2>

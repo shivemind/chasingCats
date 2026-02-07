@@ -6,7 +6,7 @@ export function EventPromo() {
       <div className="rounded-3xl border border-night/10 bg-white p-10 shadow-card md:p-16">
         <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-dark/70">Next Live Session</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-dark/70">Next Expert Session</p>
             <h2 className="mt-4 text-3xl font-semibold text-night sm:text-4xl">
               The Biology of Claws with Dr. Ned Nedlinger
             </h2>
@@ -35,15 +35,21 @@ export function EventPromo() {
               </Link>
             </div>
           </div>
-          <div className="rounded-3xl bg-night/90 p-8 text-[#F5F1E3]">
-            <h3 className="text-lg font-semibold">What you&apos;ll learn</h3>
-            <ul className="mt-5 space-y-4 text-sm text-[#F5F1E3]/80">
-              <li>How claw structure informs species identification in the field</li>
-              <li>Reading scratch marks and tree sign to locate elusive cats</li>
-              <li>Photography setups for capturing paw detail ethically</li>
-              <li>Conservation case studies: lynx rewilding and tiger corridors</li>
-            </ul>
-            <p className="mt-6 text-xs uppercase tracking-[0.3em] text-accent/80">Included with membership</p>
+          <div className="relative overflow-hidden rounded-3xl bg-night/90">
+            <div className="aspect-[4/3] w-full bg-gradient-to-br from-night via-night/95 to-brand-dark/30">
+              <div className="flex h-full w-full items-center justify-center">
+                <div className="text-center p-8">
+                  <p className="text-sm uppercase tracking-widest text-accent">Preview</p>
+                  <p className="mt-3 text-xl font-semibold text-[#F5F1E3]">
+                    Dr. Ned Nedlinger on Claw Biology
+                  </p>
+                  <p className="mt-2 text-sm text-[#F5F1E3]/60">
+                    Watch the teaser
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p className="p-4 text-center text-xs uppercase tracking-[0.3em] text-accent/80">Included with membership</p>
           </div>
         </div>
       </div>

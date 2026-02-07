@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { Hero } from '@/components/home/hero';
 import { FeatureGrid } from '@/components/home/feature-grid';
-import { SpotlightCarousel } from '@/components/home/spotlight-carousel';
 import { EventPromo } from '@/components/home/event-promo';
 import { ArchivePreview } from '@/components/home/archive-preview';
 import { StorySection } from '@/components/home/story';
@@ -31,11 +30,10 @@ export default async function HomePage() {
     <>
       <Hero />
       <FeatureGrid />
-      <SpotlightCarousel />
       <EventPromo />
+      <CommunityShowcase />
       <ArchivePreview experts={experts} field={field} ask={ask} />
       <StorySection />
-      <CommunityShowcase />
       <FinalCTA />
     </>
   );

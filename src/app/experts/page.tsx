@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
+import { UpcomingExpertSession } from '@/components/experts/upcoming-session';
 import Link from 'next/link';
 
 interface ExpertsPageProps {
@@ -43,8 +44,14 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
   const speciesOptions = uniqueSpecies.map((item) => item.species).filter(Boolean) as string[];
   const topicOptions = uniqueTopics.map((item) => item.topic).filter(Boolean) as string[];
 
+  const upcomingEvent = await prisma.event.findFirst({
+    where: { startTime: { gte: new Date() } },
+    orderBy: { startTime: 'asc' }
+  });
+
   return (
     <div className="bg-white">
+      {upcomingEvent && <UpcomingExpertSession event={upcomingEvent} />}
       <section className="container-section py-24">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
