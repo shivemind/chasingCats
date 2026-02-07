@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +18,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/account';
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +44,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push(callbackUrl);
+    // Use hard redirect to ensure session cookie is properly read
+    window.location.href = callbackUrl;
   };
 
   return (

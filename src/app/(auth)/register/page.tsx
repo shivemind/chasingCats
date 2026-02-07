@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -25,7 +25,6 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
   const [error, setError] = useState<string | null>(null);
@@ -66,12 +65,13 @@ export default function RegisterPage() {
       if (signInResult?.error) {
         // If auto sign-in fails, redirect to login page
         const target = redirect ? `/login?registered=1&callbackUrl=${encodeURIComponent(redirect)}` : '/login?registered=1';
-        router.push(target);
+        window.location.href = target;
         return;
       }
 
-      // Successfully signed in - redirect to account or specified redirect
-      router.push(redirect ?? '/account');
+      // Successfully signed in - use hard redirect to ensure session cookie is read
+      // This avoids the issue where Next.js client-side navigation doesn't pick up the new session
+      window.location.href = redirect ?? '/account';
     } catch (err) {
       setError((err as Error).message);
     }
