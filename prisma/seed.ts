@@ -6,6 +6,26 @@ const prisma = new PrismaClient();
 async function main() {
   const password = await bcrypt.hash('password123', 10);
 
+  // Admin user
+  await prisma.user.upsert({
+    where: { email: 'admin@chasingcats.club' },
+    update: { role: 'ADMIN' },
+    create: {
+      email: 'admin@chasingcats.club',
+      name: 'Admin User',
+      hashedPassword: password,
+      role: 'ADMIN',
+      profile: {
+        create: {
+          username: 'admin',
+          bio: 'Site administrator',
+          favoriteCat: 'All of them'
+        }
+      }
+    }
+  });
+
+  // Regular member user
   await prisma.user.upsert({
     where: { email: 'member@chasingcats.club' },
     update: {},
