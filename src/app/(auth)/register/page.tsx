@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,8 +56,22 @@ export default function RegisterPage() {
         throw new Error(body.error ?? 'Unable to register');
       }
 
-      const target = redirect ? `/login?registered=1&callbackUrl=${encodeURIComponent(redirect)}` : '/login?registered=1';
-      router.push(target);
+      // Auto sign-in immediately after registration
+      const signInResult = await signIn('credentials', {
+        redirect: false,
+        email: values.email,
+        password: values.password
+      });
+
+      if (signInResult?.error) {
+        // If auto sign-in fails, redirect to login page
+        const target = redirect ? `/login?registered=1&callbackUrl=${encodeURIComponent(redirect)}` : '/login?registered=1';
+        router.push(target);
+        return;
+      }
+
+      // Successfully signed in - redirect to account or specified redirect
+      router.push(redirect ?? '/account');
     } catch (err) {
       setError((err as Error).message);
     }

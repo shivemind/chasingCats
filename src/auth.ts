@@ -99,28 +99,51 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return s;
     },
 
-    async jwt({ token }: { token: JWT }): Promise<JWT> {
+    async jwt({ token, user, trigger }: { token: JWT; user?: { id: string; email?: string | null; role?: string }; trigger?: string }): Promise<JWT> {
       const t = token as AppJWT;
 
-      // NextAuth sets email as string | null | undefined depending on provider/session state.
-      const email = typeof t.email === "string" ? t.email : null;
-      if (!email) return t;
-
-      const user = await prisma.user.findUnique({
-        where: { email },
-        include: {
-          memberships: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
-        },
-      });
-
+      // Only fetch from DB on initial sign-in or explicit refresh
+      // This prevents slow DB queries on every request
       if (user) {
+        // Initial sign-in - user object is passed from authorize()
         t.id = user.id;
-        t.role = user.role;
-        t.membershipStatus = user.memberships[0]?.status ?? null;
+        t.email = user.email ?? undefined;
+        
+        // Fetch membership status only on initial login
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            memberships: {
+              orderBy: { createdAt: "desc" },
+              take: 1,
+            },
+          },
+        });
+        
+        if (dbUser) {
+          t.role = dbUser.role;
+          t.membershipStatus = dbUser.memberships[0]?.status ?? null;
+        }
+      } else if (trigger === "update") {
+        // Session update requested - refresh membership status
+        if (t.id) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: t.id },
+            include: {
+              memberships: {
+                orderBy: { createdAt: "desc" },
+                take: 1,
+              },
+            },
+          });
+          
+          if (dbUser) {
+            t.role = dbUser.role;
+            t.membershipStatus = dbUser.memberships[0]?.status ?? null;
+          }
+        }
       }
+      // On subsequent requests, token already has the data - no DB query needed
 
       return t;
     },
