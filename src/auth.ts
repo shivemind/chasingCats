@@ -99,7 +99,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return s;
     },
 
-    async jwt({ token, user, trigger }: { token: JWT; user?: { id: string; email?: string | null; role?: string }; trigger?: string }): Promise<JWT> {
+    async jwt({ token, user, trigger }) {
       const t = token as AppJWT;
 
       // Only fetch from DB on initial sign-in or explicit refresh
