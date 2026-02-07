@@ -21,8 +21,9 @@
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.2",
+    "@types/bcryptjs": "^2.4.6",
     "axios": "^1.12.2",
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.544.0",
@@ -40,7 +41,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
