@@ -1,0 +1,409 @@
+'use client';
+
+import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
+import { ManageSubscriptionButton } from './manage-subscription-button';
+
+interface DashboardProps {
+  user: {
+    name: string | null;
+    email: string | null;
+    profile: { username: string; favoriteCat: string | null } | null;
+    membership: { status: string; plan: string } | null;
+    stats: {
+      watched: number;
+      courses: number;
+      questions: number;
+      watchlist: number;
+    };
+    questions: Array<{
+      id: string;
+      question: string;
+      status: string;
+      contentTitle: string | null;
+    }>;
+    watchStatuses: Array<{
+      id: string;
+      watched: boolean;
+      content: { title: string; slug: string; type: string };
+    }>;
+  };
+}
+
+// Floating particle component
+function Particle({ delay, duration, size, color, left, top }: {
+  delay: number; duration: number; size: number; color: string; left: string; top: string;
+}) {
+  return (
+    <div
+      className="absolute rounded-full opacity-0 animate-float-particle"
+      style={{
+        width: size,
+        height: size,
+        background: color,
+        left,
+        top,
+        animationDelay: `${delay}s`,
+        animationDuration: `${duration}s`,
+        boxShadow: `0 0 ${size * 2}px ${color}`,
+      }}
+    />
+  );
+}
+
+// Animated counter component
+function AnimatedCounter({ value, duration = 2000, color }: { value: number; duration?: number; color: string }) {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let startTime: number;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      setCount(Math.floor(progress * value));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+  }, [isVisible, value, duration]);
+
+  return (
+    <span ref={ref} className={`text-4xl font-black ${color}`}>
+      {count}
+    </span>
+  );
+}
+
+// Glowing orb background
+function GlowingOrbs() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Main orbs */}
+      <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-neon-cyan/20 to-transparent blur-3xl animate-pulse-slow" />
+      <div className="absolute -bottom-60 -left-40 h-[600px] w-[600px] rounded-full bg-gradient-to-tr from-neon-purple/20 to-transparent blur-3xl animate-pulse-slow animation-delay-2000" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-gradient-to-r from-cat-eye/10 to-transparent blur-3xl animate-spin-slow" />
+      
+      {/* Floating particles */}
+      {Array.from({ length: 30 }).map((_, i) => (
+        <Particle
+          key={i}
+          delay={Math.random() * 5}
+          duration={5 + Math.random() * 10}
+          size={2 + Math.random() * 4}
+          color={['#00f5d4', '#a855f7', '#facc15', '#22d3ee'][Math.floor(Math.random() * 4)]}
+          left={`${Math.random() * 100}%`}
+          top={`${Math.random() * 100}%`}
+        />
+      ))}
+      
+      {/* Cat eye decorations */}
+      <div className="absolute top-20 left-20 flex gap-4 animate-float">
+        <div className="h-6 w-3 rounded-full bg-cat-eye shadow-[0_0_20px_#facc15] animate-blink" />
+        <div className="h-6 w-3 rounded-full bg-cat-eye shadow-[0_0_20px_#facc15] animate-blink animation-delay-100" />
+      </div>
+      <div className="absolute bottom-40 right-20 flex gap-4 animate-float animation-delay-3000">
+        <div className="h-8 w-4 rounded-full bg-cat-eye-green shadow-[0_0_25px_#22c55e] animate-blink animation-delay-500" />
+        <div className="h-8 w-4 rounded-full bg-cat-eye-green shadow-[0_0_25px_#22c55e] animate-blink animation-delay-600" />
+      </div>
+      <div className="absolute top-1/3 right-1/4 flex gap-3 animate-float animation-delay-1500 opacity-50">
+        <div className="h-4 w-2 rounded-full bg-neon-cyan shadow-[0_0_15px_#00f5d4] animate-blink animation-delay-200" />
+        <div className="h-4 w-2 rounded-full bg-neon-cyan shadow-[0_0_15px_#00f5d4] animate-blink animation-delay-300" />
+      </div>
+    </div>
+  );
+}
+
+// Stat card with hover effects
+function StatCard({ icon, value, label, color, glowColor, delay }: {
+  icon: React.ReactNode; value: number; label: string; color: string; glowColor: string; delay: number;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      className={`group relative overflow-hidden rounded-2xl border bg-white/5 p-6 text-center backdrop-blur-xl transition-all duration-500 cursor-pointer
+        ${isHovered ? `border-${color}/60 scale-105 shadow-2xl` : `border-${color}/20`}`}
+      style={{
+        boxShadow: isHovered ? `0 0 40px ${glowColor}40, 0 0 80px ${glowColor}20` : 'none',
+        animationDelay: `${delay}ms`,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Animated background gradient */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br from-${color}/20 to-transparent opacity-0 transition-opacity duration-500 ${isHovered ? 'opacity-100' : ''}`}
+      />
+      
+      {/* Scanning line effect */}
+      <div className={`absolute inset-0 overflow-hidden ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+        <div className="absolute h-px w-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-scan" />
+      </div>
+
+      {/* Icon with pulse effect */}
+      <div className={`relative mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-${color}/10 transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`}>
+        <div className={`absolute inset-0 rounded-2xl bg-${color}/20 animate-ping-slow ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+        {icon}
+      </div>
+
+      {/* Animated counter */}
+      <AnimatedCounter value={value} color={`text-${color}`} />
+      
+      <p className="mt-2 text-sm font-medium text-white/60">{label}</p>
+
+      {/* Corner accents */}
+      <div className={`absolute top-0 left-0 h-8 w-px bg-gradient-to-b from-${color} to-transparent transition-opacity ${isHovered ? 'opacity-100' : 'opacity-30'}`} />
+      <div className={`absolute top-0 left-0 w-8 h-px bg-gradient-to-r from-${color} to-transparent transition-opacity ${isHovered ? 'opacity-100' : 'opacity-30'}`} />
+      <div className={`absolute bottom-0 right-0 h-8 w-px bg-gradient-to-t from-${color} to-transparent transition-opacity ${isHovered ? 'opacity-100' : 'opacity-30'}`} />
+      <div className={`absolute bottom-0 right-0 w-8 h-px bg-gradient-to-l from-${color} to-transparent transition-opacity ${isHovered ? 'opacity-100' : 'opacity-30'}`} />
+    </div>
+  );
+}
+
+// Main dashboard component
+export function AnimatedDashboard({ user }: DashboardProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#0a0a1a] via-[#0d1025] to-[#0a0a1a]">
+      <GlowingOrbs />
+
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px',
+        }}
+      />
+
+      <section className={`container-section relative py-16 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        {/* Header with animated gradient text */}
+        <div className="max-w-3xl mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-neon-cyan animate-pulse-slow">
+            <span className="h-2 w-2 rounded-full bg-neon-cyan animate-ping" />
+            Dashboard Active
+          </div>
+          
+          <h1 className="mt-6 text-5xl font-black">
+            <span className="bg-gradient-to-r from-white via-neon-cyan to-neon-purple bg-clip-text text-transparent animate-gradient-x">
+              Welcome back,
+            </span>
+            <br />
+            <span className="text-white">{user.name ?? user.profile?.username}</span>
+          </h1>
+          
+          <p className="mt-4 text-lg text-white/50">
+            Your personal command center for wild cat mastery.
+          </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+          <StatCard
+            icon={<svg className="h-8 w-8 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            value={user.stats.watched}
+            label="Episodes Watched"
+            color="neon-cyan"
+            glowColor="#00f5d4"
+            delay={0}
+          />
+          <StatCard
+            icon={<svg className="h-8 w-8 text-neon-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>}
+            value={user.stats.courses}
+            label="Courses Completed"
+            color="neon-purple"
+            glowColor="#a855f7"
+            delay={100}
+          />
+          <StatCard
+            icon={<svg className="h-8 w-8 text-cat-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            value={user.stats.questions}
+            label="Questions Asked"
+            color="cat-eye"
+            glowColor="#facc15"
+            delay={200}
+          />
+          <StatCard
+            icon={<svg className="h-8 w-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>}
+            value={user.stats.watchlist}
+            label="In Watchlist"
+            color="brand"
+            glowColor="#22d3ee"
+            delay={300}
+          />
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-8">
+            {/* Membership Card - Premium feel */}
+            <div className="group relative overflow-hidden rounded-3xl border border-neon-cyan/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-cyan/50 hover:shadow-[0_0_50px_rgba(0,245,212,0.15)]">
+              <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-neon-cyan/20 blur-3xl transition-transform group-hover:scale-150" />
+              
+              <div className="relative flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-neon-cyan to-neon-purple shadow-lg">
+                  <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Membership Status</h2>
+                  <p className="text-sm text-white/50">Your subscription details</p>
+                </div>
+              </div>
+
+              <div className="relative mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
+                  <p className="text-xs font-medium uppercase tracking-wider text-white/40">Status</p>
+                  <p className="mt-2 text-2xl font-bold text-neon-cyan">{user.membership?.status ?? 'INACTIVE'}</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
+                  <p className="text-xs font-medium uppercase tracking-wider text-white/40">Plan</p>
+                  <p className="mt-2 text-2xl font-bold text-white">{user.membership?.plan ?? 'Free'}</p>
+                </div>
+              </div>
+
+              <div className="relative mt-6">
+                <ManageSubscriptionButton />
+              </div>
+            </div>
+
+            {/* Profile Card */}
+            <div className="group relative overflow-hidden rounded-3xl border border-neon-purple/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-purple/50">
+              <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-neon-purple/20 blur-3xl transition-transform group-hover:scale-150" />
+              
+              <div className="relative flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-neon-purple to-pink-500 shadow-lg">
+                  <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Profile Details</h2>
+                  <p className="text-sm text-white/50">Your personal information</p>
+                </div>
+              </div>
+
+              <div className="relative mt-8 space-y-4">
+                {[
+                  { label: 'Name', value: user.name ?? '—' },
+                  { label: 'Username', value: `@${user.profile?.username ?? '—'}` },
+                  { label: 'Email', value: user.email ?? '—' },
+                  { label: 'Favorite Cat', value: user.profile?.favoriteCat ?? 'Tell us!', highlight: true },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+                    <span className="text-sm text-white/50">{item.label}</span>
+                    <span className={`font-medium ${item.highlight ? 'text-cat-eye' : 'text-white'}`}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Link href="/profile/edit" className="relative mt-6 inline-flex items-center gap-2 rounded-xl bg-neon-purple/20 px-5 py-3 text-sm font-semibold text-neon-purple transition-all hover:bg-neon-purple/30 hover:shadow-lg">
+                Edit Profile
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-8">
+            {/* Continue Watching */}
+            <div className="group relative overflow-hidden rounded-3xl border border-brand/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-neon-cyan shadow-lg">
+                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-white">Continue Watching</h2>
+              </div>
+
+              <div className="space-y-4">
+                {user.watchStatuses.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-white/20 p-8 text-center">
+                    <p className="text-white/50">No content yet</p>
+                    <Link href="/experts" className="mt-2 inline-block text-neon-cyan hover:underline">Start exploring →</Link>
+                  </div>
+                ) : (
+                  user.watchStatuses.map((watch, i) => (
+                    <Link
+                      key={watch.id}
+                      href={`/${watch.content.slug}`}
+                      className="group/item flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-neon-cyan/50 hover:bg-white/10"
+                    >
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
+                        <svg className="h-6 w-6 text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-white truncate group-hover/item:text-neon-cyan transition-colors">
+                          {watch.content.title}
+                        </p>
+                        <p className="text-xs text-white/40 uppercase">{watch.content.type}</p>
+                      </div>
+                      <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${watch.watched ? 'bg-neon-cyan/20 text-neon-cyan' : 'bg-cat-eye/20 text-cat-eye'}`}>
+                        {watch.watched ? '✓ Done' : 'In Progress'}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="rounded-3xl border border-cat-eye/30 bg-gradient-to-br from-cat-eye/10 to-transparent p-8 backdrop-blur-xl">
+              <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: '🎥', label: 'Browse Library', href: '/library' },
+                  { icon: '❓', label: 'Ask Question', href: '/ask' },
+                  { icon: '📅', label: 'View Events', href: '/experts' },
+                  { icon: '🛍️', label: 'Visit Shop', href: '/shop' },
+                ].map((action, i) => (
+                  <Link
+                    key={i}
+                    href={action.href}
+                    className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-cat-eye/50 hover:bg-white/10 hover:scale-105"
+                  >
+                    <span className="text-2xl">{action.icon}</span>
+                    <span className="text-xs font-medium text-white/70">{action.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
