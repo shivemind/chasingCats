@@ -4,6 +4,8 @@ import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { AuthSessionProvider } from '@/components/providers/session-provider';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { CommandPalette } from '@/components/search/command-palette';
 import { auth } from '@/auth';
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -32,9 +34,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-[#F5F1E3] text-night`}>
 
         <AuthSessionProvider session={session}>
+          <CommandPalette />
           <Navbar />
           <main className="flex-1 pb-24">{children}</main>
           <Footer />
+          <MobileNav />
         </AuthSessionProvider>
       </body>
     </html>

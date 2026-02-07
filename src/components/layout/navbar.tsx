@@ -6,6 +6,9 @@ import { useSession, signOut } from 'next-auth/react';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { SearchButton } from '@/components/search/command-palette';
+import { NotificationBell } from '@/components/notifications/notification-bell';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const navigation = [
   { name: 'From the Experts', href: '/experts' },
@@ -45,9 +48,12 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
+          <SearchButton />
+          <ThemeToggle />
           {session?.user ? (
             <>
+              <NotificationBell />
               <Link
                 href="/account"
                 className="rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-4 py-2 text-sm font-medium text-neon-cyan transition hover:bg-neon-cyan/20"
