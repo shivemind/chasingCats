@@ -3,6 +3,10 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { ManageSubscriptionButton } from './manage-subscription-button';
+import { NextTalk } from '@/components/dashboard/next-talk';
+import { ContentCarousel } from '@/components/dashboard/content-carousel';
+import { AskSection } from '@/components/dashboard/ask-section';
+import { ExpeditionPromo } from '@/components/dashboard/expedition-promo';
 
 interface DashboardProps {
   user: {
@@ -28,6 +32,31 @@ interface DashboardProps {
       content: { title: string; slug: string; type: string };
     }>;
   };
+  nextTalk?: {
+    id: string;
+    title: string;
+    speaker: string;
+    speakerTitle?: string;
+    description: string;
+    scheduledAt: Date;
+    slug: string;
+  } | null;
+  expertsContent?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    thumbnail?: string | null;
+    author?: string;
+    duration?: string;
+  }>;
+  fieldContent?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    thumbnail?: string | null;
+    author?: string;
+    duration?: string;
+  }>;
 }
 
 // Floating particle component
@@ -183,7 +212,7 @@ function StatCard({ icon, value, label, color, glowColor, delay }: {
 }
 
 // Main dashboard component
-export function AnimatedDashboard({ user }: DashboardProps) {
+export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldContent = [] }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -225,7 +254,7 @@ export function AnimatedDashboard({ user }: DashboardProps) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+        <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8 sm:mb-12">
           <StatCard
             icon={<svg className="h-8 w-8 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
             value={user.stats.watched}
@@ -258,6 +287,55 @@ export function AnimatedDashboard({ user }: DashboardProps) {
             glowColor="#22d3ee"
             delay={300}
           />
+        </div>
+
+        {/* Next Talk Section */}
+        <div className="mb-8">
+          <NextTalk talk={nextTalk ?? null} />
+        </div>
+
+        {/* From the Experts */}
+        {expertsContent.length > 0 && (
+          <div className="mb-8">
+            <ContentCarousel
+              title="From the Experts"
+              description="Tune in for video interviews with our cat nerd friends around the world"
+              icon="🎓"
+              items={expertsContent}
+              viewAllHref="/experts"
+              accentColor="cyan"
+            />
+          </div>
+        )}
+
+        {/* Into the Field */}
+        {fieldContent.length > 0 && (
+          <div className="mb-8">
+            <ContentCarousel
+              title="Into the Field"
+              description="Wildlife photography and tracking tips and tricks"
+              icon="🌍"
+              items={fieldContent}
+              viewAllHref="/field"
+              accentColor="purple"
+            />
+          </div>
+        )}
+
+        {/* Ask Me Anything */}
+        <div className="mb-8">
+          <AskSection
+            recentQuestions={user.questions.slice(0, 3).map(q => ({
+              id: q.id,
+              question: q.question,
+              status: q.status === 'ANSWERED' ? 'answered' : 'pending',
+            }))}
+          />
+        </div>
+
+        {/* Cat Expeditions Promo */}
+        <div className="mb-8">
+          <ExpeditionPromo />
         </div>
 
         {/* Main Content Grid */}

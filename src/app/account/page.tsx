@@ -2,6 +2,12 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { AnimatedDashboard } from '@/components/account/animated-dashboard';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'Your personal dashboard for tracking progress and managing your wildlife photography education.',
+};
 
 async function getAccountData(userId: string) {
   return prisma.user.findUnique({
@@ -30,6 +36,42 @@ async function getAccountData(userId: string) {
   });
 }
 
+async function getNextTalk() {
+  const now = new Date();
+  return prisma.event.findFirst({
+    where: {
+      startTime: { gte: now },
+    },
+    orderBy: { startTime: 'asc' },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      description: true,
+      startTime: true,
+      host: true,
+    },
+  });
+}
+
+async function getContentByCategory(categorySlug: string, take: number = 6) {
+  return prisma.content.findMany({
+    where: {
+      category: { slug: categorySlug },
+      publishedAt: { not: null },
+    },
+    orderBy: { publishedAt: 'desc' },
+    take,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      thumbnailUrl: true,
+      duration: true,
+    },
+  });
+}
+
 export default async function AccountPage() {
   const session = await auth();
 
@@ -37,7 +79,12 @@ export default async function AccountPage() {
     redirect('/login?callbackUrl=/account');
   }
 
-  const user = await getAccountData(session.user.id);
+  const [user, nextTalk, expertsContent, fieldContent] = await Promise.all([
+    getAccountData(session.user.id),
+    getNextTalk(),
+    getContentByCategory('experts', 6),
+    getContentByCategory('field', 6),
+  ]);
 
   if (!user) {
     redirect('/login');
@@ -80,5 +127,39 @@ export default async function AccountPage() {
     }))
   };
 
-  return <AnimatedDashboard user={dashboardUser} />;
+  // Transform next talk data
+  const dashboardNextTalk = nextTalk ? {
+    id: nextTalk.id,
+    title: nextTalk.title,
+    speaker: nextTalk.host ?? 'TBD',
+    description: nextTalk.description ?? '',
+    scheduledAt: nextTalk.startTime,
+    slug: nextTalk.slug,
+  } : null;
+
+  // Transform content data
+  const dashboardExperts = expertsContent.map(c => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+    thumbnail: c.thumbnailUrl,
+    duration: c.duration ? `${c.duration} min` : undefined,
+  }));
+
+  const dashboardField = fieldContent.map(c => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+    thumbnail: c.thumbnailUrl,
+    duration: c.duration ? `${c.duration} min` : undefined,
+  }));
+
+  return (
+    <AnimatedDashboard 
+      user={dashboardUser} 
+      nextTalk={dashboardNextTalk}
+      expertsContent={dashboardExperts}
+      fieldContent={dashboardField}
+    />
+  );
 }
