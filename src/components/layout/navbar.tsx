@@ -92,6 +92,14 @@ export function Navbar() {
       {open && (
         <div className="border-t border-white/10 bg-midnight/95 px-6 py-4 backdrop-blur-xl md:hidden">
           <nav className="flex flex-col gap-4">
+            {/* Mobile search and notifications for logged-in users */}
+            {session?.user && (
+              <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                <SearchButton />
+                <NotificationBell />
+              </div>
+            )}
+            
             {navigation.map((item) => (
               <Link
                 key={item.name}

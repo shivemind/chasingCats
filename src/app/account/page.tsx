@@ -102,7 +102,8 @@ export default async function AccountPage() {
     } : null,
     membership: membership ? {
       status: membership.status,
-      plan: membership.plan
+      plan: membership.plan,
+      hasStripeCustomer: !!membership.stripeCustomerId
     } : null,
     stats: {
       watched: user.watchStatuses.filter(w => w.watched).length,

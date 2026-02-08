@@ -13,7 +13,7 @@ interface DashboardProps {
     name: string | null;
     email: string | null;
     profile: { username: string; favoriteCat: string | null } | null;
-    membership: { status: string; plan: string } | null;
+    membership: { status: string; plan: string; hasStripeCustomer: boolean } | null;
     stats: {
       watched: number;
       courses: number;
@@ -119,7 +119,7 @@ function AnimatedCounter({ value, duration = 2000, color }: { value: number; dur
   }, [isVisible, value, duration]);
 
   return (
-    <span ref={ref} className={`text-4xl font-black ${color}`}>
+    <span ref={ref} className={`text-2xl sm:text-3xl md:text-4xl font-black ${color}`}>
       {count}
     </span>
   );
@@ -172,7 +172,7 @@ function StatCard({ icon, value, label, color, glowColor, delay }: {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border bg-white/5 p-6 text-center backdrop-blur-xl transition-all duration-500 cursor-pointer
+      className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border bg-white/5 p-4 sm:p-6 text-center backdrop-blur-xl transition-all duration-500 cursor-pointer
         ${isHovered ? `border-${color}/60 scale-105 shadow-2xl` : `border-${color}/20`}`}
       style={{
         boxShadow: isHovered ? `0 0 40px ${glowColor}40, 0 0 80px ${glowColor}20` : 'none',
@@ -186,21 +186,21 @@ function StatCard({ icon, value, label, color, glowColor, delay }: {
         className={`absolute inset-0 bg-gradient-to-br from-${color}/20 to-transparent opacity-0 transition-opacity duration-500 ${isHovered ? 'opacity-100' : ''}`}
       />
       
-      {/* Scanning line effect */}
-      <div className={`absolute inset-0 overflow-hidden ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+      {/* Scanning line effect - hidden on mobile */}
+      <div className={`absolute inset-0 overflow-hidden ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity hidden sm:block`}>
         <div className="absolute h-px w-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-scan" />
       </div>
 
       {/* Icon with pulse effect */}
-      <div className={`relative mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-${color}/10 transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`}>
-        <div className={`absolute inset-0 rounded-2xl bg-${color}/20 animate-ping-slow ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
-        {icon}
+      <div className={`relative mx-auto mb-3 sm:mb-4 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl bg-${color}/10 transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`}>
+        <div className={`absolute inset-0 rounded-xl sm:rounded-2xl bg-${color}/20 animate-ping-slow ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+        <div className="scale-75 sm:scale-100">{icon}</div>
       </div>
 
       {/* Animated counter */}
       <AnimatedCounter value={value} color={`text-${color}`} />
       
-      <p className="mt-2 text-sm font-medium text-white/60">{label}</p>
+      <p className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-white/60 line-clamp-1">{label}</p>
 
       {/* Corner accents */}
       <div className={`absolute top-0 left-0 h-8 w-px bg-gradient-to-b from-${color} to-transparent transition-opacity ${isHovered ? 'opacity-100' : 'opacity-30'}`} />
@@ -232,29 +232,29 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
         }}
       />
 
-      <section className={`container-section relative py-16 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <section className={`container-section relative py-8 sm:py-12 md:py-16 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         {/* Header with animated gradient text */}
-        <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-neon-cyan animate-pulse-slow">
-            <span className="h-2 w-2 rounded-full bg-neon-cyan animate-ping" />
+        <div className="max-w-3xl mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-neon-cyan animate-pulse-slow">
+            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-neon-cyan animate-ping" />
             Dashboard Active
           </div>
           
-          <h1 className="mt-6 text-5xl font-black">
+          <h1 className="mt-4 sm:mt-6 text-3xl sm:text-4xl md:text-5xl font-black">
             <span className="bg-gradient-to-r from-white via-neon-cyan to-neon-purple bg-clip-text text-transparent animate-gradient-x">
               Welcome back,
             </span>
             <br />
-            <span className="text-white">{user.name ?? user.profile?.username}</span>
+            <span className="text-white break-words">{user.name ?? user.profile?.username}</span>
           </h1>
           
-          <p className="mt-4 text-lg text-white/50">
+          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-white/50">
             Your personal command center for wild cat mastery.
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8 sm:mb-12">
+        <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8 md:mb-12">
           <StatCard
             icon={<svg className="h-8 w-8 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
             value={user.stats.watched}
@@ -290,13 +290,13 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
         </div>
 
         {/* Next Talk Section */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <NextTalk talk={nextTalk ?? null} />
         </div>
 
         {/* From the Experts */}
         {expertsContent.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <ContentCarousel
               title="From the Experts"
               description="Tune in for video interviews with our cat nerd friends around the world"
@@ -310,7 +310,7 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
 
         {/* Into the Field */}
         {fieldContent.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <ContentCarousel
               title="Into the Field"
               description="Wildlife photography and tracking tips and tricks"
@@ -323,7 +323,7 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
         )}
 
         {/* Ask Me Anything */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <AskSection
             recentQuestions={user.questions.slice(0, 3).map(q => ({
               id: q.id,
@@ -334,76 +334,76 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
         </div>
 
         {/* Cat Expeditions Promo */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <ExpeditionPromo />
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-8">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6 sm:space-y-8">
             {/* Membership Card - Premium feel */}
-            <div className="group relative overflow-hidden rounded-3xl border border-neon-cyan/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-cyan/50 hover:shadow-[0_0_50px_rgba(0,245,212,0.15)]">
+            <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-neon-cyan/30 bg-gradient-to-br from-white/10 to-white/5 p-6 sm:p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-cyan/50 hover:shadow-[0_0_50px_rgba(0,245,212,0.15)]">
               <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-neon-cyan/20 blur-3xl transition-transform group-hover:scale-150" />
               
-              <div className="relative flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-neon-cyan to-neon-purple shadow-lg">
-                  <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="relative flex items-center gap-3 sm:gap-4">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-neon-cyan to-neon-purple shadow-lg">
+                  <svg className="h-6 w-6 sm:h-7 sm:w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Membership Status</h2>
-                  <p className="text-sm text-white/50">Your subscription details</p>
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl font-bold text-white truncate">Membership Status</h2>
+                  <p className="text-xs sm:text-sm text-white/50 truncate">Your subscription details</p>
                 </div>
               </div>
 
-              <div className="relative mt-8 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
+              <div className="relative mt-6 sm:mt-8 grid gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 transition-colors hover:bg-white/10">
                   <p className="text-xs font-medium uppercase tracking-wider text-white/40">Status</p>
-                  <p className="mt-2 text-2xl font-bold text-neon-cyan">{user.membership?.status ?? 'INACTIVE'}</p>
+                  <p className="mt-2 text-xl sm:text-2xl font-bold text-neon-cyan break-words">{user.membership?.status ?? 'INACTIVE'}</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
+                <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 transition-colors hover:bg-white/10">
                   <p className="text-xs font-medium uppercase tracking-wider text-white/40">Plan</p>
-                  <p className="mt-2 text-2xl font-bold text-white">{user.membership?.plan ?? 'Free'}</p>
+                  <p className="mt-2 text-xl sm:text-2xl font-bold text-white break-words">{user.membership?.plan ?? 'Free'}</p>
                 </div>
               </div>
 
               <div className="relative mt-6">
-                <ManageSubscriptionButton />
+                <ManageSubscriptionButton hasStripeCustomer={user.membership?.hasStripeCustomer ?? false} />
               </div>
             </div>
 
             {/* Profile Card */}
-            <div className="group relative overflow-hidden rounded-3xl border border-neon-purple/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-purple/50">
+            <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-neon-purple/30 bg-gradient-to-br from-white/10 to-white/5 p-6 sm:p-8 backdrop-blur-xl transition-all duration-500 hover:border-neon-purple/50">
               <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-neon-purple/20 blur-3xl transition-transform group-hover:scale-150" />
               
-              <div className="relative flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-neon-purple to-pink-500 shadow-lg">
-                  <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="relative flex items-center gap-3 sm:gap-4">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-neon-purple to-pink-500 shadow-lg">
+                  <svg className="h-6 w-6 sm:h-7 sm:w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Profile Details</h2>
-                  <p className="text-sm text-white/50">Your personal information</p>
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl font-bold text-white truncate">Profile Details</h2>
+                  <p className="text-xs sm:text-sm text-white/50 truncate">Your personal information</p>
                 </div>
               </div>
 
-              <div className="relative mt-8 space-y-4">
+              <div className="relative mt-6 sm:mt-8 space-y-3 sm:space-y-4">
                 {[
                   { label: 'Name', value: user.name ?? '—' },
                   { label: 'Username', value: `@${user.profile?.username ?? '—'}` },
                   { label: 'Email', value: user.email ?? '—' },
                   { label: 'Favorite Cat', value: user.profile?.favoriteCat ?? 'Tell us!', highlight: true },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
-                    <span className="text-sm text-white/50">{item.label}</span>
-                    <span className={`font-medium ${item.highlight ? 'text-cat-eye' : 'text-white'}`}>{item.value}</span>
+                  <div key={i} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 transition-colors hover:bg-white/10">
+                    <span className="text-xs sm:text-sm text-white/50 flex-shrink-0">{item.label}</span>
+                    <span className={`text-sm font-medium text-right break-words ${item.highlight ? 'text-cat-eye' : 'text-white'}`}>{item.value}</span>
                   </div>
                 ))}
               </div>
 
-              <Link href="/profile/edit" className="relative mt-6 inline-flex items-center gap-2 rounded-xl bg-neon-purple/20 px-5 py-3 text-sm font-semibold text-neon-purple transition-all hover:bg-neon-purple/30 hover:shadow-lg">
+              <Link href="/profile/edit" className="relative mt-5 sm:mt-6 inline-flex items-center gap-2 rounded-xl bg-neon-purple/20 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-neon-purple transition-all hover:bg-neon-purple/30 hover:shadow-lg">
                 Edit Profile
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -413,44 +413,44 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
           </div>
 
           {/* Right Column */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Continue Watching */}
-            <div className="group relative overflow-hidden rounded-3xl border border-brand/30 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-xl">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-neon-cyan shadow-lg">
-                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-brand/30 bg-gradient-to-br from-white/10 to-white/5 p-6 sm:p-8 backdrop-blur-xl">
+              <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-brand to-neon-cyan shadow-lg">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   </svg>
                 </div>
-                <h2 className="text-xl font-bold text-white">Continue Watching</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-white truncate">Continue Watching</h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {user.watchStatuses.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-white/20 p-8 text-center">
-                    <p className="text-white/50">No content yet</p>
-                    <Link href="/experts" className="mt-2 inline-block text-neon-cyan hover:underline">Start exploring →</Link>
+                  <div className="rounded-xl sm:rounded-2xl border border-dashed border-white/20 p-6 sm:p-8 text-center">
+                    <p className="text-sm sm:text-base text-white/50">No content yet</p>
+                    <Link href="/experts" className="mt-2 inline-block text-sm text-neon-cyan hover:underline">Start exploring →</Link>
                   </div>
                 ) : (
                   user.watchStatuses.map((watch, i) => (
                     <Link
                       key={watch.id}
                       href={`/${watch.content.slug}`}
-                      className="group/item flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-neon-cyan/50 hover:bg-white/10"
+                      className="group/item flex items-center gap-3 sm:gap-4 rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 transition-all hover:border-neon-cyan/50 hover:bg-white/10"
                     >
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-                        <svg className="h-6 w-6 text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-white/10">
+                        <svg className="h-5 w-5 sm:h-6 sm:w-6 text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />
                         </svg>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate group-hover/item:text-neon-cyan transition-colors">
+                        <p className="text-sm sm:text-base font-medium text-white truncate group-hover/item:text-neon-cyan transition-colors">
                           {watch.content.title}
                         </p>
-                        <p className="text-xs text-white/40 uppercase">{watch.content.type}</p>
+                        <p className="text-[10px] sm:text-xs text-white/40 uppercase">{watch.content.type}</p>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${watch.watched ? 'bg-neon-cyan/20 text-neon-cyan' : 'bg-cat-eye/20 text-cat-eye'}`}>
-                        {watch.watched ? '✓ Done' : 'In Progress'}
+                      <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] sm:text-xs font-medium ${watch.watched ? 'bg-neon-cyan/20 text-neon-cyan' : 'bg-cat-eye/20 text-cat-eye'}`}>
+                        {watch.watched ? '✓' : '···'}
                       </span>
                     </Link>
                   ))
@@ -459,9 +459,9 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
             </div>
 
             {/* Quick Actions */}
-            <div className="rounded-3xl border border-cat-eye/30 bg-gradient-to-br from-cat-eye/10 to-transparent p-8 backdrop-blur-xl">
-              <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl sm:rounded-3xl border border-cat-eye/30 bg-gradient-to-br from-cat-eye/10 to-transparent p-6 sm:p-8 backdrop-blur-xl">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Quick Actions</h2>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {[
                   { icon: '🎥', label: 'Browse Library', href: '/library' },
                   { icon: '❓', label: 'Ask Question', href: '/ask' },
@@ -471,10 +471,10 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
                   <Link
                     key={i}
                     href={action.href}
-                    className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-cat-eye/50 hover:bg-white/10 hover:scale-105"
+                    className="flex flex-col items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 transition-all hover:border-cat-eye/50 hover:bg-white/10 hover:scale-105"
                   >
-                    <span className="text-2xl">{action.icon}</span>
-                    <span className="text-xs font-medium text-white/70">{action.label}</span>
+                    <span className="text-xl sm:text-2xl">{action.icon}</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-white/70 text-center line-clamp-2">{action.label}</span>
                   </Link>
                 ))}
               </div>
