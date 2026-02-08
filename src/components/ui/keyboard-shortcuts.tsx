@@ -38,9 +38,6 @@ const shortcuts: Shortcut[] = [
   { keys: ['['], description: 'Previous chapter', category: 'Video' },
   { keys: [']'], description: 'Next chapter', category: 'Video' },
   { keys: ['0-9'], description: 'Skip to 0-90% of video', category: 'Video' },
-  
-  // Theme
-  { keys: ['⌘', 'Shift', 'L'], description: 'Toggle light/dark mode', category: 'Theme' },
 ];
 
 export function KeyboardShortcutsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {

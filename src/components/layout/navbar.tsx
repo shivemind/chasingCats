@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { SearchButton } from '@/components/search/command-palette';
 import { NotificationBell } from '@/components/notifications/notification-bell';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const navigation = [
   { name: 'From the Experts', href: '/experts' },
@@ -50,7 +49,6 @@ export function Navbar() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           <SearchButton />
-          <ThemeToggle />
           {session?.user ? (
             <>
               <NotificationBell />
