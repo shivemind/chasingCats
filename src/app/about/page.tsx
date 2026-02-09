@@ -1,9 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SITE_URL } from '@/lib/seo';
 
-export const metadata = {
-  title: 'About | Chasing Cats Club',
-  description: 'Meet Rachel and Sebastian - wildlife photographers and conservationists behind Chasing Cats Club.'
+export const metadata: Metadata = {
+  title: 'About Rachel & Sebastian - Wildlife Photography Guides',
+  description: 'Meet Rachel and Sebastian - wildlife photographers and conservationists behind Chasing Cats Club. Over a decade of experience tracking wild cats across six continents.',
+  openGraph: {
+    title: 'About | Chasing Cats Club',
+    description: 'Meet Rachel and Sebastian - wildlife photographers and conservationists behind Chasing Cats Club.',
+    type: 'website',
+    url: `${SITE_URL}/about`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/about`,
+  },
 };
 
 export default function AboutPage() {

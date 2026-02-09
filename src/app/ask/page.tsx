@@ -1,14 +1,31 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import { QuestionForm } from '@/components/ask/question-form';
 import type { Question, User } from '@prisma/client';
+import { SITE_URL, generateCollectionPageSchema } from '@/lib/seo';
 
 type QuestionWithAuthor = Question & { author: User | null };
 
-export const metadata = {
-  title: 'Ask Me Anything | Chasing Cats Club',
-  description: 'Submit your questions for Rachel, Sebastian, and their network of wild cat experts.'
+export const metadata: Metadata = {
+  title: 'Ask Me Anything - Q&A with Wild Cat Experts',
+  description: 'Submit your questions for Rachel, Sebastian, and their network of wild cat experts. Browse past Q&A sessions and expert answers.',
+  openGraph: {
+    title: 'Ask Me Anything | Chasing Cats Club',
+    description: 'Submit your questions for Rachel, Sebastian, and their network of wild cat experts.',
+    type: 'website',
+    url: `${SITE_URL}/ask`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/ask`,
+  },
 };
+
+const askPageSchema = generateCollectionPageSchema({
+  name: 'Ask Me Anything',
+  description: 'Submit your questions for Rachel, Sebastian, and their network of wild cat experts.',
+  url: '/ask',
+});
 
 export default async function AskPage() {
   const [content, questions] = await Promise.all([
@@ -26,8 +43,13 @@ export default async function AskPage() {
   ]);
 
   return (
-    <div className="bg-white">
-      <section className="container-section py-12 sm:py-16 md:py-24">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(askPageSchema) }}
+      />
+      <div className="bg-white">
+        <section className="container-section py-12 sm:py-16 md:py-24">
         <div className="max-w-3xl">
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-brand/70">Ask Me Anything</p>
           <h1 className="mt-3 sm:mt-4 text-3xl sm:text-4xl font-semibold text-night">Your direct line to cat experts.</h1>
@@ -59,7 +81,8 @@ export default async function AskPage() {
             </div>
           </aside>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

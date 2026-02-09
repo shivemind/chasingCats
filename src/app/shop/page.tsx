@@ -1,8 +1,19 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SITE_URL } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Shop | Chasing Cats Club',
-  description: 'Exclusive merchandise, editing sessions, and expedition add-ons for members.'
+export const metadata: Metadata = {
+  title: 'Shop - Member Merchandise & Services',
+  description: 'Exclusive merchandise, 1:1 editing sessions with Sebastian, and expedition add-ons for Chasing Cats Club members.',
+  openGraph: {
+    title: 'Shop | Chasing Cats Club',
+    description: 'Exclusive merchandise, editing sessions, and expedition add-ons for members.',
+    type: 'website',
+    url: `${SITE_URL}/shop`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/shop`,
+  },
 };
 
 const products = [

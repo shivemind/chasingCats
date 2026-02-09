@@ -1,13 +1,50 @@
+import type { Metadata } from 'next';
 import { PricingTable } from '@/components/join/pricing-table';
+import { generateMembershipSchema, SITE_URL } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Join the Chasing Cats Club',
-  description: 'Choose your plan to unlock live talks, workshops, field intel, and community features.'
+export const metadata: Metadata = {
+  title: 'Join the Chasing Cats Club - Membership Pricing',
+  description: 'Choose your plan to unlock live talks, workshops, field intel, and community features. Monthly ($15/mo) or Annual ($150/yr) membership options.',
+  openGraph: {
+    title: 'Join the Chasing Cats Club',
+    description: 'Access wildlife photography courses, expert interviews, live talks, and a supportive community.',
+    type: 'website',
+    url: `${SITE_URL}/join`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Join the Chasing Cats Club',
+    description: 'Access wildlife photography courses, expert interviews, live talks, and a supportive community.',
+  },
+  alternates: {
+    canonical: `${SITE_URL}/join`,
+  },
 };
+
+// Membership pricing for structured data
+const membershipSchema = generateMembershipSchema([
+  {
+    name: 'Monthly Explorer',
+    description: 'Full access billed monthly. Cancel anytime.',
+    price: 15,
+    billingPeriod: 'month',
+  },
+  {
+    name: 'Annual Expedition',
+    description: 'Two months free plus a 60-minute 1:1 session.',
+    price: 150,
+    billingPeriod: 'year',
+  },
+]);
 
 export default function JoinPage() {
   return (
-    <div className="bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(membershipSchema) }}
+      />
+      <div className="bg-white">
       <section className="container-section py-24">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand/70">Membership</p>
@@ -44,6 +81,7 @@ export default function JoinPage() {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

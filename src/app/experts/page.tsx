@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import { UpcomingExpertSession } from '@/components/experts/upcoming-session';
 import Link from 'next/link';
+import { SITE_URL, generateCollectionPageSchema } from '@/lib/seo';
 
 interface ExpertsPageProps {
   searchParams?: {
@@ -11,10 +13,25 @@ interface ExpertsPageProps {
   };
 }
 
-export const metadata = {
-  title: 'From the Experts | Chasing Cats Club',
-  description: 'Deep dives with biologists, researchers, and photographers focused on wild cats.'
+export const metadata: Metadata = {
+  title: 'From the Experts - Wild Cat Research & Photography Talks',
+  description: 'Deep dives with biologists, researchers, and photographers focused on wild cats. Expert talks on conservation, ethics, and wildlife photography techniques.',
+  openGraph: {
+    title: 'From the Experts | Chasing Cats Club',
+    description: 'Deep dives with biologists, researchers, and photographers focused on wild cats.',
+    type: 'website',
+    url: `${SITE_URL}/experts`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/experts`,
+  },
 };
+
+const expertsPageSchema = generateCollectionPageSchema({
+  name: 'From the Experts',
+  description: 'Deep dives with biologists, researchers, and photographers focused on wild cats.',
+  url: '/experts',
+});
 
 export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
   const filters = searchParams ?? {};
@@ -50,8 +67,13 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
   });
 
   return (
-    <div className="bg-white">
-      {upcomingEvent && <UpcomingExpertSession event={upcomingEvent} />}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(expertsPageSchema) }}
+      />
+      <div className="bg-white">
+        {upcomingEvent && <UpcomingExpertSession event={upcomingEvent} />}
       <section className="container-section py-24">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
@@ -116,6 +138,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

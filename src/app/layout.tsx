@@ -6,10 +6,12 @@ import { Footer } from '@/components/layout/footer';
 import { AuthSessionProvider } from '@/components/providers/session-provider';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { CommandPalette } from '@/components/search/command-palette';
+import { SkipToContent } from '@/components/layout/skip-to-content';
 import { auth } from '@/auth';
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { generateOrganizationSchema, generateWebSiteSchema, SITE_URL } from '@/lib/seo';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -21,10 +23,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin']
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
+// Canonical production URL - always use this for canonicals even on Vercel preview URLs
+const canonicalUrl = 'https://chasing-cats.vercel.app';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Chasing Cats Club | Wildlife Photography Education',
     template: '%s | Chasing Cats Club'
@@ -47,13 +50,13 @@ export const metadata: Metadata = {
     'tiger photography',
     'puma photography'
   ],
-  authors: [{ name: 'Rachel & Sebastian', url: siteUrl }],
+  authors: [{ name: 'Rachel & Sebastian', url: canonicalUrl }],
   creator: 'Chasing Cats Club',
   publisher: 'Chasing Cats Club',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: siteUrl,
+    url: canonicalUrl,
     siteName: 'Chasing Cats Club',
     title: 'Chasing Cats Club | Wildlife Photography Education',
     description: 'Join the premier membership community for wildlife photography enthusiasts. Learn to find and photograph wild cats from the experts.',
@@ -71,7 +74,8 @@ export const metadata: Metadata = {
     title: 'Chasing Cats Club | Wildlife Photography Education',
     description: 'Join the premier membership community for wildlife photography enthusiasts.',
     images: ['/og-image.svg'],
-    creator: '@chasingcatsclub'
+    creator: '@chasingcatsclub',
+    site: '@chasingcatsclub'
   },
   robots: {
     index: true,
@@ -85,12 +89,19 @@ export const metadata: Metadata = {
     }
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: canonicalUrl,
     languages: {
-      'en-US': siteUrl,
+      'en-US': canonicalUrl,
+    },
+    types: {
+      'application/rss+xml': `${canonicalUrl}/feed.xml`,
+      'application/feed+json': `${canonicalUrl}/feed.json`,
     },
   },
-  category: 'education'
+  category: 'education',
+  other: {
+    'msapplication-TileColor': '#0a0a1a',
+  },
 };
 
 export const viewport: Viewport = {
@@ -103,25 +114,9 @@ export const viewport: Viewport = {
   ]
 };
 
-// JSON-LD Structured Data
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'EducationalOrganization',
-  name: 'Chasing Cats Club',
-  description: 'Membership community and educational hub for wildlife photography enthusiasts learning about finding and photographing wild cats.',
-  url: siteUrl,
-  logo: `${siteUrl}/logo.svg`,
-  sameAs: [
-    'https://instagram.com/chasingcatsclub',
-    'https://youtube.com/@chasingcatsclub',
-    'https://catexpeditions.com'
-  ],
-  offers: {
-    '@type': 'Offer',
-    category: 'Membership',
-    description: 'Access to wildlife photography courses, expert interviews, and community'
-  }
-};
+// JSON-LD Structured Data - Organization and WebSite schemas for sitewide SEO
+const organizationSchema = generateOrganizationSchema();
+const webSiteSchema = generateWebSiteSchema();
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const session = await auth();
@@ -137,18 +132,30 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* DNS prefetch for analytics and other services */}
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         
+        {/* Feeds for RSS readers and AI agents */}
+        <link rel="alternate" type="application/rss+xml" title="Chasing Cats Club RSS Feed" href="/feed.xml" />
+        <link rel="alternate" type="application/feed+json" title="Chasing Cats Club JSON Feed" href="/feed.json" />
+        
+        {/* Organization schema - sitewide */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        {/* WebSite schema with SearchAction - sitewide */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
         />
       </head>
       <body
       className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-[#F5F1E3] text-night antialiased`}>
-
+        {/* Skip to content link for accessibility - keyboard users can skip navigation */}
+        <SkipToContent />
+        
         <AuthSessionProvider session={session}>
           <CommandPalette />
           <Navbar />
-          <main className="flex-1 pb-24">{children}</main>
+          <main id="main-content" className="flex-1 pb-24" tabIndex={-1}>{children}</main>
           <Footer />
           <MobileNav />
         </AuthSessionProvider>

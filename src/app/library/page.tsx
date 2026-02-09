@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import Link from 'next/link';
 import type { Content, Category } from '@prisma/client';
+import { SITE_URL, generateCollectionPageSchema } from '@/lib/seo';
 
 type ContentWithCategory = Content & { category: Category | null };
 
@@ -13,10 +15,25 @@ interface LibraryPageProps {
   }>;
 }
 
-export const metadata = {
-  title: 'Content Library | Chasing Cats Club',
-  description: 'Browse the full archive of expert talks, field guides, courses, and AMAs about wild cats.'
+export const metadata: Metadata = {
+  title: 'Content Library - Full Archive',
+  description: 'Browse the full archive of expert talks, field guides, courses, and AMAs about wild cats. Filter by type, category, or species.',
+  openGraph: {
+    title: 'Content Library | Chasing Cats Club',
+    description: 'Browse the full archive of expert talks, field guides, courses, and AMAs about wild cats.',
+    type: 'website',
+    url: `${SITE_URL}/library`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/library`,
+  },
 };
+
+const libraryPageSchema = generateCollectionPageSchema({
+  name: 'Content Library',
+  description: 'Browse the full archive of expert talks, field guides, courses, and AMAs about wild cats.',
+  url: '/library',
+});
 
 export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const filters = (await searchParams) ?? {};
@@ -46,8 +63,13 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const contentTypes = ['ARTICLE', 'VIDEO', 'TALK', 'COURSE', 'NEWS'];
 
   return (
-    <div className="bg-white">
-      <section className="container-section py-12 sm:py-16 md:py-24">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(libraryPageSchema) }}
+      />
+      <div className="bg-white">
+        <section className="container-section py-12 sm:py-16 md:py-24">
         <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
             <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-brand/70">Content Library</p>
@@ -132,9 +154,10 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                 eyebrow={content.category?.name ?? content.type} 
               />
             ))}
-          </div>
+        </div>
         )}
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

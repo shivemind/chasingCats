@@ -2,15 +2,32 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import type { Metadata } from 'next';
+import { SITE_URL, generateCollectionPageSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Events | Chasing Cats Club',
-  description: 'Upcoming live talks, workshops, and Q&A sessions with wild cat experts. Join our community events.',
+  title: 'Events - Live Talks & Workshops',
+  description: 'Upcoming live talks, workshops, and Q&A sessions with wild cat experts. Join our community events for expert-led discussions on wildlife photography and conservation.',
   openGraph: {
     title: 'Events | Chasing Cats Club',
     description: 'Upcoming live talks, workshops, and Q&A sessions with wild cat experts.',
+    type: 'website',
+    url: `${SITE_URL}/events`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Events | Chasing Cats Club',
+    description: 'Upcoming live talks, workshops, and Q&A sessions with wild cat experts.',
+  },
+  alternates: {
+    canonical: `${SITE_URL}/events`,
   },
 };
+
+const eventsPageSchema = generateCollectionPageSchema({
+  name: 'Events - Live Talks & Workshops',
+  description: 'Upcoming live talks, workshops, and Q&A sessions with wild cat experts.',
+  url: '/events',
+});
 
 export default async function EventsPage() {
   const now = new Date();
@@ -28,7 +45,12 @@ export default async function EventsPage() {
   ]);
 
   return (
-    <div className="bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsPageSchema) }}
+      />
+      <div className="bg-white">
       <section className="container-section py-24">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand/70">Events</p>
@@ -109,6 +131,7 @@ export default async function EventsPage() {
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }

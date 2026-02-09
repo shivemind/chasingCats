@@ -1,11 +1,28 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import Link from 'next/link';
+import { SITE_URL, generateCollectionPageSchema } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Into the Field | Chasing Cats Club',
-  description: 'Expedition briefings, tracking guides, and fieldcraft lessons for photographing wild cats.'
+export const metadata: Metadata = {
+  title: 'Into the Field - Expedition Guides & Fieldcraft',
+  description: 'Expedition briefings, tracking guides, camera settings, and fieldcraft lessons for photographing wild cats in the field.',
+  openGraph: {
+    title: 'Into the Field | Chasing Cats Club',
+    description: 'Expedition briefings, tracking guides, and fieldcraft lessons for photographing wild cats.',
+    type: 'website',
+    url: `${SITE_URL}/field`,
+  },
+  alternates: {
+    canonical: `${SITE_URL}/field`,
+  },
 };
+
+const fieldPageSchema = generateCollectionPageSchema({
+  name: 'Into the Field',
+  description: 'Expedition briefings, tracking guides, and fieldcraft lessons for photographing wild cats.',
+  url: '/field',
+});
 
 export default async function FieldPage() {
   const contents = await prisma.content.findMany({
@@ -14,8 +31,13 @@ export default async function FieldPage() {
   });
 
   return (
-    <div className="bg-white">
-      <section className="container-section py-24">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(fieldPageSchema) }}
+      />
+      <div className="bg-white">
+        <section className="container-section py-24">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand/70">Into the Field</p>
@@ -37,7 +59,8 @@ export default async function FieldPage() {
             <ContentCard key={content.id} content={content} eyebrow="Field Notes" />
           ))}
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

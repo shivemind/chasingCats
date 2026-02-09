@@ -22,9 +22,9 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-midnight/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-midnight/90 backdrop-blur-xl" role="banner">
       <div className="container-section flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight rounded-lg" aria-label="Chasing Cats Club - Home">
           <span className="flex gap-1">
             <span className="h-2 w-4 animate-pulse rounded-full bg-cat-eye-green shadow-cat-eye" />
             <span className="h-2 w-4 animate-pulse rounded-full bg-cat-eye-green shadow-cat-eye" style={{ animationDelay: '0.3s' }} />
@@ -33,15 +33,16 @@ export function Navbar() {
             Chasing Cats
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               className={cn(
-                'text-sm font-medium text-white/60 transition-colors hover:text-neon-cyan',
+                'text-sm font-medium text-white/60 transition-colors hover:text-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight rounded px-1',
                 pathname.startsWith(item.href) && 'text-neon-cyan'
               )}
+              aria-current={pathname.startsWith(item.href) ? 'page' : undefined}
             >
               {item.name}
             </Link>
@@ -92,15 +93,17 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-white md:hidden"
-          aria-label="Toggle navigation"
+          className="inline-flex items-center justify-center rounded-md p-2 text-white md:hidden focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+          aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
         </button>
       </div>
       {open && (
-        <div className="border-t border-white/10 bg-midnight/95 px-6 py-4 backdrop-blur-xl md:hidden">
-          <nav className="flex flex-col gap-4">
+        <div id="mobile-navigation" className="border-t border-white/10 bg-midnight/95 px-6 py-4 backdrop-blur-xl md:hidden">
+          <nav className="flex flex-col gap-4" aria-label="Mobile navigation">
             {/* Mobile search and notifications for logged-in users */}
             {session?.user && (
               <div className="flex items-center gap-3 pb-4 border-b border-white/10">

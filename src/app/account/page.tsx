@@ -15,6 +15,11 @@ type UserWithRelations = User & {
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Your personal dashboard for tracking progress and managing your wildlife photography education.',
+  // Private page - do not index
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 async function getAccountData(userId: string): Promise<UserWithRelations | null> {
