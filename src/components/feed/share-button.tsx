@@ -13,18 +13,15 @@ export function ShareButton({ postId, postContent }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
-  // Check for native share support on mount
+  // Set up client-side values after mount to avoid hydration mismatch
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+    setShareUrl(`${window.location.origin}/feed?post=${postId}`);
+    if ('share' in navigator) {
       setCanNativeShare(true);
     }
-  }, []);
-
-  const shareUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/feed?post=${postId}` 
-    : '';
+  }, [postId]);
   
   const shareText = postContent.slice(0, 100) + (postContent.length > 100 ? '...' : '');
 

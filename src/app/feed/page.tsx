@@ -91,62 +91,65 @@ export default async function FeedPage() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Jungle Background */}
-      <div className="fixed inset-0 -z-10">
-        {/* Base gradient - deep jungle colors */}
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-900 via-green-800 to-emerald-950" />
-        
-        {/* Tropical overlay pattern */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0c8 15 25 15 30 30-15 8-15 25-30 30-8-15-25-15-30-30 15-8 15-25 30-30z' fill='%23000' fill-opacity='0.15'/%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }} />
-        
-        {/* Animated floating leaves */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="animate-float-slow absolute top-[10%] left-[5%] text-6xl opacity-20">🌿</div>
-          <div className="animate-float-medium absolute top-[20%] right-[10%] text-5xl opacity-25">🍃</div>
-          <div className="animate-float-fast absolute top-[60%] left-[15%] text-4xl opacity-15">🌴</div>
-          <div className="animate-float-slow absolute top-[40%] right-[5%] text-7xl opacity-20">🌿</div>
-          <div className="animate-float-medium absolute bottom-[20%] left-[8%] text-5xl opacity-25">🍃</div>
-          <div className="animate-float-fast absolute top-[75%] right-[20%] text-4xl opacity-15">🌱</div>
-          <div className="animate-float-slow absolute top-[5%] left-[45%] text-3xl opacity-20">🦜</div>
-          <div className="animate-float-medium absolute bottom-[10%] right-[40%] text-4xl opacity-20">🦋</div>
-        </div>
-        
-        {/* Light rays through canopy */}
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 via-transparent to-emerald-400/5" />
-        
-        {/* Misty atmosphere at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-emerald-950/80 to-transparent" />
-      </div>
-
-      <section className="container-section py-8 sm:py-12 relative z-10">
-        <div className="max-w-2xl mx-auto">
-          {/* Header */}
-          <div className="mb-8 text-center sm:text-left">
-            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-emerald-300/80">
-              Community
-            </p>
-            <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-white drop-shadow-lg">
-              Pride Feed 🦁
-            </h1>
-            <p className="mt-2 text-sm text-emerald-100/80">
-              Share your wildcat sightings, photos, and connect with fellow enthusiasts.
-            </p>
-          </div>
-
-          {/* Feed */}
-          <FeedList
-            initialPosts={postsWithReactions}
-            initialCursor={nextCursor}
-            currentUserId={session.user.id}
-            isAdmin={session.user.role === 'ADMIN'}
-            hasPaidAccess={hasPaidAccess}
+    <>
+      {/* Override body background for this page */}
+      <style>{`body { background: linear-gradient(to bottom, #064e3b, #166534, #022c22) !important; }`}</style>
+      
+      <div className="min-h-screen relative">
+        {/* Jungle Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          {/* Tropical overlay pattern */}
+          <div 
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0c8 15 25 15 30 30-15 8-15 25-30 30-8-15-25-15-30-30 15-8 15-25 30-30z' fill='%23fff' fill-opacity='0.08'/%3E%3C/svg%3E")`,
+              backgroundSize: '60px 60px'
+            }}
           />
+          
+          {/* Floating jungle elements - static positioned for SSR */}
+          <div className="absolute top-[10%] left-[5%] text-6xl opacity-20 animate-pulse">🌿</div>
+          <div className="absolute top-[20%] right-[10%] text-5xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}>🍃</div>
+          <div className="absolute top-[50%] left-[8%] text-4xl opacity-15 animate-pulse" style={{ animationDelay: '0.5s' }}>🌴</div>
+          <div className="absolute top-[35%] right-[5%] text-7xl opacity-15 animate-pulse" style={{ animationDelay: '1.5s' }}>🌿</div>
+          <div className="absolute top-[70%] left-[12%] text-5xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}>🍃</div>
+          <div className="absolute top-[80%] right-[15%] text-4xl opacity-15 animate-pulse" style={{ animationDelay: '0.8s' }}>🌱</div>
+          <div className="absolute top-[5%] left-[50%] text-3xl opacity-25 animate-pulse" style={{ animationDelay: '1.2s' }}>🦜</div>
+          <div className="absolute top-[90%] right-[45%] text-4xl opacity-20 animate-pulse" style={{ animationDelay: '1.8s' }}>🦋</div>
+          
+          {/* Light rays through canopy */}
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 via-transparent to-emerald-400/5" />
+          
+          {/* Misty atmosphere at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-emerald-950/60 to-transparent" />
         </div>
-      </section>
-    </div>
+
+        <section className="container-section py-8 sm:py-12 relative z-10">
+          <div className="max-w-2xl mx-auto">
+            {/* Header */}
+            <div className="mb-8 text-center sm:text-left">
+              <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-emerald-300">
+                Community
+              </p>
+              <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-white drop-shadow-lg">
+                Pride Feed 🦁
+              </h1>
+              <p className="mt-2 text-sm text-emerald-100/90">
+                Share your wildcat sightings, photos, and connect with fellow enthusiasts.
+              </p>
+            </div>
+
+            {/* Feed */}
+            <FeedList
+              initialPosts={postsWithReactions}
+              initialCursor={nextCursor}
+              currentUserId={session.user.id}
+              isAdmin={session.user.role === 'ADMIN'}
+              hasPaidAccess={hasPaidAccess}
+            />
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
