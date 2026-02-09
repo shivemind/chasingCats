@@ -191,20 +191,20 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
   // Non-paid users see upgrade prompt
   if (!hasPaidAccess) {
     return (
-      <div className="rounded-2xl border border-night/10 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-sm">
+      <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/80 backdrop-blur-sm p-4 sm:p-6 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10">
-            <Lock className="h-5 w-5 text-brand" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-800/50 ring-2 ring-emerald-500/30">
+            <Lock className="h-5 w-5 text-emerald-300" />
           </div>
           <div className="flex-1">
-            <p className="font-semibold text-night text-sm sm:text-base">Join the Pride!</p>
-            <p className="text-xs sm:text-sm text-night/60">
+            <p className="font-semibold text-white text-sm sm:text-base">Join the Pride!</p>
+            <p className="text-xs sm:text-sm text-emerald-300/60">
               Upgrade to post, comment, purr & roar with the community.
             </p>
           </div>
           <Link
             href="/pricing"
-            className="rounded-full bg-brand px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-brand/90 transition-colors active:scale-95"
+            className="rounded-full bg-emerald-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-500 transition-colors active:scale-95"
           >
             Upgrade
           </Link>
@@ -220,10 +220,10 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "rounded-2xl border bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-sm transition-all",
+        "rounded-2xl border bg-emerald-950/80 backdrop-blur-sm p-4 sm:p-6 shadow-lg transition-all",
         isDragging 
-          ? "border-brand border-dashed border-2 bg-brand/5" 
-          : "border-night/10"
+          ? "border-emerald-400 border-dashed border-2 bg-emerald-900/50" 
+          : "border-emerald-500/20"
       )}
     >
       {/* Hidden file input */}
@@ -241,10 +241,10 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
 
       {/* Drag overlay */}
       {isDragging && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-brand/10 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-emerald-500/20 backdrop-blur-sm">
           <div className="text-center">
-            <Upload className="h-8 w-8 mx-auto text-brand mb-2" />
-            <p className="font-semibold text-brand">Drop to upload</p>
+            <Upload className="h-8 w-8 mx-auto text-emerald-300 mb-2" />
+            <p className="font-semibold text-emerald-200">Drop to upload</p>
           </div>
         </div>
       )}
@@ -255,19 +255,19 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
         placeholder="Share something with the pride... 🐾"
         rows={3}
         maxLength={2000}
-        className="resize-none border-0 bg-transparent p-0 text-base placeholder:text-night/40 focus:ring-0"
+        className="resize-none border-0 bg-transparent p-0 text-base text-emerald-50 placeholder:text-emerald-400/50 focus:ring-0"
         disabled={isPending || isUploading}
       />
 
       {/* Media Options Panel */}
       {showMediaOptions && !media && (
-        <div className="mt-3 rounded-xl border border-night/10 bg-night/5 p-4">
+        <div className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-900/50 p-4">
           <div className="flex flex-col sm:flex-row gap-2">
             {/* Upload File Button */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-night/20 p-4 text-night/60 hover:border-brand hover:text-brand hover:bg-brand/5 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-emerald-500/30 p-4 text-emerald-300/70 hover:border-emerald-400 hover:text-emerald-200 hover:bg-emerald-800/30 transition-colors"
             >
               <Upload className="h-5 w-5" />
               <span className="text-sm font-medium">Upload File</span>
@@ -277,7 +277,7 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
             <button
               type="button"
               onClick={() => setShowUrlInput(!showUrlInput)}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-night/20 p-4 text-night/60 hover:border-brand hover:text-brand hover:bg-brand/5 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-emerald-500/30 p-4 text-emerald-300/70 hover:border-emerald-400 hover:text-emerald-200 hover:bg-emerald-800/30 transition-colors"
             >
               <LinkIcon className="h-5 w-5" />
               <span className="text-sm font-medium">Paste URL</span>
@@ -293,20 +293,20 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleUrlSubmit())}
                 placeholder="https://example.com/image.jpg"
-                className="flex-1 rounded-lg border border-night/10 bg-white px-3 py-2 text-sm placeholder:text-night/40 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+                className="flex-1 rounded-lg border border-emerald-500/30 bg-emerald-900/50 px-3 py-2 text-sm text-emerald-100 placeholder:text-emerald-400/50 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
               />
               <Button
                 type="button"
                 onClick={handleUrlSubmit}
                 disabled={!urlInput.trim()}
-                className="px-4 text-xs"
+                className="px-4 text-xs bg-emerald-600 hover:bg-emerald-500"
               >
                 Add
               </Button>
             </div>
           )}
           
-          <p className="mt-3 text-[10px] sm:text-xs text-night/40 text-center">
+          <p className="mt-3 text-[10px] sm:text-xs text-emerald-400/50 text-center">
             Supports: JPG, PNG, GIF, WebP, MP4, WebM (max 10MB) • Or drag & drop anywhere
           </p>
         </div>
@@ -314,16 +314,16 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
 
       {/* Media Preview */}
       {media && (
-        <div className="mt-3 relative rounded-xl overflow-hidden bg-night/5">
+        <div className="mt-3 relative rounded-xl overflow-hidden bg-black/30 ring-1 ring-emerald-500/20">
           {/* Upload Progress Overlay */}
           {media.isUploading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-night/50 backdrop-blur-sm">
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-emerald-950/80 backdrop-blur-sm">
               <div className="text-center">
-                <Loader2 className="h-8 w-8 mx-auto text-white animate-spin mb-2" />
-                <p className="text-sm font-medium text-white">Uploading... {uploadProgress}%</p>
-                <div className="mt-2 w-32 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                <Loader2 className="h-8 w-8 mx-auto text-emerald-300 animate-spin mb-2" />
+                <p className="text-sm font-medium text-emerald-100">Uploading... {uploadProgress}%</p>
+                <div className="mt-2 w-32 h-1.5 bg-emerald-800 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-brand transition-all duration-300"
+                    className="h-full bg-emerald-400 transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -336,7 +336,7 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
             type="button"
             onClick={removeMedia}
             disabled={media.isUploading}
-            className="absolute top-2 right-2 z-20 rounded-full bg-night/80 p-1.5 text-white hover:bg-night transition-colors disabled:opacity-50"
+            className="absolute top-2 right-2 z-20 rounded-full bg-emerald-950/80 p-1.5 text-emerald-300 hover:bg-emerald-900 transition-colors disabled:opacity-50"
           >
             <X className="h-4 w-4" />
           </button>
@@ -362,7 +362,7 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
           
           {/* Video indicator */}
           {media.type === 'video' && !media.isUploading && (
-            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-night/80 px-2 py-1 text-xs text-white">
+            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-emerald-950/80 px-2 py-1 text-xs text-emerald-200">
               <Video className="h-3 w-3" />
               Video
             </div>
@@ -371,10 +371,10 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
       )}
 
       {error && (
-        <p className="mt-2 text-sm text-red-500">{error}</p>
+        <p className="mt-2 text-sm text-red-400">{error}</p>
       )}
 
-      <div className="mt-3 sm:mt-4 flex items-center justify-between border-t border-night/5 pt-3 sm:pt-4">
+      <div className="mt-3 sm:mt-4 flex items-center justify-between border-t border-emerald-500/20 pt-3 sm:pt-4">
         <button
           type="button"
           onClick={() => {
@@ -385,8 +385,8 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
           className={cn(
             "flex items-center gap-1 sm:gap-1.5 rounded-full px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors active:scale-95",
             showMediaOptions || media
-              ? "bg-brand/10 text-brand"
-              : "text-night/60 hover:bg-night/5 hover:text-night",
+              ? "bg-emerald-500/30 text-emerald-300"
+              : "text-emerald-300/70 hover:bg-emerald-800/50 hover:text-emerald-200",
             (isPending || isUploading || !!media) && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -395,13 +395,13 @@ export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreateP
         </button>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-[10px] sm:text-xs text-night/40">
+          <span className="text-[10px] sm:text-xs text-emerald-400/50">
             {content.length}/2000
           </span>
           <Button
             type="submit"
             disabled={isPending || isUploading || !content.trim() || media?.isUploading}
-            className="px-4 sm:px-6 text-xs sm:text-sm"
+            className="px-4 sm:px-6 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

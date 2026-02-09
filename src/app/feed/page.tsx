@@ -88,11 +88,7 @@ export default async function FeedPage() {
   }));
 
   return (
-    <>
-      {/* Override body background for this page */}
-      <style>{`body { background: linear-gradient(to bottom, #064e3b, #166534, #022c22) !important; }`}</style>
-      
-      <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-gradient-to-b from-emerald-900 via-green-800 to-emerald-950 -mt-[1px] pt-[1px]">
         {/* Jungle Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
           {/* Tropical overlay pattern */}
@@ -146,7 +142,6 @@ export default async function FeedPage() {
             />
           </div>
         </section>
-      </div>
-    </>
+    </div>
   );
 }
