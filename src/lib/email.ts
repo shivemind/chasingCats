@@ -33,9 +33,12 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions): Prom
   try {
     // Dynamic import to avoid build errors when resend is not installed
     // Install with: npm install resend
-    const resendModule = await import('resend').catch(() => null);
+    // Using variable to prevent TypeScript static analysis
+    const moduleName = 'resend';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resendModule = await import(/* webpackIgnore: true */ moduleName as any).catch(() => null) as any;
     
-    if (!resendModule) {
+    if (!resendModule?.Resend) {
       console.warn('Resend package not installed. Install with: npm install resend');
       console.log('📧 Email would be sent:', { to, subject });
       return true;
