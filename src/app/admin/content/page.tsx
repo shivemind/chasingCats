@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { DeleteContentButton } from '@/components/admin/delete-content-button';
+import type { Content, Category } from '@prisma/client';
+
+type ContentWithCategory = Content & { category: Category | null };
 
 export default async function AdminContentPage() {
   const contents = await prisma.content.findMany({
     orderBy: { createdAt: 'desc' },
     include: { category: true }
-  });
+  }) as ContentWithCategory[];
 
   return (
     <div>
