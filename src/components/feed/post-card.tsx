@@ -2,21 +2,23 @@
 
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageCircle, Trash2, ChevronDown, ChevronUp, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReactionButtons } from './reaction-buttons';
 import { CommentList } from './comment-list';
 import { CommentForm } from './comment-form';
+import { ShareButton } from './share-button';
 import type { FeedPost, PostComment } from '@/types/feed';
 
 type PostCardProps = {
   post: FeedPost;
   currentUserId: string;
   isAdmin?: boolean;
+  hasPaidAccess?: boolean;
   onDelete?: (postId: string) => void;
 };
 
-export function PostCard({ post, currentUserId, isAdmin = false, onDelete }: PostCardProps) {
+export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess = false, onDelete }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [commentCount, setCommentCount] = useState(post._count.comments);
@@ -118,30 +120,35 @@ export function PostCard({ post, currentUserId, isAdmin = false, onDelete }: Pos
       </div>
 
       {/* Actions */}
-      <div className="mt-3 sm:mt-4 flex items-center justify-between border-t border-night/5 pt-3 sm:pt-4">
+      <div className="mt-3 sm:mt-4 flex items-center justify-between flex-wrap gap-2 border-t border-night/5 pt-3 sm:pt-4">
         <ReactionButtons
           postId={post.id}
           initialCounts={post.reactionCounts}
           initialUserReaction={post.userReaction}
+          disabled={!hasPaidAccess}
         />
 
-        <button
-          onClick={handleToggleComments}
-          className={cn(
-            'flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors active:scale-95',
-            showComments
-              ? 'bg-brand/10 text-brand'
-              : 'bg-night/5 text-night/70 hover:bg-night/10 hover:text-night'
-          )}
-        >
-          <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          <span>{commentCount}</span>
-          {showComments ? (
-            <ChevronUp className="h-3 w-3" />
-          ) : (
-            <ChevronDown className="h-3 w-3" />
-          )}
-        </button>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button
+            onClick={handleToggleComments}
+            className={cn(
+              'flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors active:scale-95',
+              showComments
+                ? 'bg-brand/10 text-brand'
+                : 'bg-night/5 text-night/70 hover:bg-night/10 hover:text-night'
+            )}
+          >
+            <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{commentCount}</span>
+            {showComments ? (
+              <ChevronUp className="h-3 w-3" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </button>
+          
+          <ShareButton postId={post.id} postContent={post.content} />
+        </div>
       </div>
 
       {/* Comments section */}
@@ -152,7 +159,14 @@ export function PostCard({ post, currentUserId, isAdmin = false, onDelete }: Pos
           ) : (
             <CommentList comments={comments} />
           )}
-          <CommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
+          {hasPaidAccess ? (
+            <CommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
+          ) : (
+            <div className="flex items-center gap-2 rounded-full border border-dashed border-night/20 bg-night/5 px-4 py-2 text-sm text-night/50">
+              <Lock className="h-4 w-4" />
+              <span>Upgrade to comment</span>
+            </div>
+          )}
         </div>
       )}
     </article>

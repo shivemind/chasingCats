@@ -10,9 +10,10 @@ type FeedListProps = {
   initialCursor?: string;
   currentUserId: string;
   isAdmin?: boolean;
+  hasPaidAccess?: boolean;
 };
 
-export function FeedList({ initialPosts, initialCursor, currentUserId, isAdmin = false }: FeedListProps) {
+export function FeedList({ initialPosts, initialCursor, currentUserId, isAdmin = false, hasPaidAccess = false }: FeedListProps) {
   const [posts, setPosts] = useState<FeedPost[]>(initialPosts);
   const [cursor, setCursor] = useState<string | undefined>(initialCursor);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +48,7 @@ export function FeedList({ initialPosts, initialCursor, currentUserId, isAdmin =
 
   return (
     <div className="space-y-6">
-      <CreatePostForm onPostCreated={handlePostCreated} />
+      <CreatePostForm onPostCreated={handlePostCreated} hasPaidAccess={hasPaidAccess} />
 
       {posts.length === 0 ? (
         <div className="rounded-2xl border border-night/10 bg-white p-8 sm:p-12 text-center">
@@ -66,6 +67,7 @@ export function FeedList({ initialPosts, initialCursor, currentUserId, isAdmin =
                 post={post}
                 currentUserId={currentUserId}
                 isAdmin={isAdmin}
+                hasPaidAccess={hasPaidAccess}
                 onDelete={handlePostDeleted}
               />
             ))}

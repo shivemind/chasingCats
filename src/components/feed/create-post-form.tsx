@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus, X, Lock } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import type { FeedPost } from '@/types/feed';
 
 type CreatePostFormProps = {
   onPostCreated: (post: FeedPost) => void;
+  hasPaidAccess?: boolean;
 };
 
-export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
+export function CreatePostForm({ onPostCreated, hasPaidAccess = false }: CreatePostFormProps) {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
@@ -49,10 +51,35 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     });
   };
 
+  // Non-paid users see upgrade prompt
+  if (!hasPaidAccess) {
+    return (
+      <div className="rounded-2xl border border-night/10 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10">
+            <Lock className="h-5 w-5 text-brand" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-night text-sm sm:text-base">Join the Pride!</p>
+            <p className="text-xs sm:text-sm text-night/60">
+              Upgrade to post, comment, purr & roar with the community.
+            </p>
+          </div>
+          <Link
+            href="/pricing"
+            className="rounded-full bg-brand px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-brand/90 transition-colors active:scale-95"
+          >
+            Upgrade
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-night/10 bg-white p-4 sm:p-6 shadow-sm"
+      className="rounded-2xl border border-night/10 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-sm"
     >
       <Textarea
         value={content}

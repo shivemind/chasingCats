@@ -38,7 +38,10 @@ const config: Config = {
       animation: {
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
-        'fade-in-delayed': 'fadeIn 0.3s ease-in 0.3s forwards'
+        'fade-in-delayed': 'fadeIn 0.3s ease-in 0.3s forwards',
+        'float-slow': 'floatJungle 8s ease-in-out infinite',
+        'float-medium': 'floatJungle 6s ease-in-out infinite 1s',
+        'float-fast': 'floatJungle 4s ease-in-out infinite 0.5s'
       },
       keyframes: {
         'pulse-glow': {
@@ -52,6 +55,12 @@ const config: Config = {
         'fadeIn': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
+        },
+        'floatJungle': {
+          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+          '25%': { transform: 'translateY(-15px) rotate(5deg)' },
+          '50%': { transform: 'translateY(-8px) rotate(-3deg)' },
+          '75%': { transform: 'translateY(-20px) rotate(3deg)' }
         }
       }
     }

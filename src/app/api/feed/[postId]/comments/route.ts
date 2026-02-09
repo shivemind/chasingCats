@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { checkContentAccess } from '@/lib/access';
 import { z } from 'zod';
 
 type RouteParams = { params: Promise<{ postId: string }> };
@@ -45,6 +46,12 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check for paid membership
+  const access = await checkContentAccess(session.user.id);
+  if (!access.hasAccess) {
+    return NextResponse.json({ error: 'Paid membership required to comment' }, { status: 403 });
   }
 
   // Verify post exists
