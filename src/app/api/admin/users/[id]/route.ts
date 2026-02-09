@@ -61,3 +61,37 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const adminCheck = await checkAdmin();
+    if ('error' in adminCheck) {
+      return NextResponse.json({ error: adminCheck.error }, { status: adminCheck.status });
+    }
+
+    const { id } = await params;
+
+    // Prevent deleting yourself
+    if (adminCheck.session.user?.id === id) {
+      return NextResponse.json(
+        { error: 'Cannot delete your own account' },
+        { status: 400 }
+      );
+    }
+
+    await prisma.user.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete user' },
+      { status: 500 }
+    );
+  }
+}

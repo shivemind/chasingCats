@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { UserRoleSelect } from '@/components/admin/user-role-select';
+import { DeleteUserButton } from '@/components/admin/delete-user-button';
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
@@ -53,6 +54,7 @@ export default async function AdminUsersPage() {
               <th className="px-6 py-4 font-medium">Role</th>
               <th className="px-6 py-4 font-medium">Subscriptions</th>
               <th className="px-6 py-4 font-medium">Joined</th>
+              <th className="px-6 py-4 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -73,11 +75,14 @@ export default async function AdminUsersPage() {
                     day: 'numeric'
                   })}
                 </td>
+                <td className="px-6 py-4">
+                  <DeleteUserButton userId={user.id} userName={user.name} />
+                </td>
               </tr>
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-white/50">
+              <td colSpan={6} className="px-6 py-12 text-center text-white/50">
                   No users found.
                 </td>
               </tr>
