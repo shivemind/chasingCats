@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { QuestionForm } from '@/components/ask/question-form';
 import { WatchToggle } from '@/components/content/watch-toggle';
 import { Paywall } from '@/components/content/paywall';
+import { YouTubePlayer } from '@/components/video/youtube-player';
 import { auth } from '@/auth';
 import { checkContentAccess } from '@/lib/access';
 import { generateArticleSchema, generateVideoSchema, generateBreadcrumbSchema } from '@/lib/seo';
@@ -204,9 +205,16 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <p className="mt-4 text-night/70">{content.excerpt}</p>
             </div>
             <div className="aspect-video w-full overflow-hidden rounded-3xl border border-night/10 bg-night/80">
-              <div className="flex h-full items-center justify-center text-[#F5F1E3]/70">
-                {content.videoUrl ? 'Video player placeholder' : 'Audio/Article placeholder'}
-              </div>
+              {content.videoUrl ? (
+                <YouTubePlayer videoUrl={content.videoUrl} title={content.title} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-[#F5F1E3]/70">
+                  <div className="text-center">
+                    <span className="text-4xl">📄</span>
+                    <p className="mt-2">Article content below</p>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-4">
               <WatchToggle
