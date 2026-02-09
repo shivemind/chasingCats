@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { QuestionForm } from '@/components/ask/question-form';
 import { WatchToggle } from '@/components/content/watch-toggle';
 import { auth } from '@/auth';
+import type { Content, Comment, User, RelatedContent, WatchStatus } from '@prisma/client';
 
 interface ContentRouteParams {
   slug: string[];
@@ -11,6 +12,12 @@ interface ContentRouteParams {
 interface ContentPageProps {
   params: Promise<ContentRouteParams>;
 }
+
+type ContentWithRelations = Content & {
+  comments: (Comment & { author: User | null })[];
+  relatedContent: (RelatedContent & { related: Content })[];
+  watchStatuses: WatchStatus[];
+};
 
 export async function generateMetadata({ params }: ContentPageProps) {
   const { slug } = await params;
@@ -53,7 +60,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
         take: userId ? 1 : 0
       }
     }
-  });
+  }) as ContentWithRelations | null;
 
   if (!content) {
     notFound();
@@ -78,7 +85,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <WatchToggle
                 contentId={content.id}
                 contentSlug={content.slug}
-                initialWatched={(content as unknown as { watchStatuses?: { watched: boolean }[] }).watchStatuses?.[0]?.watched ?? false}
+                initialWatched={content.watchStatuses?.[0]?.watched ?? false}
               />
             </div>
             <div className="prose prose-lg max-w-none text-night" dangerouslySetInnerHTML={{ __html: content.body }} />
