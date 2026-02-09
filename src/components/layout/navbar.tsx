@@ -33,13 +33,13 @@ export function Navbar() {
             Chasing Cats
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-6 lg:gap-8 md:flex flex-1 justify-center" aria-label="Main navigation">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               className={cn(
-                'text-sm font-medium text-white/60 transition-colors hover:text-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight rounded px-1',
+                'text-sm font-medium text-white/60 transition-colors hover:text-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight rounded px-2 py-1 whitespace-nowrap',
                 pathname.startsWith(item.href) && 'text-neon-cyan'
               )}
               aria-current={pathname.startsWith(item.href) ? 'page' : undefined}
@@ -48,14 +48,14 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-2 lg:gap-3 md:flex flex-shrink-0">
           <SearchButton />
           {session?.user ? (
             <>
               <Link
                 href="/feed"
                 className={cn(
-                  'text-sm font-medium transition-colors hover:text-neon-cyan',
+                  'text-sm font-medium transition-colors hover:text-neon-cyan whitespace-nowrap',
                   pathname === '/feed' ? 'text-neon-cyan' : 'text-white/60'
                 )}
               >
@@ -64,14 +64,14 @@ export function Navbar() {
               <NotificationBell />
               <Link
                 href="/account"
-                className="rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-4 py-2 text-sm font-medium text-neon-cyan transition hover:bg-neon-cyan/20"
+                className="rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-3 lg:px-4 py-2 text-sm font-medium text-neon-cyan transition hover:bg-neon-cyan/20 whitespace-nowrap"
               >
-                Your Profile
+                Profile
               </Link>
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-sm font-medium text-white/60 hover:text-white"
+                className="text-sm font-medium text-white/60 hover:text-white whitespace-nowrap"
               >
                 Sign out
               </button>
