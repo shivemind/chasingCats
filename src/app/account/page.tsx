@@ -3,13 +3,21 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { AnimatedDashboard } from '@/components/account/animated-dashboard';
 import type { Metadata } from 'next';
+import type { User, Profile, Membership, WatchStatus, Question, Content } from '@prisma/client';
+
+type UserWithRelations = User & {
+  profile: Profile | null;
+  memberships: Membership[];
+  watchStatuses: (WatchStatus & { content: Content })[];
+  questions: (Question & { content: Content | null })[];
+};
 
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Your personal dashboard for tracking progress and managing your wildlife photography education.',
 };
 
-async function getAccountData(userId: string) {
+async function getAccountData(userId: string): Promise<UserWithRelations | null> {
   return prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -33,7 +41,7 @@ async function getAccountData(userId: string) {
         take: 5
       }
     }
-  });
+  }) as Promise<UserWithRelations | null>;
 }
 
 async function getNextTalk() {
