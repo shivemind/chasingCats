@@ -8,6 +8,7 @@ import { ContentCarousel } from '@/components/dashboard/content-carousel';
 import { AskSection } from '@/components/dashboard/ask-section';
 import { ExpeditionPromo } from '@/components/dashboard/expedition-promo';
 import { FeedPreview, type FeedPreviewPost } from '@/components/dashboard/feed-preview';
+import { ContentImage } from '@/components/shared/content-image';
 
 interface DashboardProps {
   user: {
@@ -405,22 +406,15 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
                     className="group flex gap-3 sm:gap-4 rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 transition-all hover:border-cat-eye/40 hover:bg-white/10"
                   >
                     {/* Thumbnail */}
-                    <div className="relative h-16 w-24 sm:h-20 sm:w-28 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-cat-eye/20 to-neon-purple/20">
-                      {item.thumbnail ? (
-                        <img
-                          src={item.thumbnail}
-                          alt={item.title}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white/30" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm6.5 5L16 12l-5.5 3V9z" />
-                          </svg>
-                        </div>
-                      )}
+                    <div className="relative h-16 w-24 sm:h-20 sm:w-28 flex-shrink-0 overflow-hidden rounded-lg">
+                      <ContentImage
+                        src={item.thumbnail}
+                        alt={item.title}
+                        type={item.type}
+                        className="group-hover:scale-105 transition-transform duration-300"
+                      />
                       {item.duration && (
-                        <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white">
+                        <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white z-10">
                           {item.duration}
                         </span>
                       )}
