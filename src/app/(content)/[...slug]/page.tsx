@@ -2,8 +2,11 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { QuestionForm } from '@/components/ask/question-form';
 import { WatchToggle } from '@/components/content/watch-toggle';
+import { Paywall } from '@/components/content/paywall';
 import { auth } from '@/auth';
-import type { Content, Comment, User, RelatedContent, WatchStatus } from '@prisma/client';
+import { checkContentAccess } from '@/lib/access';
+import { generateArticleSchema, generateVideoSchema, generateBreadcrumbSchema } from '@/lib/seo';
+import type { Content, Comment, User, RelatedContent, WatchStatus, Category } from '@prisma/client';
 
 interface ContentRouteParams {
   slug: string[];
@@ -17,23 +20,65 @@ type ContentWithRelations = Content & {
   comments: (Comment & { author: User | null })[];
   relatedContent: (RelatedContent & { related: Content })[];
   watchStatuses: WatchStatus[];
+  category: Category | null;
 };
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
+
+// Pre-render all published content pages at build time
+export async function generateStaticParams() {
+  const contents = await prisma.content.findMany({
+    where: { publishedAt: { not: null } },
+    select: { slug: true },
+  });
+
+  return contents.map((content) => ({
+    slug: content.slug.split('/'),
+  }));
+}
 
 export async function generateMetadata({ params }: ContentPageProps) {
   const { slug } = await params;
   const slugPath = slug.join('/');
 
   const content = await prisma.content.findUnique({
-    where: { slug: slugPath }
+    where: { slug: slugPath },
+    include: { category: true },
   });
 
   if (!content) {
     return {};
   }
 
+  const ogImage = content.thumbnailUrl || '/og-image.svg';
+  const canonicalUrl = `${siteUrl}/${content.slug}`;
+
   return {
-    title: `${content.title} | Chasing Cats Club`,
-    description: content.excerpt
+    title: content.title,
+    description: content.excerpt,
+    openGraph: {
+      title: content.title,
+      description: content.excerpt,
+      url: canonicalUrl,
+      type: content.videoUrl ? 'video.other' : 'article',
+      images: [
+        {
+          url: ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`,
+          width: 1200,
+          height: 630,
+          alt: content.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: content.title,
+      description: content.excerpt,
+      images: [ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`],
+    },
+    alternates: {
+      canonical: canonicalUrl,
+    },
   };
 }
 
@@ -44,9 +89,13 @@ export default async function ContentPage({ params }: ContentPageProps) {
   const session = await auth();
   const userId = session?.user?.id ?? '';
 
+  // Check if user has access to premium content
+  const accessStatus = await checkContentAccess(session?.user?.id);
+
   const content = await prisma.content.findUnique({
     where: { slug: slugPath },
     include: {
+      category: true,
       comments: {
         include: { author: true },
         orderBy: { createdAt: 'desc' }
@@ -66,9 +115,58 @@ export default async function ContentPage({ params }: ContentPageProps) {
     notFound();
   }
 
+  // Generate structured data based on content type
+  const isVideo = content.type === 'VIDEO' || content.type === 'TALK' || !!content.videoUrl;
+  const structuredData = isVideo
+    ? generateVideoSchema({
+        title: content.title,
+        description: content.excerpt,
+        url: `/${content.slug}`,
+        thumbnailUrl: content.thumbnailUrl,
+        videoUrl: content.videoUrl,
+        duration: content.duration,
+        publishedAt: content.publishedAt,
+      })
+    : generateArticleSchema({
+        title: content.title,
+        description: content.excerpt,
+        url: `/${content.slug}`,
+        publishedAt: content.publishedAt,
+        updatedAt: content.updatedAt,
+        thumbnailUrl: content.thumbnailUrl,
+      });
+
+  const breadcrumbData = generateBreadcrumbSchema([
+    { name: 'Home', href: '/' },
+    ...(content.category
+      ? [{ name: content.category.name, href: `/${content.category.slug}` }]
+      : []),
+    { name: content.title, href: `/${content.slug}` },
+  ]);
+
   return (
-    <div className="bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      <div className="bg-white">
       <section className="container-section py-24">
+        {/* Show paywall if user doesn't have access */}
+        {!accessStatus.hasAccess ? (
+          <div className="space-y-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand/70">{content.type}</p>
+              <h1 className="mt-4 text-4xl font-semibold text-night">{content.title}</h1>
+              <p className="mt-4 text-night/70">{content.excerpt}</p>
+            </div>
+            <Paywall isLoggedIn={!!session?.user} contentTitle={content.title} />
+          </div>
+        ) : (
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <article className="space-y-8">
             <div>
@@ -130,7 +228,9 @@ export default async function ContentPage({ params }: ContentPageProps) {
             </div>
           </aside>
         </div>
+        )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }
