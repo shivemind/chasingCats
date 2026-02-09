@@ -39,7 +39,7 @@ function SkillNode({
   skill, 
   onSelect, 
   isSelected,
-  isConnected 
+  isConnected: _isConnected 
 }: { 
   skill: Skill; 
   onSelect: () => void; 

@@ -32,7 +32,7 @@ interface LiveChatProps {
 
 const QUICK_REACTIONS = ['👏', '❤️', '🔥', '😮', '🦁', '📸'];
 
-export function LiveChat({ eventId, messages, onSendMessage, onReact, isLive = true }: LiveChatProps) {
+export function LiveChat({ eventId: _eventId, messages, onSendMessage, onReact, isLive = true }: LiveChatProps) {
   const [newMessage, setNewMessage] = useState('');
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [showReactions, setShowReactions] = useState<string | null>(null);

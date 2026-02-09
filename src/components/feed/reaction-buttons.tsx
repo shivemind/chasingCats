@@ -9,6 +9,7 @@ type ReactionButtonsProps = {
   initialCounts: ReactionCounts;
   initialUserReaction: 'PURR' | 'ROAR' | null;
   disabled?: boolean;
+  disabledReason?: 'not-logged-in' | 'no-paid-access';
   onReactionChange?: (counts: ReactionCounts, userReaction: 'PURR' | 'ROAR' | null) => void;
 };
 
@@ -17,8 +18,14 @@ export function ReactionButtons({
   initialCounts,
   initialUserReaction,
   disabled = false,
+  disabledReason,
   onReactionChange
 }: ReactionButtonsProps) {
+  const disabledTitle = disabledReason === 'not-logged-in' 
+    ? 'Sign in to react' 
+    : disabledReason === 'no-paid-access' 
+    ? 'Upgrade to react' 
+    : undefined;
   const [counts, setCounts] = useState(initialCounts);
   const [userReaction, setUserReaction] = useState(initialUserReaction);
   const [isPending, startTransition] = useTransition();
@@ -59,7 +66,7 @@ export function ReactionButtons({
           (isPending || disabled) && 'opacity-50 cursor-not-allowed',
           !disabled && 'active:scale-95'
         )}
-        title={disabled ? 'Upgrade to react' : 'Purr (like)'}
+        title={disabled ? disabledTitle : 'Purr (like)'}
       >
         <span className="text-sm sm:text-base">🐱</span>
         <span>{counts.purrs}</span>
@@ -77,7 +84,7 @@ export function ReactionButtons({
           (isPending || disabled) && 'opacity-50 cursor-not-allowed',
           !disabled && 'active:scale-95'
         )}
-        title={disabled ? 'Upgrade to react' : 'Roar (super like)'}
+        title={disabled ? disabledTitle : 'Roar (super like)'}
       >
         <span className="text-sm sm:text-base">🦁</span>
         <span>{counts.roars}</span>

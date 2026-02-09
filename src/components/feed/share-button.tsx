@@ -34,7 +34,7 @@ export function ShareButton({ postId, postContent }: ShareButtonProps) {
           url: shareUrl,
         });
         setIsOpen(false);
-      } catch (err) {
+      } catch {
         // User cancelled or error
       }
     }

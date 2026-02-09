@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkContentAccess } from '@/lib/access';
+import { rateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 import type { Post, User, Profile, ReactionType } from '@prisma/client';
 
@@ -18,13 +19,10 @@ const createPostSchema = z.object({
   imageUrl: z.string().url().optional().or(z.literal(''))
 });
 
-// GET /api/feed - List posts with pagination
+// GET /api/feed - List posts with pagination (public - anyone can view)
 export async function GET(request: Request) {
   const session = await auth();
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const userId = session?.user?.id;
 
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get('cursor');
@@ -51,10 +49,11 @@ export async function GET(request: Request) {
       _count: {
         select: { comments: true, reactions: true }
       },
-      reactions: {
-        where: { userId: session.user.id },
+      // Only fetch user's reactions if logged in
+      reactions: userId ? {
+        where: { userId },
         select: { type: true }
-      }
+      } : false
     }
   }) as unknown as PostWithRelations[];
 
@@ -84,7 +83,7 @@ export async function GET(request: Request) {
   const postsWithReactions = posts.map((post) => ({
     ...post,
     reactionCounts: reactionCountMap.get(post.id) || { purrs: 0, roars: 0 },
-    userReaction: post.reactions[0]?.type || null
+    userReaction: (Array.isArray(post.reactions) && post.reactions[0]?.type) || null
   }));
 
   return NextResponse.json({
@@ -99,6 +98,22 @@ export async function POST(request: Request) {
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limit: 10 posts per hour per user
+  const rateLimitResult = rateLimit(`feed:post:${session.user.id}`, { limit: 10, windowSeconds: 3600 });
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'You are posting too frequently. Please wait before creating another post.' },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+        }
+      }
+    );
   }
 
   // Check for paid membership

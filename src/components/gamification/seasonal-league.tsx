@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 
 interface LeagueTier {
@@ -130,7 +129,7 @@ export function LeagueTiersDisplay({ currentPoints }: { currentPoints: number })
       <h3 className="text-lg font-semibold text-white mb-6">League Tiers</h3>
       
       <div className="space-y-4">
-        {LEAGUE_TIERS.map((tier, index) => {
+        {LEAGUE_TIERS.map((tier) => {
           const isCurrentTier = tier.id === currentTier.id;
           const isUnlocked = currentPoints >= tier.minPoints;
           const isNext = LEAGUE_TIERS[LEAGUE_TIERS.indexOf(currentTier) + 1]?.id === tier.id;

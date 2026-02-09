@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
 // Mock notifications - in production, these would come from a database
-function getNotifications(userId: string) {
+function getNotifications(_userId: string) {
   // Generate some demo notifications based on user ID
   const notifications = [
     {

@@ -296,7 +296,7 @@ function PhotoCritiqueResults({ critique }: { critique: PhotoCritique }) {
 }
 
 // Quick critique button for gallery
-export function QuickCritiqueButton({ photoUrl, onClick }: { photoUrl: string; onClick: () => void }) {
+export function QuickCritiqueButton({ photoUrl: _photoUrl, onClick }: { photoUrl: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}

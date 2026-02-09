@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Trash2, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { MessageCircle, Trash2, ChevronDown, ChevronUp, Lock, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReactionButtons } from './reaction-buttons';
 import { CommentList } from './comment-list';
@@ -12,7 +13,7 @@ import type { FeedPost, PostComment } from '@/types/feed';
 
 type PostCardProps = {
   post: FeedPost;
-  currentUserId: string;
+  currentUserId?: string;  // Optional - may be undefined for non-logged-in users
   isAdmin?: boolean;
   hasPaidAccess?: boolean;
   onDelete?: (postId: string) => void;
@@ -25,8 +26,10 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isAuthor = post.author.id === currentUserId;
+  const isLoggedIn = !!currentUserId;
+  const isAuthor = currentUserId && post.author.id === currentUserId;
   const canDelete = isAuthor || isAdmin;
+  const canInteract = isLoggedIn && hasPaidAccess;
   const displayName = post.author.profile?.username || post.author.name || 'Anonymous';
   const avatarUrl = post.author.profile?.photoUrl || post.author.image;
 
@@ -125,7 +128,8 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
           postId={post.id}
           initialCounts={post.reactionCounts}
           initialUserReaction={post.userReaction}
-          disabled={!hasPaidAccess}
+          disabled={!canInteract}
+          disabledReason={!isLoggedIn ? 'not-logged-in' : !hasPaidAccess ? 'no-paid-access' : undefined}
         />
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -159,8 +163,16 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
           ) : (
             <CommentList comments={comments} />
           )}
-          {hasPaidAccess ? (
+          {canInteract ? (
             <CommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
+          ) : !isLoggedIn ? (
+            <Link
+              href="/login?callbackUrl=/feed"
+              className="flex items-center gap-2 rounded-full border border-dashed border-emerald-500/30 bg-emerald-800/30 px-4 py-2 text-sm text-emerald-300/60 hover:bg-emerald-700/40 hover:text-emerald-300 transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign in to comment</span>
+            </Link>
           ) : (
             <div className="flex items-center gap-2 rounded-full border border-dashed border-emerald-500/30 bg-emerald-800/30 px-4 py-2 text-sm text-emerald-300/60">
               <Lock className="h-4 w-4" />

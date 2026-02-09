@@ -223,16 +223,17 @@ export function DashboardControls({ isEditing, onToggleEdit, onAddWidget, onRese
   );
 }
 
+// Default widget configuration (outside hook for stable reference)
+const DEFAULT_WIDGETS: Widget[] = [
+  { id: '1', type: 'continue-watching', title: 'Continue Watching', size: 'large', order: 0, isVisible: true },
+  { id: '2', type: 'streak', title: 'Learning Streak', size: 'small', order: 1, isVisible: true },
+  { id: '3', type: 'achievements', title: 'Recent Achievements', size: 'small', order: 2, isVisible: true },
+  { id: '4', type: 'recommendations', title: 'Recommended for You', size: 'medium', order: 3, isVisible: true },
+  { id: '5', type: 'upcoming-events', title: 'Upcoming Events', size: 'medium', order: 4, isVisible: true },
+];
+
 // Hook to manage dashboard state
 export function useDashboardWidgets() {
-  const defaultWidgets: Widget[] = [
-    { id: '1', type: 'continue-watching', title: 'Continue Watching', size: 'large', order: 0, isVisible: true },
-    { id: '2', type: 'streak', title: 'Learning Streak', size: 'small', order: 1, isVisible: true },
-    { id: '3', type: 'achievements', title: 'Recent Achievements', size: 'small', order: 2, isVisible: true },
-    { id: '4', type: 'recommendations', title: 'Recommended for You', size: 'medium', order: 3, isVisible: true },
-    { id: '5', type: 'upcoming-events', title: 'Upcoming Events', size: 'medium', order: 4, isVisible: true },
-  ];
-
   const [widgets, setWidgets] = useState<Widget[]>(() => {
     // Load from localStorage if available
     if (typeof window !== 'undefined') {
@@ -241,11 +242,11 @@ export function useDashboardWidgets() {
         try {
           return JSON.parse(saved);
         } catch {
-          return defaultWidgets;
+          return DEFAULT_WIDGETS;
         }
       }
     }
-    return defaultWidgets;
+    return DEFAULT_WIDGETS;
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -282,7 +283,7 @@ export function useDashboardWidgets() {
   }, [widgets, saveWidgets]);
 
   const resetWidgets = useCallback(() => {
-    saveWidgets(defaultWidgets);
+    saveWidgets(DEFAULT_WIDGETS);
   }, [saveWidgets]);
 
   return {

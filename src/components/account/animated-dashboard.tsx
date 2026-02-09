@@ -545,7 +545,7 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
                     <Link href="/experts" className="mt-2 inline-block text-sm text-neon-cyan hover:underline">Start exploring →</Link>
                   </div>
                 ) : (
-                  user.watchStatuses.map((watch, i) => (
+                  user.watchStatuses.map((watch) => (
                     <Link
                       key={watch.id}
                       href={`/${watch.content.slug}`}

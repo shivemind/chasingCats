@@ -43,7 +43,7 @@ interface EmailCampaignBuilderProps {
   onScheduleCampaign: (campaignId: string, date: string) => Promise<void>;
 }
 
-export function EmailCampaignBuilder({ templates, campaigns, segments, onSaveCampaign, onSendCampaign, onScheduleCampaign }: EmailCampaignBuilderProps) {
+export function EmailCampaignBuilder({ templates, campaigns, segments, onSaveCampaign, onSendCampaign, onScheduleCampaign: _onScheduleCampaign }: EmailCampaignBuilderProps) {
   const [activeTab, setActiveTab] = useState<'campaigns' | 'create' | 'templates'>('campaigns');
   const [selectedCampaign, setSelectedCampaign] = useState<EmailCampaign | null>(null);
   

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
-import type Stripe from 'stripe';
 
 const priceMap: Record<string, string | undefined> = {
   monthly: process.env.STRIPE_MONTHLY_PRICE_ID,

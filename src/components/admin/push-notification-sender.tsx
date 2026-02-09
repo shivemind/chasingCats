@@ -30,7 +30,7 @@ interface PushNotificationSenderProps {
   onSaveTemplate: (template: NotificationTemplate) => Promise<void>;
 }
 
-export function PushNotificationSender({ templates, history, userSegments, onSend, onSaveTemplate }: PushNotificationSenderProps) {
+export function PushNotificationSender({ templates, history, userSegments, onSend, onSaveTemplate: _onSaveTemplate }: PushNotificationSenderProps) {
   const [activeTab, setActiveTab] = useState<'compose' | 'templates' | 'history'>('compose');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');

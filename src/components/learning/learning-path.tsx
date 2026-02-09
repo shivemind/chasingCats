@@ -140,7 +140,7 @@ export function LearningPathCard({ path, isEnrolled }: LearningPathCardProps) {
 }
 
 // Detailed path view with modules
-export function LearningPathDetail({ path, onEnroll }: { path: LearningPath; onEnroll?: () => void }) {
+export function LearningPathDetail({ path, onEnroll: _onEnroll }: { path: LearningPath; onEnroll?: () => void }) {
   const [expandedModule, setExpandedModule] = useState<string | null>(path.modules[0]?.id);
 
   const totalLessons = path.modules.reduce((acc, m) => acc + m.lessons.length, 0);

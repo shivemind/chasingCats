@@ -50,7 +50,7 @@ const EVENT_COLORS: Record<ActivityEvent['type'], string> = {
 };
 
 export function UserActivityTimeline({ 
-  userId, 
+  userId: _userId, 
   userName, 
   userAvatar, 
   activities, 

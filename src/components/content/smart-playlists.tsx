@@ -25,8 +25,8 @@ interface SmartPlaylist {
   isPersonalized: boolean;
 }
 
-// Predefined smart playlists
-const SMART_PLAYLIST_TEMPLATES: Partial<SmartPlaylist>[] = [
+// Predefined smart playlists (exported for use in playlist generation)
+export const SMART_PLAYLIST_TEMPLATES: Partial<SmartPlaylist>[] = [
   {
     id: 'quick-learn',
     name: '5-Minute Lessons',

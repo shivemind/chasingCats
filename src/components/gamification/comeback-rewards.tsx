@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface ComebackReward {
   id: string;
   day: number;
@@ -61,7 +59,6 @@ export function ComebackModal({
             <div className="grid grid-cols-7 gap-2">
               {progress.rewards.map((reward) => {
                 const isToday = reward.day === progress.daysSinceReturn;
-                const isPast = reward.day < progress.daysSinceReturn;
                 const isFuture = reward.day > progress.daysSinceReturn;
 
                 return (
@@ -150,9 +147,8 @@ export function StreakRecovery({
   daysInactive: number;
   recoveryReward: number;
 }) {
-  const [isRecovered, setIsRecovered] = useState(false);
-
-  if (isRecovered) return null;
+  // Unused state for future recovery animation
+  // const [isRecovered, setIsRecovered] = useState(false);
 
   return (
     <div className="rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-red-500/10 p-4">

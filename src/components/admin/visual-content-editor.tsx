@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 
 interface ContentBlock {
   id: string;
@@ -19,7 +19,6 @@ export function VisualContentEditor({ initialContent = [], onSave, onPreview }: 
   const [blocks, setBlocks] = useState<ContentBlock[]>(initialContent);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
   const [showBlockMenu, setShowBlockMenu] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const editorRef = useRef<HTMLDivElement>(null);
 
   const generateId = () => Math.random().toString(36).substring(7);

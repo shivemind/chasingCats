@@ -36,7 +36,7 @@ export function CommunityShowcase() {
           </p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {highlights.map((item, index) => (
+          {highlights.map((item) => (
             <article 
               key={item.title} 
               className="group relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all hover:border-neon-cyan/30 hover:bg-white/10"

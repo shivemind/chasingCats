@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { DeleteQuestionButton } from '@/components/admin/delete-question-button';
 import { QuestionStatusBadge } from '@/components/admin/question-status-badge';
-import type { Question, QuestionStatus } from '@prisma/client';
+import type { Question } from '@prisma/client';
 
 type QuestionWithRelations = Question & {
   author: { name: string | null; email: string | null } | null;

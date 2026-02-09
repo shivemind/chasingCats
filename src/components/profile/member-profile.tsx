@@ -61,7 +61,8 @@ interface MemberProfileProps {
 }
 
 export function MemberProfileHeader({ profile, isOwnProfile, onFollow, onUnfollow, onMessage }: MemberProfileProps) {
-  const [activeTab, setActiveTab] = useState<'photos' | 'gear' | 'achievements'>('photos');
+  // Note: activeTab state is prepared for future tab implementation
+  // const [activeTab, setActiveTab] = useState<'photos' | 'gear' | 'achievements'>('photos');
   const [isFollowing, setIsFollowing] = useState(profile.isFollowing);
 
   const handleFollowClick = () => {

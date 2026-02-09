@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
 // Mock user achievements - in production, these would come from the database
-function getUserAchievements(userId: string) {
+function getUserAchievements(_userId: string) {
   // Demo achievements
   const achievements = [
     {
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         earnedAt: new Date().toISOString(),
       }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to award badge' }, { status: 500 });
   }
 }

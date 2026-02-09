@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkContentAccess } from '@/lib/access';
+import { rateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 
 type RouteParams = { params: Promise<{ postId: string }> };
@@ -46,6 +47,22 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limit: 30 comments per hour per user
+  const rateLimitResult = rateLimit(`feed:comment:${session.user.id}`, { limit: 30, windowSeconds: 3600 });
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'You are commenting too frequently. Please wait before adding another comment.' },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+        }
+      }
+    );
   }
 
   // Check for paid membership

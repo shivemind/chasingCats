@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 interface ChallengeEntry {
@@ -107,7 +107,7 @@ export function ChallengeCard({ challenge, onClick }: { challenge: PhotoChalleng
 }
 
 // Challenge detail view
-export function ChallengeDetail({ challenge, onSubmit, onVote }: { 
+export function ChallengeDetail({ challenge, onSubmit: _onSubmit, onVote }: { 
   challenge: PhotoChallenge; 
   onSubmit: (file: File, caption: string) => void;
   onVote: (entryId: string) => void;

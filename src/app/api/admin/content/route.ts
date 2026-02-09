@@ -1,6 +1,27 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { ContentType, SkillLevel } from '@prisma/client';
+
+const contentSchema = z.object({
+  title: z.string().min(1).max(200),
+  slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/),
+  excerpt: z.string().min(1).max(500),
+  body: z.string().min(1),
+  type: z.nativeEnum(ContentType),
+  thumbnailUrl: z.string().url().optional().nullable(),
+  videoUrl: z.string().url().optional().nullable(),
+  resourceUrl: z.string().url().optional().nullable(),
+  duration: z.number().int().positive().optional().nullable(),
+  level: z.nativeEnum(SkillLevel).optional(),
+  region: z.string().max(100).optional().nullable(),
+  species: z.string().max(100).optional().nullable(),
+  topic: z.string().max(100).optional().nullable(),
+  categoryId: z.string().cuid().optional().nullable(),
+  featured: z.boolean().optional(),
+  publishedAt: z.string().datetime().optional().nullable(),
+});
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +41,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const data = await request.json();
+    const body = await request.json();
+    const parsed = contentSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid content data', details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const data = parsed.data;
 
     const content = await prisma.content.create({
       data: {
@@ -29,16 +60,16 @@ export async function POST(request: Request) {
         excerpt: data.excerpt,
         body: data.body,
         type: data.type,
-        thumbnailUrl: data.thumbnailUrl,
-        videoUrl: data.videoUrl,
-        resourceUrl: data.resourceUrl,
-        duration: data.duration,
+        thumbnailUrl: data.thumbnailUrl ?? null,
+        videoUrl: data.videoUrl ?? null,
+        resourceUrl: data.resourceUrl ?? null,
+        duration: data.duration ?? null,
         level: data.level,
-        region: data.region,
-        species: data.species,
-        topic: data.topic,
-        categoryId: data.categoryId || null,
-        featured: data.featured,
+        region: data.region ?? null,
+        species: data.species ?? null,
+        topic: data.topic ?? null,
+        categoryId: data.categoryId ?? null,
+        featured: data.featured ?? false,
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : null
       }
     });
