@@ -54,11 +54,11 @@ export default async function FeedPage() {
 
   // Get reaction counts by type
   const postIds = posts.map(p => p.id);
-  const reactionCounts = await prisma.reaction.groupBy({
+  const reactionCounts = await (prisma.reaction.groupBy({
     by: ['postId', 'type'],
     where: { postId: { in: postIds } },
     _count: { type: true }
-  }) as Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>;
+  }) as unknown as Promise<Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>>);
 
   const reactionCountMap = new Map<string, { purrs: number; roars: number }>();
   for (const r of reactionCounts) {

@@ -70,11 +70,11 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 
   // Get reaction counts by type
-  const reactionCounts = await prisma.reaction.groupBy({
+  const reactionCounts = await (prisma.reaction.groupBy({
     by: ['type'],
     where: { postId },
     _count: { type: true }
-  }) as Array<{ type: 'PURR' | 'ROAR'; _count: { type: number } }>;
+  }) as unknown as Promise<Array<{ type: 'PURR' | 'ROAR'; _count: { type: number } }>>);
 
   const counts = { purrs: 0, roars: 0 };
   for (const r of reactionCounts) {

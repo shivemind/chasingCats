@@ -178,12 +178,12 @@ export default async function AccountPage() {
       select: { id: true }
     }).then(async (posts) => {
       const postIds = posts.map(p => p.id);
-      const counts = await prisma.reaction.groupBy({
+      const counts = await (prisma.reaction.groupBy({
         by: ['postId', 'type'],
         where: { postId: { in: postIds } },
         _count: { type: true }
-      });
-      return counts as Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>;
+      }) as unknown as Promise<Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>>);
+      return counts;
     })
   ]);
 

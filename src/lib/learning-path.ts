@@ -136,7 +136,8 @@ export async function generateLearningPath(options: PathGenerationOptions) {
         id: { notIn: [...watchedIds, ...content.map(c => c.id)] }
       },
       orderBy: { publishedAt: 'desc' },
-      take: maxItems - content.length
+      take: maxItems - content.length,
+      include: { category: true }
     });
     selectedContent = [...content, ...additionalContent];
   }

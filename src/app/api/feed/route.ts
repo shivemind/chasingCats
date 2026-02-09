@@ -59,11 +59,11 @@ export async function GET(request: Request) {
 
   // Get reaction counts by type for each post
   const postIds = posts.map(p => p.id);
-  const reactionCounts = await prisma.reaction.groupBy({
+  const reactionCounts = await (prisma.reaction.groupBy({
     by: ['postId', 'type'],
     where: { postId: { in: postIds } },
     _count: { type: true }
-  }) as Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>;
+  }) as unknown as Promise<Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>>);
 
   // Map reaction counts to posts
   const reactionCountMap = new Map<string, { purrs: number; roars: number }>();
