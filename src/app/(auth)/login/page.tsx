@@ -42,6 +42,20 @@ export default function LoginPage() {
       return;
     }
 
+    // Check if user is admin and redirect accordingly
+    try {
+      const roleRes = await fetch('/api/auth/role');
+      if (roleRes.ok) {
+        const { role } = await roleRes.json();
+        if (role === 'ADMIN') {
+          window.location.href = '/admin';
+          return;
+        }
+      }
+    } catch {
+      // If role check fails, use default redirect
+    }
+
     // Use hard redirect to ensure session cookie is properly read
     window.location.href = callbackUrl;
   };
