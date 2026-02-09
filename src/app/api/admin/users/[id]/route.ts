@@ -82,8 +82,24 @@ export async function DELETE(
       );
     }
 
-    await prisma.user.delete({
-      where: { id }
+    // Delete user and all related records in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Delete related records first
+      await tx.watchStatus.deleteMany({ where: { userId: id } });
+      await tx.question.deleteMany({ where: { authorId: id } });
+      await tx.comment.deleteMany({ where: { authorId: id } });
+      await tx.membership.deleteMany({ where: { userId: id } });
+      await tx.mediaUpload.deleteMany({ where: { userId: id } });
+      await tx.announcement.updateMany({ 
+        where: { authorId: id },
+        data: { authorId: null }
+      });
+      await tx.profile.deleteMany({ where: { userId: id } });
+      await tx.account.deleteMany({ where: { userId: id } });
+      await tx.session.deleteMany({ where: { userId: id } });
+      
+      // Finally delete the user
+      await tx.user.delete({ where: { id } });
     });
 
     return NextResponse.json({ success: true });
