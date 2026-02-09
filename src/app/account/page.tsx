@@ -83,7 +83,18 @@ async function getContentByCategory(categorySlug: string, take: number = 6) {
   });
 }
 
-async function getLatestContent(take: number = 6) {
+type LatestContent = {
+  id: string;
+  title: string;
+  slug: string;
+  thumbnailUrl: string | null;
+  duration: number | null;
+  type: string;
+  publishedAt: Date | null;
+  category: { name: string } | null;
+};
+
+async function getLatestContent(take: number = 6): Promise<LatestContent[]> {
   return prisma.content.findMany({
     where: {
       publishedAt: { not: null },
@@ -102,7 +113,7 @@ async function getLatestContent(take: number = 6) {
         select: { name: true }
       }
     },
-  });
+  }) as unknown as Promise<LatestContent[]>;
 }
 
 export default async function AccountPage() {

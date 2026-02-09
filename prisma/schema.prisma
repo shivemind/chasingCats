@@ -28,7 +28,10 @@ model User {
   questions         Question[]
   watchStatuses     WatchStatus[]
   uploads           MediaUpload[]
-  announcements    Announcement[]
+  announcements     Announcement[]
+  posts             Post[]
+  postComments      PostComment[]
+  reactions         Reaction[]
 }
 
 enum UserRole {
@@ -269,4 +272,53 @@ model Announcement {
   publishedAt DateTime @default(now())
   authorId    String?
   author      User?    @relation(fields: [authorId], references: [id])
+}
+
+// Social Feed Models
+
+model Post {
+  id        String        @id @default(cuid())
+  content   String
+  imageUrl  String?
+  authorId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  PostComment[]
+  reactions Reaction[]
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  body      String
+  authorId  String
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  type      ReactionType
+  userId    String
+  postId    String
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+enum ReactionType {
+  PURR
+  ROAR
 }

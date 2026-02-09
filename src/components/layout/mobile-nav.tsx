@@ -33,6 +33,14 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: '/feed',
+    label: 'Feed',
+    icon: (active: boolean) => (
+      <span className={`text-2xl ${active ? 'grayscale-0' : 'grayscale opacity-60'}`}>🦁</span>
+    ),
+    authRequired: true,
+  },
+  {
     href: '/account',
     label: 'Account',
     icon: (active: boolean) => (

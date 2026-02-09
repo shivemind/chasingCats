@@ -51,6 +51,15 @@ export function Navbar() {
           <SearchButton />
           {session?.user ? (
             <>
+              <Link
+                href="/feed"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-neon-cyan',
+                  pathname === '/feed' ? 'text-neon-cyan' : 'text-white/60'
+                )}
+              >
+                🦁 Feed
+              </Link>
               <NotificationBell />
               <Link
                 href="/account"
@@ -115,6 +124,16 @@ export function Navbar() {
             ))}
             {session?.user ? (
               <>
+                <Link 
+                  href="/feed" 
+                  className={cn(
+                    'text-base font-medium hover:text-neon-cyan',
+                    pathname === '/feed' ? 'text-neon-cyan' : 'text-white/70'
+                  )}
+                  onClick={() => setOpen(false)}
+                >
+                  🦁 Pride Feed
+                </Link>
                 <Link href="/account" className="text-base font-medium text-neon-cyan" onClick={() => setOpen(false)}>
                   Your Profile
                 </Link>
