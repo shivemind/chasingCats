@@ -142,6 +142,26 @@ function AnimatedCounter({ value, duration = 2000, color }: { value: number; dur
 
 // Glowing orb background
 function GlowingOrbs() {
+  const [particles, setParticles] = useState<Array<{
+    id: number; delay: number; duration: number; size: number; color: string; left: string; top: string;
+  }>>([]);
+
+  // Generate particles only on client after mount to avoid hydration mismatch
+  useEffect(() => {
+    const colors = ['#00f5d4', '#a855f7', '#facc15', '#22d3ee'];
+    setParticles(
+      Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        delay: Math.random() * 5,
+        duration: 5 + Math.random() * 10,
+        size: 2 + Math.random() * 4,
+        color: colors[Math.floor(Math.random() * 4)],
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+      }))
+    );
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Main orbs */}
@@ -149,16 +169,16 @@ function GlowingOrbs() {
       <div className="absolute -bottom-60 -left-40 h-[600px] w-[600px] rounded-full bg-gradient-to-tr from-neon-purple/20 to-transparent blur-3xl animate-pulse-slow animation-delay-2000" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-gradient-to-r from-cat-eye/10 to-transparent blur-3xl animate-spin-slow" />
       
-      {/* Floating particles */}
-      {Array.from({ length: 30 }).map((_, i) => (
+      {/* Floating particles - rendered only after mount */}
+      {particles.map((p) => (
         <Particle
-          key={i}
-          delay={Math.random() * 5}
-          duration={5 + Math.random() * 10}
-          size={2 + Math.random() * 4}
-          color={['#00f5d4', '#a855f7', '#facc15', '#22d3ee'][Math.floor(Math.random() * 4)]}
-          left={`${Math.random() * 100}%`}
-          top={`${Math.random() * 100}%`}
+          key={p.id}
+          delay={p.delay}
+          duration={p.duration}
+          size={p.size}
+          color={p.color}
+          left={p.left}
+          top={p.top}
         />
       ))}
       
