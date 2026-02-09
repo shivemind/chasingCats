@@ -72,8 +72,10 @@ export function NotificationBell() {
       {/* Bell button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-all hover:bg-white/10 hover:scale-110"
-        aria-label="Notifications"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-all hover:bg-white/10 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+        aria-label={isOpen ? 'Close notifications' : 'Open notifications'}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         <svg className="h-5 w-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -93,8 +95,8 @@ export function NotificationBell() {
       {/* Dropdown */}
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-white/10 bg-deep-space shadow-xl">
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
+          <div className="fixed sm:absolute right-4 sm:right-0 left-4 sm:left-auto top-20 sm:top-full z-50 sm:mt-2 w-auto sm:w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-deep-space shadow-xl">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <h3 className="font-semibold text-white">Notifications</h3>
@@ -166,8 +168,11 @@ export function NotificationBell() {
             {/* Footer */}
             {notifications.length > 0 && (
               <div className="border-t border-white/10 p-2">
-                <button className="w-full rounded-lg py-2 text-sm text-gray-400 transition hover:bg-white/5 hover:text-white">
-                  View all notifications
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="w-full rounded-lg py-2 text-sm text-gray-400 transition hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+                >
+                  Close
                 </button>
               </div>
             )}

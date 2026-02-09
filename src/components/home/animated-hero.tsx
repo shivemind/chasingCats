@@ -172,29 +172,29 @@ export function AnimatedHero() {
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
           <Link
-            href="/auth/register"
-            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(0,245,212,0.5)]"
+            href="/join"
+            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(0,245,212,0.5)] focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight"
           >
             <span className="relative z-10">Start Learning</span>
             <span className="absolute inset-0 -z-0 bg-gradient-to-r from-neon-purple to-neon-cyan opacity-0 transition-opacity group-hover:opacity-100" />
           </Link>
           
           <Link
-            href="/content"
-            className="group flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-lg font-medium text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:border-white/40"
+            href="/library"
+            className="group flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-lg font-medium text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-midnight"
           >
-            <svg className="h-5 w-5 transition-transform group-hover:scale-125" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 transition-transform group-hover:scale-125" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
             Watch Preview
           </Link>
           
           <Link
-            href="/feed"
-            className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-900/30 px-8 py-4 text-lg font-medium text-emerald-300 backdrop-blur-sm transition-all hover:bg-emerald-800/40 hover:border-emerald-400/50"
+            href="/experts"
+            className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-900/30 px-8 py-4 text-lg font-medium text-emerald-300 backdrop-blur-sm transition-all hover:bg-emerald-800/40 hover:border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-midnight"
           >
-            <span className="text-xl">🦁</span>
-            Pride Feed
+            <span className="text-xl" aria-hidden="true">🦁</span>
+            Expert Talks
           </Link>
         </div>
 
@@ -213,11 +213,11 @@ export function AnimatedHero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      {/* Scroll indicator - hidden on mobile to prevent overlap */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden md:block">
         <div className="flex flex-col items-center gap-2 text-gray-400">
           <span className="text-xs uppercase tracking-wider">Scroll</span>
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
