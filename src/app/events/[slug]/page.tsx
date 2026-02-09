@@ -71,6 +71,24 @@ export default async function EventPage({ params }: EventPageProps) {
 
   const isUpcoming = new Date(event.startTime) > new Date();
 
+  // Generate structured data
+  const eventSchema = generateEventSchema({
+    title: event.title,
+    description: event.description,
+    url: `/events/${event.slug}`,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    location: event.location,
+    host: event.host,
+    isOnline: true,
+  });
+
+  const breadcrumbData = generateBreadcrumbSchema([
+    { name: 'Home', href: '/' },
+    { name: 'Events', href: '/events' },
+    { name: event.title, href: `/events/${event.slug}` },
+  ]);
+
   return (
     <>
       <script

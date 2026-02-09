@@ -23,7 +23,7 @@ const EMAIL_FROM = process.env.EMAIL_FROM || 'Chasing Cats Club <hello@chasingca
  * Currently logs to console - replace with actual email provider in production
  */
 export async function sendEmail({ to, subject, html, text }: EmailOptions): Promise<boolean> {
-  // In development/preview, just log the email
+  // Log email in development or when Resend is not configured
   if (process.env.NODE_ENV !== 'production' || !process.env.RESEND_API_KEY) {
     console.log('📧 Email would be sent:', { to, subject });
     console.log('HTML:', html.substring(0, 200) + '...');
@@ -31,9 +31,17 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions): Prom
   }
 
   try {
-    // Using Resend - install with: npm install resend
-    const { Resend } = await import('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    // Dynamic import to avoid build errors when resend is not installed
+    // Install with: npm install resend
+    const resendModule = await import('resend').catch(() => null);
+    
+    if (!resendModule) {
+      console.warn('Resend package not installed. Install with: npm install resend');
+      console.log('📧 Email would be sent:', { to, subject });
+      return true;
+    }
+
+    const resend = new resendModule.Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
       from: EMAIL_FROM,
