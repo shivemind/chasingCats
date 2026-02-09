@@ -1,13 +1,10 @@
 /**
- * Email utility for sending notifications
+ * Email utility for sending notifications using Resend
  * 
- * For production, integrate with a service like:
- * - Resend (recommended for Next.js)
- * - SendGrid
- * - AWS SES
- * 
- * Set EMAIL_FROM and your provider's API key in environment variables.
+ * Set RESEND_API_KEY and EMAIL_FROM in environment variables.
  */
+
+import { Resend } from 'resend';
 
 export interface EmailOptions {
   to: string;
@@ -20,7 +17,7 @@ const EMAIL_FROM = process.env.EMAIL_FROM || 'Chasing Cats Club <hello@chasingca
 
 /**
  * Send an email notification
- * Currently logs to console - replace with actual email provider in production
+ * Logs to console in development or when RESEND_API_KEY is not set
  */
 export async function sendEmail({ to, subject, html, text }: EmailOptions): Promise<boolean> {
   // Log email in development or when Resend is not configured
@@ -31,20 +28,7 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions): Prom
   }
 
   try {
-    // Dynamic import to avoid build errors when resend is not installed
-    // Install with: npm install resend
-    // Using variable to prevent TypeScript static analysis
-    const moduleName = 'resend';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const resendModule = await import(/* webpackIgnore: true */ moduleName as any).catch(() => null) as any;
-    
-    if (!resendModule?.Resend) {
-      console.warn('Resend package not installed. Install with: npm install resend');
-      console.log('📧 Email would be sent:', { to, subject });
-      return true;
-    }
-
-    const resend = new resendModule.Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
       from: EMAIL_FROM,
