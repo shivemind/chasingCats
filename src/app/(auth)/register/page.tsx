@@ -26,6 +26,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
+  const plan = searchParams.get('plan'); // Plan selected on /join page
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -70,6 +71,26 @@ export default function RegisterPage() {
 
       // Successfully signed in - use hard redirect to ensure session cookie is read
       // This avoids the issue where Next.js client-side navigation doesn't pick up the new session
+      
+      // If user came from pricing page with a plan selected, go directly to checkout
+      if (plan === 'monthly' || plan === 'annual') {
+        try {
+          const checkoutRes = await fetch('/api/stripe/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan })
+          });
+          
+          if (checkoutRes.ok) {
+            const { url } = await checkoutRes.json();
+            window.location.href = url;
+            return;
+          }
+        } catch {
+          // If checkout fails, fall through to normal redirect
+        }
+      }
+      
       window.location.href = redirect ?? '/account';
     } catch (err) {
       setError((err as Error).message);

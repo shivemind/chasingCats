@@ -45,7 +45,8 @@ export function PricingTable() {
 
   const handleCheckout = async (planId: 'monthly' | 'annual') => {
     if (!session?.user) {
-      router.push('/register?redirect=/join');
+      // Pass the selected plan so we can auto-checkout after registration
+      router.push(`/register?plan=${planId}`);
       return;
     }
 
