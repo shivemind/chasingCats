@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { EventCountdown } from '@/components/events/event-countdown';
 import { generateEventSchema, generateBreadcrumbSchema } from '@/lib/seo';
+import { EventQuestionForm } from '@/components/events/event-question-form';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
 
@@ -161,18 +162,25 @@ export default async function EventPage({ params }: EventPageProps) {
             </div>
           )}
 
-          <div className="mt-12 flex flex-wrap gap-4">
-            <Link
-              href="/ask"
-              className="rounded-full bg-brand px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-card transition hover:bg-brand-dark"
-            >
-              Submit your question
-            </Link>
+          {isUpcoming && (
+            <div className="mt-12 rounded-2xl border border-night/10 bg-[#F5F1E3]/60 p-6">
+              <h3 className="text-lg font-semibold text-night mb-4">Submit your question</h3>
+              <EventQuestionForm eventId={event.id} eventTitle={event.title} />
+            </div>
+          )}
+
+          <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/join"
-              className="rounded-full border border-night/20 px-8 py-3 text-sm font-semibold text-night transition hover:bg-night/5"
+              className="rounded-full bg-brand px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-card transition hover:bg-brand-dark"
             >
               Join to attend live
+            </Link>
+            <Link
+              href="/events"
+              className="rounded-full border border-night/20 px-8 py-3 text-sm font-semibold text-night transition hover:bg-night/5"
+            >
+              View all events
             </Link>
           </div>
         </div>

@@ -5,7 +5,8 @@ import { z } from 'zod';
 
 const questionSchema = z.object({
   question: z.string().min(10, 'Question must be at least 10 characters'),
-  contentId: z.string().optional()
+  contentId: z.string().optional(),
+  eventId: z.string().optional()
 });
 
 export async function POST(request: Request) {
@@ -26,7 +27,8 @@ export async function POST(request: Request) {
     data: {
       question: parsed.data.question,
       authorId: session.user.id,
-      contentId: parsed.data.contentId
+      contentId: parsed.data.contentId,
+      eventId: parsed.data.eventId
     }
   });
 
