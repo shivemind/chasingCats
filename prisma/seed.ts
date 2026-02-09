@@ -224,7 +224,7 @@ async function main() {
       },
       {
         content: "Hot take: Clouded leopards are the most underrated wild cats. Those canine teeth! That climbing ability! They can hang upside down from branches and descend trees headfirst. Absolute units of the arboreal world. 🌳🐱\n\nChange my mind.",
-        imageUrl: 'https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1615824996195-f780bba7cfab?w=800',
         authorId: memberUser.id,
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
       },
