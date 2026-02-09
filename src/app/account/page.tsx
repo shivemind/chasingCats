@@ -116,6 +116,42 @@ async function getLatestContent(take: number = 6): Promise<LatestContent[]> {
   }) as unknown as Promise<LatestContent[]>;
 }
 
+type RecentPost = {
+  id: string;
+  content: string;
+  imageUrl: string | null;
+  createdAt: Date;
+  author: {
+    name: string | null;
+    profile: { username: string } | null;
+  };
+  _count: { comments: number };
+};
+
+async function getRecentPosts(take: number = 6): Promise<RecentPost[]> {
+  return prisma.post.findMany({
+    orderBy: { createdAt: 'desc' },
+    take,
+    select: {
+      id: true,
+      content: true,
+      imageUrl: true,
+      createdAt: true,
+      author: {
+        select: {
+          name: true,
+          profile: {
+            select: { username: true }
+          }
+        }
+      },
+      _count: {
+        select: { comments: true }
+      }
+    }
+  }) as unknown as Promise<RecentPost[]>;
+}
+
 export default async function AccountPage() {
   const session = await auth();
 
@@ -123,12 +159,27 @@ export default async function AccountPage() {
     redirect('/login?callbackUrl=/account');
   }
 
-  const [user, nextTalk, expertsContent, fieldContent, latestContent] = await Promise.all([
+  const [user, nextTalk, expertsContent, fieldContent, latestContent, recentPosts, reactionCounts] = await Promise.all([
     getAccountData(session.user.id),
     getNextTalk(),
     getContentByCategory('experts', 6),
     getContentByCategory('field', 6),
     getLatestContent(6),
+    getRecentPosts(6),
+    // Get reaction counts for the posts
+    prisma.post.findMany({
+      take: 6,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true }
+    }).then(async (posts) => {
+      const postIds = posts.map(p => p.id);
+      const counts = await prisma.reaction.groupBy({
+        by: ['postId', 'type'],
+        where: { postId: { in: postIds } },
+        _count: { type: true }
+      });
+      return counts as Array<{ postId: string; type: 'PURR' | 'ROAR'; _count: { type: number } }>;
+    })
   ]);
 
   if (!user) {
@@ -214,6 +265,25 @@ export default async function AccountPage() {
     publishedAt: c.publishedAt,
   }));
 
+  // Transform feed posts with reaction counts
+  const reactionCountMap = new Map<string, { purrs: number; roars: number }>();
+  for (const r of reactionCounts) {
+    const current = reactionCountMap.get(r.postId) || { purrs: 0, roars: 0 };
+    if (r.type === 'PURR') current.purrs = r._count.type;
+    if (r.type === 'ROAR') current.roars = r._count.type;
+    reactionCountMap.set(r.postId, current);
+  }
+
+  const feedPosts = recentPosts.map(p => ({
+    id: p.id,
+    content: p.content,
+    imageUrl: p.imageUrl,
+    createdAt: p.createdAt.toISOString(),
+    author: p.author,
+    _count: p._count,
+    reactionCounts: reactionCountMap.get(p.id) || { purrs: 0, roars: 0 },
+  }));
+
   return (
     <AnimatedDashboard 
       user={dashboardUser} 
@@ -221,6 +291,7 @@ export default async function AccountPage() {
       expertsContent={dashboardExperts}
       fieldContent={dashboardField}
       latestContent={dashboardLatest}
+      feedPosts={feedPosts}
     />
   );
 }

@@ -7,6 +7,7 @@ import { NextTalk } from '@/components/dashboard/next-talk';
 import { ContentCarousel } from '@/components/dashboard/content-carousel';
 import { AskSection } from '@/components/dashboard/ask-section';
 import { ExpeditionPromo } from '@/components/dashboard/expedition-promo';
+import { FeedPreview, type FeedPreviewPost } from '@/components/dashboard/feed-preview';
 
 interface DashboardProps {
   user: {
@@ -70,6 +71,7 @@ interface DashboardProps {
     category?: string | null;
     publishedAt: Date | null;
   }>;
+  feedPosts?: FeedPreviewPost[];
 }
 
 // Floating particle component
@@ -238,7 +240,7 @@ function formatRelativeTime(date: Date | null): string {
 }
 
 // Main dashboard component
-export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldContent = [], latestContent = [] }: DashboardProps) {
+export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldContent = [], latestContent = [], feedPosts = [] }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -313,6 +315,11 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
             glowColor="#22d3ee"
             delay={300}
           />
+        </div>
+
+        {/* Pride Feed - Prominent Section */}
+        <div className="mb-6 sm:mb-8">
+          <FeedPreview posts={feedPosts} />
         </div>
 
         {/* Next Talk Section */}
