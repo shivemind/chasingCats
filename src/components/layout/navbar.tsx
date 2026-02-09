@@ -22,7 +22,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-midnight/90 backdrop-blur-xl" role="banner">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-midnight/90 backdrop-blur-xl isolate" role="banner">
       <div className="container-section flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-midnight rounded-lg" aria-label="Chasing Cats Club - Home">
           <span className="flex gap-1">

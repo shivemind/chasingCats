@@ -155,7 +155,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <AuthSessionProvider session={session}>
           <CommandPalette />
           <Navbar />
-          <main id="main-content" className="flex-1 pb-24" tabIndex={-1}>{children}</main>
+          <main id="main-content" className="flex-1 pb-24 isolate" tabIndex={-1}>{children}</main>
           <Footer />
           <MobileNav />
         </AuthSessionProvider>
