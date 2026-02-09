@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ReactNode } from 'react';
 
 export type WidgetSize = 'small' | 'medium' | 'large';
@@ -234,22 +234,20 @@ const DEFAULT_WIDGETS: Widget[] = [
 
 // Hook to manage dashboard state
 export function useDashboardWidgets() {
-  const [widgets, setWidgets] = useState<Widget[]>(() => {
-    // Load from localStorage if available
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dashboard_widgets');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          return DEFAULT_WIDGETS;
-        }
+  const [widgets, setWidgets] = useState<Widget[]>(DEFAULT_WIDGETS);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Load from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    const saved = localStorage.getItem('dashboard_widgets');
+    if (saved) {
+      try {
+        setWidgets(JSON.parse(saved));
+      } catch {
+        // Keep default widgets on parse error
       }
     }
-    return DEFAULT_WIDGETS;
-  });
-
-  const [isEditing, setIsEditing] = useState(false);
+  }, []);
 
   const saveWidgets = useCallback((newWidgets: Widget[]) => {
     setWidgets(newWidgets);
