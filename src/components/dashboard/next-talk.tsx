@@ -17,9 +17,13 @@ interface NextTalkProps {
 }
 
 function useCountdown(targetDate: Date) {
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetDate));
+  // Initialize with zeros to avoid hydration mismatch (server/client time difference)
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isLive: false });
 
   useEffect(() => {
+    // Calculate immediately on mount
+    setTimeLeft(calculateTimeLeft(targetDate));
+    
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft(targetDate));
     }, 1000);
