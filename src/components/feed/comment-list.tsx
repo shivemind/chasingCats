@@ -10,7 +10,7 @@ type CommentListProps = {
 export function CommentList({ comments }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <p className="text-sm text-night/50 italic">No comments yet. Be the first to comment!</p>
+      <p className="text-sm text-emerald-300/50 italic">No comments yet. Be the first to comment!</p>
     );
   }
 
@@ -18,7 +18,7 @@ export function CommentList({ comments }: CommentListProps) {
     <div className="space-y-3">
       {comments.map((comment) => (
         <div key={comment.id} className="flex gap-2 sm:gap-3">
-          <div className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 rounded-full bg-night/10 overflow-hidden">
+          <div className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 rounded-full bg-emerald-800/50 ring-1 ring-emerald-500/30 overflow-hidden">
             {(comment.author.profile?.photoUrl || comment.author.image) ? (
               <img
                 src={comment.author.profile?.photoUrl || comment.author.image || ''}
@@ -26,21 +26,21 @@ export function CommentList({ comments }: CommentListProps) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-night/50">
+              <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-emerald-300">
                 {(comment.author.name || comment.author.profile?.username || 'U')[0].toUpperCase()}
               </div>
             )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-night">
+              <span className="text-sm font-semibold text-emerald-100">
                 {comment.author.profile?.username || comment.author.name || 'Anonymous'}
               </span>
-              <span className="text-xs text-night/40">
+              <span className="text-xs text-emerald-400/50">
                 {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
               </span>
             </div>
-            <p className="text-sm text-night/80 break-words">{comment.body}</p>
+            <p className="text-sm text-emerald-100/80 break-words">{comment.body}</p>
           </div>
         </div>
       ))}

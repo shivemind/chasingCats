@@ -21,15 +21,12 @@ export const metadata: Metadata = {
 
 export default async function FeedPage() {
   const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/login?callbackUrl=/feed');
-  }
+  const userId = session?.user?.id;
 
   const limit = 20;
   
-  // Check if user has paid access for interactions
-  const accessStatus = await checkContentAccess(session.user.id);
+  // Check if user has paid access for interactions (only if logged in)
+  const accessStatus = userId ? await checkContentAccess(userId) : { hasAccess: false };
   const hasPaidAccess = accessStatus.hasAccess;
 
   const posts = await prisma.post.findMany({
@@ -49,10 +46,10 @@ export default async function FeedPage() {
       _count: {
         select: { comments: true, reactions: true }
       },
-      reactions: {
-        where: { userId: session.user.id },
+      reactions: userId ? {
+        where: { userId },
         select: { type: true }
-      }
+      } : false
     }
   }) as unknown as PostWithRelations[];
 
@@ -87,7 +84,7 @@ export default async function FeedPage() {
     author: post.author,
     _count: post._count,
     reactionCounts: reactionCountMap.get(post.id) || { purrs: 0, roars: 0 },
-    userReaction: (post.reactions[0]?.type as 'PURR' | 'ROAR') || null
+    userReaction: (Array.isArray(post.reactions) && post.reactions[0]?.type as 'PURR' | 'ROAR') || null
   }));
 
   return (
@@ -143,8 +140,8 @@ export default async function FeedPage() {
             <FeedList
               initialPosts={postsWithReactions}
               initialCursor={nextCursor}
-              currentUserId={session.user.id}
-              isAdmin={session.user.role === 'ADMIN'}
+              currentUserId={userId}
+              isAdmin={session?.user?.role === 'ADMIN'}
               hasPaidAccess={hasPaidAccess}
             />
           </div>

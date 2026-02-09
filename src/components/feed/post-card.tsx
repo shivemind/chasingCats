@@ -70,22 +70,22 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
   };
 
   return (
-    <article className="rounded-2xl border border-night/10 bg-white p-4 sm:p-6 shadow-sm">
+    <article className="rounded-2xl border border-emerald-500/20 bg-emerald-950/80 backdrop-blur-sm p-4 sm:p-6 shadow-lg">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-night/10 overflow-hidden">
+          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-emerald-800/50 ring-2 ring-emerald-500/30 overflow-hidden">
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-night/50">
+              <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-emerald-300">
                 {displayName[0].toUpperCase()}
               </div>
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold text-night">{displayName}</p>
-            <p className="text-xs text-night/50">
+            <p className="text-sm font-semibold text-white">{displayName}</p>
+            <p className="text-xs text-emerald-300/60">
               {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
             </p>
           </div>
@@ -95,7 +95,7 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="rounded-full p-2 text-night/40 hover:bg-red-50 hover:text-red-500 transition-colors"
+            className="rounded-full p-2 text-emerald-400/50 hover:bg-red-500/20 hover:text-red-400 transition-colors"
             title={isAdmin && !isAuthor ? 'Delete post (admin)' : 'Delete post'}
           >
             <Trash2 className="h-4 w-4" />
@@ -105,10 +105,10 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
 
       {/* Content */}
       <div className="mt-4">
-        <p className="text-night whitespace-pre-wrap break-words">{post.content}</p>
+        <p className="text-emerald-50 whitespace-pre-wrap break-words">{post.content}</p>
         
         {post.imageUrl && (
-          <div className="mt-4 rounded-xl overflow-hidden bg-night/5">
+          <div className="mt-4 rounded-xl overflow-hidden bg-black/30 ring-1 ring-emerald-500/20">
             <img
               src={post.imageUrl}
               alt=""
@@ -120,7 +120,7 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
       </div>
 
       {/* Actions */}
-      <div className="mt-3 sm:mt-4 flex items-center justify-between flex-wrap gap-2 border-t border-night/5 pt-3 sm:pt-4">
+      <div className="mt-3 sm:mt-4 flex items-center justify-between flex-wrap gap-2 border-t border-emerald-500/20 pt-3 sm:pt-4">
         <ReactionButtons
           postId={post.id}
           initialCounts={post.reactionCounts}
@@ -134,8 +134,8 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
             className={cn(
               'flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors active:scale-95',
               showComments
-                ? 'bg-brand/10 text-brand'
-                : 'bg-night/5 text-night/70 hover:bg-night/10 hover:text-night'
+                ? 'bg-emerald-500/30 text-emerald-300'
+                : 'bg-emerald-800/50 text-emerald-300/70 hover:bg-emerald-700/50 hover:text-emerald-200'
             )}
           >
             <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -153,16 +153,16 @@ export function PostCard({ post, currentUserId, isAdmin = false, hasPaidAccess =
 
       {/* Comments section */}
       {showComments && (
-        <div className="mt-4 border-t border-night/5 pt-4 space-y-4">
+        <div className="mt-4 border-t border-emerald-500/20 pt-4 space-y-4">
           {isLoadingComments ? (
-            <p className="text-sm text-night/50">Loading comments...</p>
+            <p className="text-sm text-emerald-300/50">Loading comments...</p>
           ) : (
             <CommentList comments={comments} />
           )}
           {hasPaidAccess ? (
             <CommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
           ) : (
-            <div className="flex items-center gap-2 rounded-full border border-dashed border-night/20 bg-night/5 px-4 py-2 text-sm text-night/50">
+            <div className="flex items-center gap-2 rounded-full border border-dashed border-emerald-500/30 bg-emerald-800/30 px-4 py-2 text-sm text-emerald-300/60">
               <Lock className="h-4 w-4" />
               <span>Upgrade to comment</span>
             </div>

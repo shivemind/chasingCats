@@ -54,8 +54,8 @@ export function ReactionButtons({
         className={cn(
           'flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-all',
           userReaction === 'PURR'
-            ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-            : 'bg-night/5 text-night/70 hover:bg-night/10 hover:text-night',
+            ? 'bg-amber-500/30 text-amber-300 hover:bg-amber-500/40'
+            : 'bg-emerald-800/50 text-emerald-300/70 hover:bg-emerald-700/50 hover:text-emerald-200',
           (isPending || disabled) && 'opacity-50 cursor-not-allowed',
           !disabled && 'active:scale-95'
         )}
@@ -72,8 +72,8 @@ export function ReactionButtons({
         className={cn(
           'flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-all',
           userReaction === 'ROAR'
-            ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-            : 'bg-night/5 text-night/70 hover:bg-night/10 hover:text-night',
+            ? 'bg-orange-500/30 text-orange-300 hover:bg-orange-500/40'
+            : 'bg-emerald-800/50 text-emerald-300/70 hover:bg-emerald-700/50 hover:text-emerald-200',
           (isPending || disabled) && 'opacity-50 cursor-not-allowed',
           !disabled && 'active:scale-95'
         )}

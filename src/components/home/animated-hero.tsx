@@ -188,6 +188,14 @@ export function AnimatedHero() {
             </svg>
             Watch Preview
           </Link>
+          
+          <Link
+            href="/feed"
+            className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-900/30 px-8 py-4 text-lg font-medium text-emerald-300 backdrop-blur-sm transition-all hover:bg-emerald-800/40 hover:border-emerald-400/50"
+          >
+            <span className="text-xl">🦁</span>
+            Pride Feed
+          </Link>
         </div>
 
         {/* Stats */}
