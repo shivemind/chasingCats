@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 interface WatchPartyParticipant {
@@ -155,8 +155,8 @@ export function WatchPartySidebar({ party, onLeave }: { party: WatchParty; onLea
     setMessage('');
   };
 
-  const sendReaction = (emoji: string) => {
-    // Send reaction logic
+  const sendReaction = (_emoji: string) => {
+    // Send reaction logic - to be implemented
   };
 
   return (

@@ -78,7 +78,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <WatchToggle
                 contentId={content.id}
                 contentSlug={content.slug}
-                initialWatched={content.watchStatuses?.[0]?.watched ?? false}
+                initialWatched={(content as unknown as { watchStatuses?: { watched: boolean }[] }).watchStatuses?.[0]?.watched ?? false}
               />
             </div>
             <div className="prose prose-lg max-w-none text-night" dangerouslySetInnerHTML={{ __html: content.body }} />

@@ -37,7 +37,7 @@ export function KudosButton({ kudos, onGiveKudo, compact = false }: KudosButtonP
 
   const totalKudos = Object.values(kudos).reduce((sum, k) => sum + k.count, 0);
   const topKudos = Object.entries(kudos)
-    .filter(([_, data]) => data.count > 0)
+    .filter(([, data]) => data.count > 0)
     .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 3);
 
@@ -183,7 +183,7 @@ function KudosPicker({
 export function KudosSummary({ kudos }: { kudos: KudosData }) {
   const totalKudos = Object.values(kudos).reduce((sum, k) => sum + k.count, 0);
   const sortedKudos = Object.entries(kudos)
-    .filter(([_, data]) => data.count > 0)
+    .filter(([, data]) => data.count > 0)
     .sort((a, b) => b[1].count - a[1].count);
 
   if (totalKudos === 0) return null;
