@@ -30,6 +30,7 @@ export default function AboutPage() {
                 alt="Rachel and Sebastian in the field"
                 width={600}
                 height={400}
+                priority
                 className="h-full w-full object-cover"
               />
             </div>

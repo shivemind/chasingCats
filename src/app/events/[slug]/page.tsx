@@ -3,6 +3,20 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { EventCountdown } from '@/components/events/event-countdown';
+import { generateEventSchema, generateBreadcrumbSchema } from '@/lib/seo';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
+
+// Pre-render all event pages at build time
+export async function generateStaticParams() {
+  const events = await prisma.event.findMany({
+    select: { slug: true },
+  });
+
+  return events.map((event) => ({
+    slug: event.slug,
+  }));
+}
 
 interface EventPageProps {
   params: Promise<{ slug: string }>;
@@ -15,10 +29,35 @@ export async function generateMetadata({ params }: EventPageProps) {
   if (!event) {
     return { title: 'Event Not Found' };
   }
+
+  const canonicalUrl = `${siteUrl}/events/${event.slug}`;
   
   return {
-    title: `${event.title} | Chasing Cats Club`,
-    description: event.description
+    title: event.title,
+    description: event.description,
+    openGraph: {
+      title: event.title,
+      description: event.description,
+      url: canonicalUrl,
+      type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/og-image.svg`,
+          width: 1200,
+          height: 630,
+          alt: event.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description: event.description,
+      images: [`${siteUrl}/og-image.svg`],
+    },
+    alternates: {
+      canonical: canonicalUrl,
+    },
   };
 }
 
@@ -33,7 +72,16 @@ export default async function EventPage({ params }: EventPageProps) {
   const isUpcoming = new Date(event.startTime) > new Date();
 
   return (
-    <div className="bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      <div className="bg-white">
       <section className="container-section py-24">
         <div className="mx-auto max-w-4xl">
           <div className="flex flex-wrap items-center gap-3">
@@ -124,6 +172,7 @@ export default async function EventPage({ params }: EventPageProps) {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

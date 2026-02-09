@@ -1,0 +1,7 @@
+# Chasing Cats Club Security Policy
+# https://securitytxt.org/
+
+Contact: mailto:security@chasingcats.club
+Preferred-Languages: en
+Canonical: https://chasingcats.club/.well-known/security.txt
+Expires: 2027-12-31T23:59:59.000Z

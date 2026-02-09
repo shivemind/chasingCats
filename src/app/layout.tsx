@@ -8,6 +8,8 @@ import { MobileNav } from '@/components/layout/mobile-nav';
 import { CommandPalette } from '@/components/search/command-palette';
 import { auth } from '@/auth';
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -57,7 +59,7 @@ export const metadata: Metadata = {
     description: 'Join the premier membership community for wildlife photography enthusiasts. Learn to find and photograph wild cats from the experts.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'Chasing Cats Club - Wildlife Photography Education'
@@ -68,7 +70,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Chasing Cats Club | Wildlife Photography Education',
     description: 'Join the premier membership community for wildlife photography enthusiasts.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.svg'],
     creator: '@chasingcatsclub'
   },
   robots: {
@@ -83,7 +85,10 @@ export const metadata: Metadata = {
     }
   },
   alternates: {
-    canonical: siteUrl
+    canonical: siteUrl,
+    languages: {
+      'en-US': siteUrl,
+    },
   },
   category: 'education'
 };
@@ -105,7 +110,7 @@ const jsonLd = {
   name: 'Chasing Cats Club',
   description: 'Membership community and educational hub for wildlife photography enthusiasts learning about finding and photographing wild cats.',
   url: siteUrl,
-  logo: `${siteUrl}/logo.png`,
+  logo: `${siteUrl}/logo.svg`,
   sameAs: [
     'https://instagram.com/chasingcatsclub',
     'https://youtube.com/@chasingcatsclub',
@@ -124,6 +129,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en">
       <head>
+        {/* Preconnect to external domains for performance */}
+        <link rel="preconnect" href="https://js.stripe.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* DNS prefetch for analytics and other services */}
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -139,6 +152,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <Footer />
           <MobileNav />
         </AuthSessionProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

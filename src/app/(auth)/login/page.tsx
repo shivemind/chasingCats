@@ -127,6 +127,11 @@ export default function LoginPage() {
                 placeholder="••••••••"
               />
               {errors.password ? <p className="mt-1 text-xs text-red-400">{errors.password.message}</p> : null}
+              <div className="mt-2 text-right">
+                <Link href="/forgot-password" className="text-xs text-white/50 hover:text-neon-cyan">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
 
             {error ? (

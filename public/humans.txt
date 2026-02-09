@@ -1,0 +1,17 @@
+/* TEAM */
+Creators: Rachel & Sebastian
+Site: https://chasingcats.club
+Location: Worldwide
+
+/* SITE */
+Standards: HTML5, CSS3, ES6+
+Framework: Next.js 15
+Styling: Tailwind CSS
+Database: PostgreSQL with Prisma
+Payments: Stripe
+Hosting: Vercel
+
+/* THANKS */
+Wild cats everywhere for the inspiration.
+Our community of wildlife photographers.
+Conservation partners protecting habitats.

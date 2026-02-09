@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { SubscriptionStatus } from '@prisma/client';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -12,6 +13,24 @@ const registerSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  // Rate limit: 5 registration attempts per minute per IP
+  const ip = getClientIp(request);
+  const rateLimitResult = rateLimit(`register:${ip}`, { limit: 5, windowSeconds: 60 });
+  
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Too many registration attempts. Please try again later.' },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+        }
+      }
+    );
+  }
+
   const data = await request.json();
   const parsed = registerSchema.safeParse(data);
 

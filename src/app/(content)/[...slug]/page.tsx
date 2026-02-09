@@ -164,6 +164,35 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <h1 className="mt-4 text-4xl font-semibold text-night">{content.title}</h1>
               <p className="mt-4 text-night/70">{content.excerpt}</p>
             </div>
+            
+            {/* Thumbnail preview for SEO and engagement */}
+            {content.thumbnailUrl && (
+              <div className="aspect-video w-full overflow-hidden rounded-3xl border border-night/10 relative">
+                <img 
+                  src={content.thumbnailUrl} 
+                  alt={content.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                  <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-night">
+                    {content.duration ? `${content.duration} min` : content.type}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            {/* Content preview for SEO - show first ~100 words */}
+            <div className="prose prose-lg max-w-none text-night relative">
+              <div 
+                className="line-clamp-4"
+                dangerouslySetInnerHTML={{ 
+                  __html: content.body.split('</p>').slice(0, 2).join('</p>') + '</p>' 
+                }} 
+              />
+              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
+            </div>
+            
             <Paywall isLoggedIn={!!session?.user} contentTitle={content.title} />
           </div>
         ) : (
