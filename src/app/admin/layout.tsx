@@ -43,7 +43,7 @@ export default async function AdminLayout({
             </Link>
           </div>
           
-          <nav className="flex-1 space-y-1 p-4">
+          <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
             <Link
               href="/admin"
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
@@ -73,6 +73,40 @@ export default async function AdminLayout({
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
             >
               <span>👥</span> Users
+            </Link>
+            
+            <div className="my-4 border-t border-white/10" />
+            <p className="px-4 text-xs font-semibold uppercase tracking-wider text-white/40">Growth</p>
+            
+            <Link
+              href="/admin/gamification"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>🎮</span> Gamification
+            </Link>
+            <Link
+              href="/admin/challenges"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>📸</span> Photo Challenges
+            </Link>
+            <Link
+              href="/admin/notifications"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>🔔</span> Push Notifications
+            </Link>
+            <Link
+              href="/admin/chatbot"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>🤖</span> AI Chatbot
+            </Link>
+            <Link
+              href="/admin/digest"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>📧</span> Email Digest
             </Link>
           </nav>
           

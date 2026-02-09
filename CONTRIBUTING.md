@@ -74,3 +74,73 @@ curl http://localhost:3000/feed.json
 - [Google Rich Results Test](https://search.google.com/test/rich-results)
 - [Schema.org Validator](https://validator.schema.org/)
 - [W3C Feed Validator](https://validator.w3.org/feed/) (for RSS)
+
+## Growth & Retention Features
+
+The platform includes several features for user engagement:
+
+### Gamification System
+- **Streaks**: Daily activity tracking with rewards at 3, 7, 14, 30, 60, 90, 365 days
+- **Missions**: Daily and weekly missions with XP rewards
+- **XP & Leveling**: 20 levels with exponential XP requirements
+- **Admin**: `/admin/gamification` - view leaderboards and stats
+
+### Learning Paths
+- **Personalized**: Generated based on user quiz results and watch history
+- **Progress Tracking**: Completion percentage and next-up suggestions
+- **User Page**: `/learn` - view and manage learning path
+
+### Push Notifications
+- **Web Push**: Browser notifications for events, content, streaks
+- **Admin**: `/admin/notifications` - send notifications to all or specific users
+- **Requires**: VAPID keys (generate with `npx web-push generate-vapid-keys`)
+
+### Podcast Feed
+- **URL**: `/podcast.xml` - iTunes-compatible RSS feed
+- **Content**: Includes all talks and content with audio URLs
+- **Admin**: Configure via PodcastSettings in database
+
+### Photo Challenges (Planned)
+- **Schema**: PhotoChallenge, ChallengeEntry, ChallengeVote models ready
+- **Pages**: `/challenges` hub, `/challenges/[id]` for individual challenges
+- **Admin**: `/admin/challenges` - create and moderate challenges
+
+### AI Chatbot (Planned)
+- **Schema**: ChatMessage model ready
+- **Requires**: OpenAI or Anthropic API key
+- **Admin**: `/admin/chatbot` - view conversations
+
+### Weekly Digest Emails (Planned)
+- **Schema**: DigestPreference model ready
+- **Requires**: Email service (Resend, SendGrid, etc.)
+- **Admin**: `/admin/digest` - preview and configure
+
+## Environment Variables
+
+### Required for Core Features
+```
+DATABASE_URL=your_postgres_url
+NEXTAUTH_SECRET=your_secret
+NEXTAUTH_URL=https://your-domain.com
+```
+
+### Optional - Push Notifications
+```
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_public_key
+VAPID_PRIVATE_KEY=your_private_key
+VAPID_EMAIL=mailto:your@email.com
+```
+
+### Optional - AI Chatbot
+```
+OPENAI_API_KEY=sk-your-key
+# or
+ANTHROPIC_API_KEY=sk-ant-your-key
+```
+
+### Optional - Email Digest
+```
+RESEND_API_KEY=re_your_key
+# or
+SENDGRID_API_KEY=SG.your_key
+```

@@ -11,27 +11,37 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  name              String?
-  email             String?            @unique
-  emailVerified     DateTime?
-  image             String?
-  hashedPassword    String?
-  role              UserRole           @default(MEMBER)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  accounts          Account[]
-  sessions          Session[]
-  profile           Profile?
-  memberships       Membership[]
-  comments          Comment[]
-  questions         Question[]
-  watchStatuses     WatchStatus[]
-  uploads           MediaUpload[]
-  announcements     Announcement[]
-  posts             Post[]
-  postComments      PostComment[]
-  reactions         Reaction[]
+  id                  String             @id @default(cuid())
+  name                String?
+  email               String?            @unique
+  emailVerified       DateTime?
+  image               String?
+  hashedPassword      String?
+  role                UserRole           @default(MEMBER)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  accounts            Account[]
+  sessions            Session[]
+  profile             Profile?
+  memberships         Membership[]
+  comments            Comment[]
+  questions           Question[]
+  watchStatuses       WatchStatus[]
+  uploads             MediaUpload[]
+  announcements       Announcement[]
+  posts               Post[]
+  postComments        PostComment[]
+  reactions           Reaction[]
+  // Growth & Retention Features
+  learningPath        LearningPath?
+  streak              UserStreak?
+  missions            UserMission[]
+  xp                  UserXP?
+  pushSubscriptions   PushSubscription[]
+  challengeEntries    ChallengeEntry[]
+  challengeVotes      ChallengeVote[]    @relation("ChallengeVoter")
+  digestPreference    DigestPreference?
+  chatMessages        ChatMessage[]
 }
 
 enum UserRole {
@@ -142,31 +152,33 @@ model Category {
 }
 
 model Content {
-  id             String          @id @default(cuid())
-  title          String
-  slug           String          @unique
-  excerpt        String
-  body           String
-  type           ContentType
-  thumbnailUrl   String?
-  videoUrl       String?
-  resourceUrl    String?
-  publishedAt    DateTime?
-  duration       Int?
-  featured       Boolean         @default(false)
-  level          SkillLevel      @default(ALL_LEVELS)
-  region         String?
-  species        String?
-  topic          String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  categoryId     String?
-  category       Category?       @relation(fields: [categoryId], references: [id])
-  comments       Comment[]
-  watchStatuses  WatchStatus[]
-  relatedContent RelatedContent[] @relation("RelatedContentSelf")
-  relatedTo      RelatedContent[] @relation("RelatedContentOther")
-  questions      Question[]
+  id                String             @id @default(cuid())
+  title             String
+  slug              String             @unique
+  excerpt           String
+  body              String
+  type              ContentType
+  thumbnailUrl      String?
+  videoUrl          String?
+  audioUrl          String?            // For podcast episodes
+  resourceUrl       String?
+  publishedAt       DateTime?
+  duration          Int?
+  featured          Boolean            @default(false)
+  level             SkillLevel         @default(ALL_LEVELS)
+  region            String?
+  species           String?
+  topic             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  categoryId        String?
+  category          Category?          @relation(fields: [categoryId], references: [id])
+  comments          Comment[]
+  watchStatuses     WatchStatus[]
+  relatedContent    RelatedContent[]   @relation("RelatedContentSelf")
+  relatedTo         RelatedContent[]   @relation("RelatedContentOther")
+  questions         Question[]
+  learningPathItems LearningPathItem[]
 }
 
 enum ContentType {
@@ -321,4 +333,204 @@ model Reaction {
 enum ReactionType {
   PURR
   ROAR
+}
+
+// ==========================================
+// GROWTH & RETENTION FEATURES
+// ==========================================
+
+// Learning Paths - Personalized curriculum for each user
+model LearningPath {
+  id          String              @id @default(cuid())
+  userId      String              @unique
+  title       String              @default("Your Learning Journey")
+  description String?
+  totalItems  Int                 @default(0)
+  completed   Int                 @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       LearningPathItem[]
+}
+
+model LearningPathItem {
+  id             String       @id @default(cuid())
+  learningPathId String
+  contentId      String
+  order          Int
+  isCompleted    Boolean      @default(false)
+  completedAt    DateTime?
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  content        Content      @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([learningPathId, contentId])
+  @@index([learningPathId])
+}
+
+// User Streaks - Persistent streak tracking
+model UserStreak {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastActiveDate  DateTime?
+  totalDaysActive Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// User Missions - Daily/weekly mission progress
+model UserMission {
+  id          String      @id @default(cuid())
+  userId      String
+  missionType MissionType
+  missionKey  String      // e.g., "watch_videos", "leave_comments"
+  target      Int
+  current     Int         @default(0)
+  xpReward    Int
+  isCompleted Boolean     @default(false)
+  isClaimed   Boolean     @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, missionType])
+  @@index([expiresAt])
+}
+
+enum MissionType {
+  DAILY
+  WEEKLY
+  SPECIAL
+}
+
+// User XP - Experience points tracking
+model UserXP {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  totalXP   Int      @default(0)
+  level     Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Push Notifications - Web push subscriptions
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String   // Public key
+  auth      String   // Auth secret
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Photo Challenges
+model PhotoChallenge {
+  id          String           @id @default(cuid())
+  title       String
+  slug        String           @unique
+  description String
+  theme       String           // e.g., "Golden Hour Cats", "Eyes in the Dark"
+  rules       String?
+  prizeInfo   String?
+  startDate   DateTime
+  endDate     DateTime
+  votingEnd   DateTime
+  status      ChallengeStatus  @default(UPCOMING)
+  featured    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  entries     ChallengeEntry[]
+}
+
+enum ChallengeStatus {
+  UPCOMING
+  ACTIVE
+  VOTING
+  COMPLETED
+}
+
+model ChallengeEntry {
+  id           String         @id @default(cuid())
+  challengeId  String
+  userId       String
+  imageUrl     String
+  title        String?
+  caption      String?
+  location     String?
+  cameraInfo   String?
+  isApproved   Boolean        @default(true) // Admin can reject
+  isFeatured   Boolean        @default(false)
+  isWinner     Boolean        @default(false)
+  winnerPlace  Int?           // 1st, 2nd, 3rd
+  createdAt    DateTime       @default(now())
+  challenge    PhotoChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes        ChallengeVote[]
+
+  @@unique([challengeId, userId]) // One entry per user per challenge
+  @@index([challengeId])
+}
+
+model ChallengeVote {
+  id        String         @id @default(cuid())
+  entryId   String
+  voterId   String
+  createdAt DateTime       @default(now())
+  entry     ChallengeEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  voter     User           @relation("ChallengeVoter", fields: [voterId], references: [id], onDelete: Cascade)
+
+  @@unique([entryId, voterId]) // One vote per entry per user
+  @@index([entryId])
+}
+
+// Weekly Digest Preferences
+model DigestPreference {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  enabled           Boolean  @default(true)
+  includeNewContent Boolean  @default(true)
+  includeEvents     Boolean  @default(true)
+  includeStreaks    Boolean  @default(true)
+  includeCommunity  Boolean  @default(true)
+  preferredDay      Int      @default(0) // 0 = Sunday, 1 = Monday, etc.
+  lastSentAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// AI Chat Messages
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String   // Group messages by session
+  userId    String?  // Optional - can be anonymous
+  role      String   // "user" or "assistant"
+  content   String
+  metadata  Json?    // Store recommended content IDs, etc.
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId])
+  @@index([userId])
+}
+
+// Podcast Settings (admin-configurable)
+model PodcastSettings {
+  id           String   @id @default(cuid())
+  title        String   @default("Chasing Cats Podcast")
+  description  String   @default("Wildlife photography education from the experts")
+  author       String   @default("Rachel & Sebastian")
+  email        String   @default("podcast@chasingcats.club")
+  imageUrl     String?
+  language     String   @default("en")
+  category     String   @default("Education")
+  explicit     Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
 }
