@@ -116,9 +116,6 @@ export async function POST(request: Request) {
         metadata: {
           userId: session.user.id,
           plan: normalizedPlan
-        },
-        trial_settings: {
-          end_behavior: { missing_payment_method: 'cancel' }
         }
       },
       metadata: {
@@ -161,15 +158,18 @@ export async function POST(request: Request) {
       }
 
       if (stripeError.type === 'StripeInvalidRequestError') {
+        const message = stripeError.message || 'Invalid payment request';
+        console.error('StripeInvalidRequestError:', message);
         return NextResponse.json(
-          { error: 'Invalid payment request. Please try again or contact support.' },
+          { error: message },
           { status: 400 }
         );
       }
     }
 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to create checkout session. Please try again or contact support.' },
+      { error: `Failed to create checkout session: ${errorMessage}` },
       { status: 500 }
     );
   }
