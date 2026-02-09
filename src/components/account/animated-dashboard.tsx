@@ -23,8 +23,11 @@ interface DashboardProps {
     questions: Array<{
       id: string;
       question: string;
+      answer: string | null;
       status: string;
+      answeredAt: Date | null;
       contentTitle: string | null;
+      eventTitle: string | null;
     }>;
     watchStatuses: Array<{
       id: string;
@@ -325,10 +328,13 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
         {/* Ask Me Anything */}
         <div className="mb-6 sm:mb-8">
           <AskSection
-            recentQuestions={user.questions.slice(0, 3).map(q => ({
+            recentQuestions={user.questions.slice(0, 5).map(q => ({
               id: q.id,
               question: q.question,
+              answer: q.answer,
               status: q.status === 'ANSWERED' ? 'answered' : 'pending',
+              answeredAt: q.answeredAt,
+              eventTitle: q.eventTitle,
             }))}
           />
         </div>

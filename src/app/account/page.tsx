@@ -9,7 +9,7 @@ type UserWithRelations = User & {
   profile: Profile | null;
   memberships: Membership[];
   watchStatuses: (WatchStatus & { content: Content })[];
-  questions: (Question & { content: Content | null })[];
+  questions: (Question & { content: Content | null; event: { title: string } | null })[];
 };
 
 export const metadata: Metadata = {
@@ -35,10 +35,13 @@ async function getAccountData(userId: string): Promise<UserWithRelations | null>
       },
       questions: {
         include: {
-          content: true
+          content: true,
+          event: {
+            select: { title: true }
+          }
         },
         orderBy: { createdAt: 'desc' },
-        take: 5
+        take: 10
       }
     }
   }) as unknown as Promise<UserWithRelations | null>;
@@ -122,8 +125,11 @@ export default async function AccountPage() {
     questions: user.questions.map(q => ({
       id: q.id,
       question: q.question,
+      answer: q.answer,
       status: q.status,
-      contentTitle: q.content?.title ?? null
+      answeredAt: q.answeredAt,
+      contentTitle: q.content?.title ?? null,
+      eventTitle: q.event?.title ?? null
     })),
     watchStatuses: user.watchStatuses.map(w => ({
       id: w.id,

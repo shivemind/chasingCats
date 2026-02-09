@@ -7,8 +7,10 @@ interface AskSectionProps {
   recentQuestions?: Array<{
     id: string;
     question: string;
+    answer: string | null;
     status: 'pending' | 'answered';
-    answeredAt?: Date;
+    answeredAt?: Date | null;
+    eventTitle?: string | null;
   }>;
 }
 
@@ -93,18 +95,43 @@ export function AskSection({ recentQuestions = [] }: AskSectionProps) {
       {/* Recent Questions */}
       {recentQuestions.length > 0 && (
         <div className="mt-6 pt-4 border-t border-white/10">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Your Recent Questions</p>
-          <div className="space-y-2">
-            {recentQuestions.slice(0, 3).map((q) => (
-              <div key={q.id} className="flex items-start gap-3 rounded-lg bg-white/5 p-3">
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  q.status === 'answered' 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-yellow-500/20 text-yellow-400'
-                }`}>
-                  {q.status === 'answered' ? '✓ Answered' : '⏳ Pending'}
-                </span>
-                <p className="text-sm text-white line-clamp-1">{q.question}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Your Questions</p>
+          <div className="space-y-3">
+            {recentQuestions.slice(0, 5).map((q) => (
+              <div key={q.id} className="rounded-xl bg-white/5 p-4">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    q.status === 'answered' 
+                      ? 'bg-green-500/20 text-green-400' 
+                      : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
+                    {q.status === 'answered' ? '✓ Answered' : '⏳ Pending'}
+                  </span>
+                  {q.eventTitle && (
+                    <span className="text-[10px] text-neon-cyan truncate">
+                      📅 {q.eventTitle}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-white mb-2">{q.question}</p>
+                
+                {q.status === 'answered' && q.answer && (
+                  <div className="mt-3 pt-3 border-t border-white/10">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-green-400 mb-1">
+                      🌟 Response from the Experts
+                    </p>
+                    <p className="text-sm text-white/80 whitespace-pre-wrap">{q.answer}</p>
+                    {q.answeredAt && (
+                      <p className="mt-2 text-[10px] text-gray-500">
+                        Answered on {new Date(q.answeredAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

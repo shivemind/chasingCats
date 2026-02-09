@@ -61,7 +61,15 @@ export default async function AdminQuestionsPage() {
               <span className="text-xs text-white/50">
                 {new Date(question.createdAt).toLocaleDateString()}
               </span>
-              <DeleteQuestionButton questionId={question.id} />
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/questions/${question.id}`}
+                  className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+                >
+                  {question.status === 'PENDING' ? 'Answer' : 'View'}
+                </Link>
+                <DeleteQuestionButton questionId={question.id} />
+              </div>
             </div>
           </div>
         ))}
@@ -121,7 +129,15 @@ export default async function AdminQuestionsPage() {
                   {new Date(question.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <DeleteQuestionButton questionId={question.id} />
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={`/admin/questions/${question.id}`}
+                      className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+                    >
+                      {question.status === 'PENDING' ? 'Answer' : 'View'}
+                    </Link>
+                    <DeleteQuestionButton questionId={question.id} />
+                  </div>
                 </td>
               </tr>
             ))}
