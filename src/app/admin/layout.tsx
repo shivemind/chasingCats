@@ -63,6 +63,12 @@ export default async function AdminLayout({
               <span>📅</span> Events & Meetings
             </Link>
             <Link
+              href="/admin/questions"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <span>❓</span> Questions
+            </Link>
+            <Link
               href="/admin/users"
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
             >
