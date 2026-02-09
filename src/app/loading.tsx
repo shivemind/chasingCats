@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-night">
       {/* Only appears after 300ms delay - fast loads won't see it */}
       <div className="opacity-0 animate-fade-in-delayed">
         <div className="flex gap-2">
