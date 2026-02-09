@@ -37,7 +37,8 @@ const config: Config = {
       },
       animation: {
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-        'float': 'float 6s ease-in-out infinite'
+        'float': 'float 6s ease-in-out infinite',
+        'fade-in-delayed': 'fadeIn 0.3s ease-in 0.3s forwards'
       },
       keyframes: {
         'pulse-glow': {
@@ -47,6 +48,10 @@ const config: Config = {
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' }
+        },
+        'fadeIn': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
         }
       }
     }
