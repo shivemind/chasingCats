@@ -1,10 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" rx="32" fill="#133537" />
-  <g stroke="#F9982F" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9">
-    <rect x="150" y="120" width="300" height="220" rx="36" />
-    <circle cx="300" cy="230" r="68" />
-    <circle cx="300" cy="230" r="28" />
-    <path d="M190 150h40" />
-    <path d="M370 150h40" />
+  <defs>
+    <linearGradient id="forestBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a2f1a"/>
+      <stop offset="100%" stop-color="#0d1a0d"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#forestBg)"/>
+  <!-- Trees silhouette -->
+  <g fill="#0a150a" opacity="0.6">
+    <path d="M50 400 L80 280 L60 285 L90 200 L70 205 L100 120 L130 205 L110 200 L140 285 L120 280 L150 400 Z"/>
+    <path d="M500 400 L530 300 L510 305 L540 220 L520 225 L550 150 L580 225 L560 220 L590 305 L570 300 L600 400 Z"/>
   </g>
+  <!-- Camera trap on tree -->
+  <rect x="200" y="180" width="30" height="200" fill="#3d2817" rx="4"/>
+  <g fill="#2a2a2a">
+    <rect x="180" y="200" width="90" height="70" rx="8"/>
+    <rect x="175" y="195" width="100" height="15" rx="4" fill="#3a3a3a"/>
+  </g>
+  <circle cx="225" cy="235" r="22" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="3"/>
+  <circle cx="225" cy="235" r="12" fill="#2d4a6a"/>
+  <circle cx="225" cy="235" r="4" fill="#fff" opacity="0.3"/>
+  <rect x="250" y="210" width="12" height="8" rx="2" fill="#4a4a4a"/>
+  <circle cx="256" cy="214" r="2" fill="#ff4444"/>
+  <!-- Clouded leopard silhouette -->
+  <g fill="#c4a882" opacity="0.9">
+    <ellipse cx="420" cy="300" rx="60" ry="35"/>
+    <circle cx="470" cy="280" r="28"/>
+    <path d="M455 258 L460 240 L475 260 Z"/>
+    <path d="M475 255 L485 238 L498 260 Z"/>
+    <path d="M360 295 Q320 280 310 310 Q305 330 325 335" stroke="#c4a882" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <rect x="390" y="320" width="16" height="35" rx="6"/>
+    <rect x="440" y="320" width="16" height="35" rx="6"/>
+  </g>
+  <g fill="#8a7a6a" opacity="0.4">
+    <ellipse cx="400" cy="295" rx="8" ry="12"/><ellipse cx="430" cy="305" rx="10" ry="8"/>
+  </g>
+  <ellipse cx="462" cy="277" rx="5" ry="7" fill="#7ab87a"/>
+  <ellipse cx="478" cy="277" rx="5" ry="7" fill="#7ab87a"/>
+  <text x="300" y="385" text-anchor="middle" fill="#7ab87a" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">CAMERA TRAPPING</text>
 </svg>

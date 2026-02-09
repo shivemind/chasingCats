@@ -1,11 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
   <defs>
-    <linearGradient id="grad" x1="0%" x2="100%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="#F9982F" />
-      <stop offset="100%" stop-color="#0E7C7B" />
+    <linearGradient id="vocalBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0d1f30"/>
     </linearGradient>
   </defs>
-  <rect width="600" height="400" fill="url(#grad)" rx="32" />
-  <path d="M120 200c40-80 120-120 180-120s140 40 180 120c-40 80-120 120-180 120S160 280 120 200z" fill="#fff" fill-opacity="0.15" />
-  <path d="M200 200c25-50 75-75 112-75s87 25 112 75c-25 50-75 75-112 75s-87-25-112-75z" fill="#fff" fill-opacity="0.35" />
+  <rect width="600" height="400" rx="24" fill="url(#vocalBg)"/>
+  <!-- Sound waves -->
+  <g stroke="#00f5d4" fill="none" opacity="0.3">
+    <circle cx="380" cy="200" r="60" stroke-width="2"/>
+    <circle cx="380" cy="200" r="90" stroke-width="2"/>
+    <circle cx="380" cy="200" r="120" stroke-width="2"/>
+    <circle cx="380" cy="200" r="150" stroke-width="1"/>
+  </g>
+  <!-- Cat head roaring -->
+  <g fill="#f5e6c8">
+    <ellipse cx="220" cy="200" rx="90" ry="80"/>
+    <path d="M150 140 L130 70 L180 120 Z"/>
+    <path d="M290 140 L310 70 L260 120 Z"/>
+    <path d="M155 130 L145 90 L175 118 Z" fill="#d4a574"/>
+    <path d="M285 130 L295 90 L265 118 Z" fill="#d4a574"/>
+    <ellipse cx="220" cy="240" rx="45" ry="35" fill="#e8d5b8"/>
+  </g>
+  <ellipse cx="220" cy="255" rx="30" ry="25" fill="#8b4050"/>
+  <path d="M200 240 Q220 235 240 240" stroke="#f5e6c8" stroke-width="4" fill="none"/>
+  <g fill="#fff">
+    <path d="M200 248 L205 260 L210 248 Z"/>
+    <path d="M230 248 L235 260 L240 248 Z"/>
+  </g>
+  <ellipse cx="185" cy="180" rx="15" ry="18" fill="#fff"/>
+  <ellipse cx="255" cy="180" rx="15" ry="18" fill="#fff"/>
+  <ellipse cx="185" cy="182" rx="10" ry="14" fill="#f9982f"/>
+  <ellipse cx="255" cy="182" rx="10" ry="14" fill="#f9982f"/>
+  <ellipse cx="185" cy="182" rx="5" ry="10" fill="#000"/>
+  <ellipse cx="255" cy="182" rx="5" ry="10" fill="#000"/>
+  <ellipse cx="220" cy="225" rx="12" ry="8" fill="#d4a574"/>
+  <g stroke="#c4b4a4" stroke-width="1.5">
+    <line x1="180" y1="235" x2="130" y2="225"/>
+    <line x1="180" y1="245" x2="125" y2="245"/>
+    <line x1="260" y1="235" x2="310" y2="225"/>
+    <line x1="260" y1="245" x2="315" y2="245"/>
+  </g>
+  <text x="300" y="380" text-anchor="middle" fill="#00f5d4" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">VOCALIZATIONS DECODED</text>
 </svg>

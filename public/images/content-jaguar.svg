@@ -1,12 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" rx="32" fill="#0E7C7B" />
-  <g fill="#F5F1E3" fill-opacity="0.6">
-    <circle cx="180" cy="160" r="90" />
-    <circle cx="360" cy="140" r="70" />
-    <path d="M140 280c50-70 120-100 180-100s130 30 180 100c-70 60-130 80-180 80s-110-20-180-80z" />
+  <defs>
+    <linearGradient id="jaguarBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a3a2f"/>
+      <stop offset="100%" stop-color="#0d1f18"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#jaguarBg)"/>
+  <g fill="#fff" opacity="0.5">
+    <circle cx="50" cy="60" r="1.5"/><circle cx="120" cy="40" r="1"/>
+    <circle cx="200" cy="80" r="1.5"/><circle cx="550" cy="90" r="1.5"/>
   </g>
-  <g fill="#F9982F" fill-opacity="0.8">
-    <circle cx="420" cy="240" r="110" />
-    <circle cx="220" cy="240" r="70" />
+  <circle cx="500" cy="80" r="40" fill="#fffef0" opacity="0.85"/>
+  <g fill="#000" opacity="0.85">
+    <ellipse cx="300" cy="280" rx="120" ry="50"/>
+    <circle cx="420" cy="250" r="45"/>
+    <path d="M400 210 L410 180 L430 210 Z"/>
+    <path d="M440 210 L450 180 L470 210 Z"/>
+    <rect x="200" y="300" width="25" height="60" rx="8"/>
+    <rect x="260" y="310" width="25" height="50" rx="8"/>
+    <rect x="340" y="310" width="25" height="50" rx="8"/>
+    <rect x="390" y="300" width="25" height="60" rx="8"/>
+    <path d="M180 270 Q120 240 100 280 Q90 300 110 310" stroke="#000" stroke-width="18" fill="none" stroke-linecap="round"/>
   </g>
+  <ellipse cx="408" cy="245" rx="8" ry="10" fill="#f9982f"/>
+  <ellipse cx="432" cy="245" rx="8" ry="10" fill="#f9982f"/>
+  <ellipse cx="408" cy="245" rx="3" ry="8" fill="#000"/>
+  <ellipse cx="432" cy="245" rx="3" ry="8" fill="#000"/>
+  <g fill="#F9982F" opacity="0.15">
+    <circle cx="280" cy="270" r="12"/><circle cx="320" cy="285" r="10"/><circle cx="350" cy="265" r="11"/>
+  </g>
+  <text x="300" y="380" text-anchor="middle" fill="#F9982F" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">NOCTURNAL TRACKING</text>
 </svg>

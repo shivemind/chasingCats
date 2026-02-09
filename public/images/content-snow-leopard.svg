@@ -1,10 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" rx="32" fill="#F5F1E3" />
-  <path d="M80 280c60-90 160-150 240-150s180 60 240 150c-100 60-180 80-240 80s-140-20-240-80z" fill="#0E7C7B" fill-opacity="0.15" />
-  <path d="M160 240c40-60 110-90 160-90s120 30 160 90c-60 50-110 70-160 70s-100-20-160-70z" fill="#0E7C7B" fill-opacity="0.3" />
-  <g fill="#0E7C7B" fill-opacity="0.6">
-    <circle cx="220" cy="210" r="28" />
-    <circle cx="380" cy="210" r="28" />
-    <path d="M240 250c30 30 90 30 120 0" stroke="#0E7C7B" stroke-width="12" stroke-linecap="round" fill="none" />
+  <defs>
+    <linearGradient id="mountainBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a8c8e8"/>
+      <stop offset="60%" stop-color="#e8eff5"/>
+      <stop offset="100%" stop-color="#f5f5f5"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#mountainBg)"/>
+  <!-- Mountains -->
+  <path d="M0 400 L150 180 L300 400 Z" fill="#8ba4b8" opacity="0.5"/>
+  <path d="M100 400 L300 120 L500 400 Z" fill="#9db5c9" opacity="0.7"/>
+  <path d="M250 400 L450 150 L600 400 Z" fill="#b8cad9" opacity="0.6"/>
+  <!-- Snow caps -->
+  <path d="M280 150 L300 120 L320 150 L310 145 L300 155 L290 145 Z" fill="#fff"/>
+  <path d="M430 180 L450 150 L470 180 L460 175 L450 185 L440 175 Z" fill="#fff"/>
+  <!-- Snow leopard -->
+  <ellipse cx="300" cy="340" rx="100" ry="20" fill="#7a8a96" opacity="0.4"/>
+  <g fill="#d4d8dc">
+    <ellipse cx="280" cy="290" rx="80" ry="40"/>
+    <circle cx="370" cy="265" r="38"/>
+    <path d="M350 235 L358 210 L375 235 Z"/>
+    <path d="M375 230 L390 205 L405 235 Z"/>
+    <path d="M200 280 Q140 260 120 290 Q100 320 130 340 Q150 355 170 340" fill="#d4d8dc"/>
+    <rect x="230" y="310" width="22" height="40" rx="8"/>
+    <rect x="280" y="315" width="22" height="35" rx="8"/>
+    <rect x="320" y="315" width="22" height="35" rx="8"/>
   </g>
+  <g fill="#8a9aa6" opacity="0.5">
+    <circle cx="250" cy="280" r="8"/><circle cx="280" cy="295" r="6"/>
+    <circle cx="310" cy="275" r="7"/><circle cx="155" cy="310" r="6"/>
+  </g>
+  <ellipse cx="358" cy="260" rx="7" ry="9" fill="#6b8a6b"/>
+  <ellipse cx="382" cy="260" rx="7" ry="9" fill="#6b8a6b"/>
+  <ellipse cx="358" cy="260" rx="2.5" ry="7" fill="#222"/>
+  <ellipse cx="382" cy="260" rx="2.5" ry="7" fill="#222"/>
+  <text x="300" y="385" text-anchor="middle" fill="#5a7a8a" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">HIMALAYAN EXPEDITION</text>
 </svg>

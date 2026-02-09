@@ -1,10 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" rx="32" fill="#F9982F" />
-  <g fill="none" stroke="#133537" stroke-width="16" opacity="0.8">
-    <path d="M180 160h240" />
-    <path d="M180 200h240" />
-    <path d="M180 240h180" />
-    <circle cx="180" cy="160" r="32" />
-    <circle cx="420" cy="240" r="32" />
+  <defs>
+    <linearGradient id="ethicsBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1f0f"/>
+      <stop offset="100%" stop-color="#1a120a"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#ethicsBg)"/>
+  <!-- Scale/balance -->
+  <g stroke="#d4a855" stroke-width="4" fill="none">
+    <line x1="300" y1="100" x2="300" y2="180"/>
+    <line x1="180" y1="180" x2="420" y2="180"/>
+    <line x1="180" y1="180" x2="180" y2="220"/>
+    <line x1="420" y1="180" x2="420" y2="220"/>
   </g>
+  <!-- Left pan - camera -->
+  <ellipse cx="180" cy="240" rx="60" ry="15" fill="#d4a855" opacity="0.3"/>
+  <g fill="#4a4a4a">
+    <rect x="150" y="215" width="60" height="40" rx="6"/>
+    <circle cx="180" cy="235" r="12" fill="#2a2a2a"/>
+    <circle cx="180" cy="235" r="5" fill="#4a6a8a"/>
+  </g>
+  <!-- Right pan - heart/patience -->
+  <ellipse cx="420" cy="240" rx="60" ry="15" fill="#d4a855" opacity="0.3"/>
+  <path d="M420 215 C400 200 380 215 380 235 C380 255 420 280 420 280 C420 280 460 255 460 235 C460 215 440 200 420 215" fill="#c44" opacity="0.8"/>
+  <!-- Cheetah in middle observing -->
+  <g fill="#e8c87a">
+    <ellipse cx="300" cy="320" rx="50" ry="30"/>
+    <circle cx="330" cy="295" r="22"/>
+    <path d="M318 278 L322 262 L335 280 Z"/>
+    <path d="M335 275 L342 260 L352 280 Z"/>
+    <rect x="265" y="335" width="12" height="30" rx="4"/>
+    <rect x="325" y="335" width="12" height="30" rx="4"/>
+  </g>
+  <!-- Spots -->
+  <g fill="#3a3020" opacity="0.5">
+    <circle cx="285" cy="315" r="4"/><circle cx="310" cy="325" r="3"/>
+  </g>
+  <!-- Tear marks -->
+  <path d="M323 295 Q320 310 318 320" stroke="#3a3020" stroke-width="2" fill="none"/>
+  <path d="M337 295 Q340 310 342 320" stroke="#3a3020" stroke-width="2" fill="none"/>
+  <!-- Eyes -->
+  <ellipse cx="324" cy="292" rx="4" ry="5" fill="#5a4a2a"/>
+  <ellipse cx="336" cy="292" rx="4" ry="5" fill="#5a4a2a"/>
+  <text x="300" y="385" text-anchor="middle" fill="#d4a855" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">ETHICS IN WILDLIFE PHOTOGRAPHY</text>
 </svg>

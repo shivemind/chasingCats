@@ -1,11 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" rx="32" fill="#0E7C7B" />
-  <g fill="none" stroke="#F5F1E3" stroke-width="12" opacity="0.7">
-    <path d="M200 140c80-80 200-80 280 0" />
-    <path d="M200 200c80-80 200-80 280 0" />
-    <path d="M200 260c80-80 200-80 280 0" />
-    <path d="M120 200c60-60 120-60 180 0" />
-    <path d="M300 200c60-60 120-60 180 0" />
+  <defs>
+    <linearGradient id="neuroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a3a"/>
+      <stop offset="100%" stop-color="#0d0d1f"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#neuroBg)"/>
+  <!-- Brain wave patterns -->
+  <g stroke="#a855f7" stroke-width="2" fill="none" opacity="0.4">
+    <path d="M50 100 Q100 80 150 100 T250 100 T350 100 T450 100 T550 100"/>
+    <path d="M50 140 Q100 100 150 140 T250 140 T350 140 T450 140 T550 140"/>
+    <path d="M50 320 Q100 340 150 320 T250 320 T350 320 T450 320 T550 320"/>
   </g>
-  <circle cx="300" cy="200" r="90" fill="#F9982F" fill-opacity="0.5" />
+  <!-- Sleeping lion head -->
+  <g fill="#d4a855">
+    <ellipse cx="300" cy="220" rx="100" ry="70"/>
+    <!-- Mane -->
+    <ellipse cx="300" cy="180" rx="130" ry="90" fill="#8b6914" opacity="0.6"/>
+    <ellipse cx="300" cy="200" rx="115" ry="80" fill="#a67c1a"/>
+    <!-- Face -->
+    <ellipse cx="300" cy="230" rx="75" ry="55"/>
+    <!-- Muzzle -->
+    <ellipse cx="300" cy="260" rx="35" ry="25" fill="#e8c87a"/>
+  </g>
+  <!-- Closed eyes (sleeping) -->
+  <path d="M255 215 Q270 225 285 215" stroke="#5a4a2a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M315 215 Q330 225 345 215" stroke="#5a4a2a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Nose -->
+  <ellipse cx="300" cy="250" rx="12" ry="8" fill="#5a4a2a"/>
+  <!-- Dream bubbles -->
+  <g fill="#a855f7" opacity="0.6">
+    <circle cx="420" cy="140" r="8"/>
+    <circle cx="450" cy="110" r="12"/>
+    <circle cx="490" cy="70" r="18"/>
+  </g>
+  <!-- ZZZ -->
+  <text x="500" y="60" fill="#a855f7" font-family="system-ui" font-size="20" font-weight="bold" opacity="0.7">Z</text>
+  <text x="520" y="45" fill="#a855f7" font-family="system-ui" font-size="16" font-weight="bold" opacity="0.5">z</text>
+  <text x="535" y="35" fill="#a855f7" font-family="system-ui" font-size="12" font-weight="bold" opacity="0.3">z</text>
+  <text x="300" y="380" text-anchor="middle" fill="#a855f7" font-family="system-ui" font-size="14" font-weight="600" opacity="0.8">NEUROLOGY OF SLEEP</text>
 </svg>
