@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { UserRoleSelect } from '@/components/admin/user-role-select';
 import { DeleteUserButton } from '@/components/admin/delete-user-button';
+import { EducationalPassButton } from '@/components/admin/educational-pass-button';
 import type { UserRole } from '@prisma/client';
 
 type UserWithCount = {
@@ -10,6 +11,7 @@ type UserWithCount = {
   role: UserRole;
   createdAt: Date;
   _count: { memberships: number };
+  memberships: { educationalPassExpiry: Date | null }[];
 };
 
 export default async function AdminUsersPage() {
@@ -25,9 +27,20 @@ export default async function AdminUsersPage() {
         select: {
           memberships: true
         }
+      },
+      memberships: {
+        select: { educationalPassExpiry: true },
+        orderBy: { createdAt: 'desc' },
+        take: 1
       }
     }
   }) as unknown as UserWithCount[];
+
+  // Count active educational passes
+  const activePassCount = users.filter(u => 
+    u.memberships[0]?.educationalPassExpiry && 
+    new Date(u.memberships[0].educationalPassExpiry) > new Date()
+  ).length;
 
   return (
     <div>
@@ -36,7 +49,7 @@ export default async function AdminUsersPage() {
         <p className="mt-1 text-sm text-white/50 sm:mt-2 sm:text-base">Manage user accounts and roles</p>
       </div>
 
-      <div className="mb-6 grid gap-3 grid-cols-3 sm:gap-4">
+      <div className="mb-6 grid gap-3 grid-cols-2 sm:grid-cols-4 sm:gap-4">
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
           <div className="text-2xl font-bold text-white">{users.length}</div>
           <div className="text-sm text-white/50">Total Users</div>
@@ -53,6 +66,12 @@ export default async function AdminUsersPage() {
           </div>
           <div className="text-sm text-white/50">Members</div>
         </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+          <div className="text-2xl font-bold text-cat-eye">
+            {activePassCount}
+          </div>
+          <div className="text-sm text-white/50">Educational Passes</div>
+        </div>
       </div>
 
       {/* Mobile card view */}
@@ -65,6 +84,12 @@ export default async function AdminUsersPage() {
                 <p className="text-sm text-white/50">{user.email}</p>
               </div>
               <UserRoleSelect userId={user.id} currentRole={user.role} />
+            </div>
+            <div className="mt-3 border-t border-white/10 pt-3">
+              <EducationalPassButton 
+                userId={user.id} 
+                currentExpiry={user.memberships[0]?.educationalPassExpiry ?? null} 
+              />
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
               <span className="text-xs text-white/50">
@@ -90,6 +115,7 @@ export default async function AdminUsersPage() {
               <th className="px-6 py-4 font-medium">Email</th>
               <th className="px-6 py-4 font-medium">Role</th>
               <th className="px-6 py-4 font-medium">Subscriptions</th>
+              <th className="px-6 py-4 font-medium">Educational Pass</th>
               <th className="px-6 py-4 font-medium">Joined</th>
               <th className="px-6 py-4 font-medium">Actions</th>
             </tr>
@@ -105,6 +131,12 @@ export default async function AdminUsersPage() {
                   <UserRoleSelect userId={user.id} currentRole={user.role} />
                 </td>
                 <td className="px-6 py-4 text-white/70">{user._count.memberships}</td>
+                <td className="px-6 py-4">
+                  <EducationalPassButton 
+                    userId={user.id} 
+                    currentExpiry={user.memberships[0]?.educationalPassExpiry ?? null} 
+                  />
+                </td>
                 <td className="px-6 py-4 text-white/70">
                   {new Date(user.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -119,7 +151,7 @@ export default async function AdminUsersPage() {
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-white/50">
+                <td colSpan={7} className="px-6 py-12 text-center text-white/50">
                   No users found.
                 </td>
               </tr>

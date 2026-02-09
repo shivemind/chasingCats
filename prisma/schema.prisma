@@ -93,16 +93,17 @@ model VerificationToken {
 }
 
 model Membership {
-  id                 String            @id @default(cuid())
-  userId             String
-  stripeCustomerId   String?           @unique
-  stripeSubscription String?
-  plan               SubscriptionPlan  @default(MONTHLY)
-  status             SubscriptionStatus @default(ACTIVE)
-  currentPeriodEnd   DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  user               User              @relation(fields: [userId], references: [id])
+  id                    String            @id @default(cuid())
+  userId                String
+  stripeCustomerId      String?           @unique
+  stripeSubscription    String?
+  plan                  SubscriptionPlan  @default(MONTHLY)
+  status                SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd      DateTime?
+  educationalPassExpiry DateTime?         // Grants full access until this date
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  user                  User              @relation(fields: [userId], references: [id])
 }
 
 enum SubscriptionPlan {
