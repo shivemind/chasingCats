@@ -2,6 +2,13 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { DeleteQuestionButton } from '@/components/admin/delete-question-button';
 import { QuestionStatusBadge } from '@/components/admin/question-status-badge';
+import type { Question, QuestionStatus } from '@prisma/client';
+
+type QuestionWithRelations = Question & {
+  author: { name: string | null; email: string | null } | null;
+  event: { id: string; title: string; slug: string } | null;
+  content: { id: string; title: string; slug: string } | null;
+};
 
 export default async function AdminQuestionsPage() {
   const questions = await prisma.question.findMany({
@@ -17,7 +24,7 @@ export default async function AdminQuestionsPage() {
         select: { id: true, title: true, slug: true }
       }
     }
-  });
+  }) as QuestionWithRelations[];
 
   const pendingCount = questions.filter(q => q.status === 'PENDING').length;
 
