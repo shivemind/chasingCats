@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import { QuestionForm } from '@/components/ask/question-form';
+import type { Question, User } from '@prisma/client';
+
+type QuestionWithAuthor = Question & { author: User | null };
 
 export const metadata = {
   title: 'Ask Me Anything | Chasing Cats Club',
@@ -19,7 +22,7 @@ export default async function AskPage() {
       },
       orderBy: { createdAt: 'desc' },
       take: 6
-    })
+    }) as Promise<QuestionWithAuthor[]>
   ]);
 
   return (

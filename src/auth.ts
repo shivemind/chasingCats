@@ -5,6 +5,9 @@ import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+import type { User, Membership } from "@prisma/client";
+
+type UserWithMemberships = User & { memberships: Membership[] };
 
 /**
  * Extend the JWT/session shape with your app-specific fields.
@@ -118,7 +121,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               take: 1,
             },
           },
-        });
+        }) as UserWithMemberships | null;
         
         if (dbUser) {
           t.role = dbUser.role;
@@ -135,7 +138,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 take: 1,
               },
             },
-          });
+          }) as UserWithMemberships | null;
           
           if (dbUser) {
             t.role = dbUser.role;

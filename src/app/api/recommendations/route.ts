@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import type { WatchStatus, Content, Category } from '@prisma/client';
+
+type WatchStatusWithContent = WatchStatus & { content: Content & { category: Category | null } };
+type ContentWithCategory = Content & { category: Category | null };
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +24,7 @@ export async function GET(request: Request) {
         include: { content: { include: { category: true } } },
         take: 20,
         orderBy: { updatedAt: 'desc' },
-      });
+      }) as WatchStatusWithContent[];
 
       watchedContentIds = watchHistory.map(w => w.contentId);
       watchedCategories = watchHistory
@@ -35,7 +39,7 @@ export async function GET(request: Request) {
       const current = await prisma.content.findUnique({
         where: { id: contentId },
         include: { category: true },
-      });
+      }) as ContentWithCategory | null;
 
       if (current) {
         // Get content in same category

@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { ContentCard } from '@/components/shared/content-card';
 import Link from 'next/link';
+import type { Content, Category } from '@prisma/client';
+
+type ContentWithCategory = Content & { category: Category | null };
 
 interface LibraryPageProps {
   searchParams?: Promise<{
@@ -28,7 +31,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
       category: true
     },
     orderBy: { publishedAt: 'desc' }
-  });
+  }) as ContentWithCategory[];
 
   const categories = await prisma.category.findMany({
     orderBy: { name: 'asc' }
