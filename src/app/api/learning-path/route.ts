@@ -6,6 +6,31 @@ import {
   getLearningPathProgress 
 } from '@/lib/learning-path';
 
+interface PathWithItems {
+  id: string;
+  title: string;
+  description: string | null;
+  totalItems: number;
+  completed: number;
+  items: Array<{
+    id: string;
+    order: number;
+    isCompleted: boolean;
+    completedAt: Date | null;
+    content: {
+      id: string;
+      title: string;
+      slug: string;
+      excerpt: string | null;
+      type: string;
+      thumbnailUrl: string | null;
+      duration: number | null;
+      level: string | null;
+      category: { name: string } | null;
+    };
+  }>;
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -14,7 +39,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const path = await getOrCreateLearningPath(session.user.id);
+    const path = await getOrCreateLearningPath(session.user.id) as unknown as PathWithItems;
     const progress = await getLearningPathProgress(session.user.id);
     
     return NextResponse.json({ 

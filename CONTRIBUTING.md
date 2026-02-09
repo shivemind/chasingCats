@@ -100,20 +100,30 @@ The platform includes several features for user engagement:
 - **Content**: Includes all talks and content with audio URLs
 - **Admin**: Configure via PodcastSettings in database
 
-### Photo Challenges (Planned)
-- **Schema**: PhotoChallenge, ChallengeEntry, ChallengeVote models ready
-- **Pages**: `/challenges` hub, `/challenges/[id]` for individual challenges
-- **Admin**: `/admin/challenges` - create and moderate challenges
+### Photo Challenges
+- **Public Pages**: `/challenges` - list of active challenges, `/challenges/[slug]` - individual challenge
+- **Features**: Entry submission, community voting, automatic status transitions (upcoming → active → voting → completed)
+- **Winner Selection**: Top 3 entries by vote count displayed as winners
+- **Admin**: `/admin/challenges` - create challenges, moderate entries, manage status
+- **API Routes**: `/api/challenges/entries`, `/api/challenges/vote`, `/api/admin/challenges`
 
-### AI Chatbot (Planned)
-- **Schema**: ChatMessage model ready
-- **Requires**: OpenAI or Anthropic API key
-- **Admin**: `/admin/chatbot` - view conversations
+### AI Chatbot
+- **Widget**: Floating chat widget on bottom-right of screen
+- **Providers**: Supports OpenAI (GPT-4o-mini) and Anthropic (Claude 3 Haiku)
+- **System Prompt**: Trained for wildlife photography help, politely redirects off-topic questions
+- **History**: Conversation history saved per session
+- **Admin**: `/admin/chatbot` - view stats and recent conversations
+- **API Routes**: `/api/chat`
+- **Requires**: `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`
 
-### Weekly Digest Emails (Planned)
-- **Schema**: DigestPreference model ready
-- **Requires**: Email service (Resend, SendGrid, etc.)
-- **Admin**: `/admin/digest` - preview and configure
+### Weekly Digest Emails
+- **Content**: New content, active challenges, photography tips
+- **Frequencies**: Weekly, Daily, or None (opt-out)
+- **User Settings**: Customize which sections to include via `/api/digest/preferences`
+- **Cron Job**: `/api/cron/digest?frequency=WEEKLY` (or DAILY) - requires CRON_SECRET
+- **Admin**: `/admin/digest` - view stats, preview email template
+- **Providers**: Supports Resend and SendGrid
+- **Requires**: `RESEND_API_KEY` or `SENDGRID_API_KEY`
 
 ## Environment Variables
 
@@ -143,4 +153,5 @@ ANTHROPIC_API_KEY=sk-ant-your-key
 RESEND_API_KEY=re_your_key
 # or
 SENDGRID_API_KEY=SG.your_key
+CRON_SECRET=your_cron_secret  # For automated digest sending
 ```

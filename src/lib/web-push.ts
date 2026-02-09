@@ -135,7 +135,8 @@ async function sendPushNotification(
 
   try {
     // Dynamic import to avoid issues when web-push is not installed
-    const webPush = await import('web-push').catch(() => null);
+    // @ts-expect-error - web-push may not be installed
+    const webPush = await import('web-push').catch(() => null) as typeof import('web-push') | null;
     
     if (!webPush) {
       console.warn('web-push package not installed');

@@ -492,18 +492,22 @@ model ChallengeVote {
 
 // Weekly Digest Preferences
 model DigestPreference {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  enabled           Boolean  @default(true)
-  includeNewContent Boolean  @default(true)
-  includeEvents     Boolean  @default(true)
-  includeStreaks    Boolean  @default(true)
-  includeCommunity  Boolean  @default(true)
-  preferredDay      Int      @default(0) // 0 = Sunday, 1 = Monday, etc.
-  lastSentAt        DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  frequency          DigestFrequency @default(WEEKLY)
+  includeNewContent  Boolean         @default(true)
+  includeChallenges  Boolean         @default(true)
+  includeTips        Boolean         @default(true)
+  lastSentAt         DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum DigestFrequency {
+  WEEKLY
+  DAILY
+  NONE
 }
 
 // AI Chat Messages

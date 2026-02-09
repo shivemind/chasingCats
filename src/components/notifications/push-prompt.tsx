@@ -61,9 +61,10 @@ export function PushNotificationPrompt() {
       }
 
       // Subscribe to push
+      const applicationKey = urlBase64ToUint8Array(vapidPublicKey);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+        applicationServerKey: applicationKey as BufferSource
       });
 
       // Send subscription to server
@@ -206,9 +207,10 @@ export function PushNotificationToggle() {
           throw new Error('Permission denied');
         }
 
+        const applicationKey = urlBase64ToUint8Array(vapidPublicKey);
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+          applicationServerKey: applicationKey as BufferSource
         });
 
         await fetch('/api/push/subscribe', {

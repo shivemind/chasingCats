@@ -6,10 +6,16 @@ export const metadata = {
   title: 'Push Notifications | Admin'
 };
 
+interface SubWithUser {
+  id: string;
+  createdAt: Date;
+  user: { name: string | null; email: string | null };
+}
+
 export default async function AdminNotificationsPage() {
   const stats = await getPushStats();
   
-  const recentSubscriptions = await prisma.pushSubscription.findMany({
+  const recentSubscriptions: SubWithUser[] = await prisma.pushSubscription.findMany({
     orderBy: { createdAt: 'desc' },
     take: 10,
     include: {
@@ -17,7 +23,7 @@ export default async function AdminNotificationsPage() {
         select: { name: true, email: true }
       }
     }
-  });
+  }) as unknown as SubWithUser[];
 
   const hasVapidKeys = !!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 

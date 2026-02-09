@@ -9,7 +9,43 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import type { SkillLevel, ContentType } from '@prisma/client';
+import type { SkillLevel, ContentType, LearningPathItem, Content, Category } from '@prisma/client';
+
+// Type helpers for Prisma Accelerate extension
+interface PathItem extends LearningPathItem {
+  content: Content & { category: Category | null };
+}
+
+interface PathWithItems {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string | null;
+  userId: string;
+  totalItems: number;
+  completed: number;
+  items: PathItem[];
+}
+
+interface PathWithItemsSimple {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string | null;
+  userId: string;
+  totalItems: number;
+  completed: number;
+  items: LearningPathItem[];
+}
+
+interface PathWithItemsContentType {
+  id: string;
+  items: { isCompleted: boolean; content: { type: ContentType } }[];
+  totalItems: number;
+  completed: number;
+}
 
 interface PathGenerationOptions {
   userId: string;
@@ -33,7 +69,7 @@ export async function getOrCreateLearningPath(userId: string) {
         orderBy: { order: 'asc' }
       }
     }
-  });
+  }) as unknown as PathWithItems | null;
 
   if (!path) {
     // Generate new path
@@ -144,7 +180,7 @@ export async function generateLearningPath(options: PathGenerationOptions) {
         orderBy: { order: 'asc' }
       }
     }
-  });
+  }) as unknown as PathWithItems;
 
   return path;
 }
@@ -153,7 +189,7 @@ export async function markPathItemComplete(userId: string, contentId: string) {
   const path = await prisma.learningPath.findUnique({
     where: { userId },
     include: { items: true }
-  });
+  }) as unknown as PathWithItemsSimple | null;
 
   if (!path) return null;
 
@@ -181,7 +217,7 @@ export async function markPathItemComplete(userId: string, contentId: string) {
         orderBy: { order: 'asc' }
       }
     }
-  });
+  }) as unknown as PathWithItems;
 
   return updatedPath;
 }
@@ -197,7 +233,7 @@ export async function getNextPathItem(userId: string) {
         take: 1
       }
     }
-  });
+  }) as unknown as PathWithItems | null;
 
   if (!path || path.items.length === 0) return null;
   

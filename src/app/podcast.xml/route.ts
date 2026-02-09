@@ -1,6 +1,20 @@
 import { prisma } from '@/lib/prisma';
 import { SITE_URL } from '@/lib/seo';
 
+interface EpisodeWithCategory {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  audioUrl: string | null;
+  videoUrl: string | null;
+  thumbnailUrl: string | null;
+  publishedAt: Date | null;
+  createdAt: Date;
+  duration: number | null;
+  category: { name: string } | null;
+}
+
 export const revalidate = 3600; // Revalidate every hour
 
 export async function GET() {
@@ -28,7 +42,7 @@ export async function GET() {
     orderBy: { publishedAt: 'desc' },
     take: 100,
     include: { category: true }
-  });
+  }) as unknown as EpisodeWithCategory[];
 
   const feedItems = episodes.map(episode => {
     // Use audio URL if available, otherwise construct from video

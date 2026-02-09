@@ -8,6 +8,32 @@ import { getStreakData, getUserXP } from '@/lib/gamification';
 import { checkContentAccess } from '@/lib/access';
 import { SITE_URL } from '@/lib/seo';
 
+interface PathItem {
+  id: string;
+  order: number;
+  isCompleted: boolean;
+  completedAt: Date | null;
+  content: {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    type: string;
+    thumbnailUrl: string | null;
+    duration: number | null;
+    category: { name: string } | null;
+  };
+}
+
+interface PathWithItems {
+  id: string;
+  title: string;
+  description: string | null;
+  totalItems: number;
+  completed: number;
+  items: PathItem[];
+}
+
 export const metadata: Metadata = {
   title: 'Your Learning Path',
   description: 'Your personalized wildlife photography learning journey. Track progress, complete lessons, and level up your skills.',
@@ -29,12 +55,14 @@ export default async function LearnPage() {
     redirect('/join?reason=premium');
   }
 
-  const [path, progress, streak, xp] = await Promise.all([
+  const [pathResult, progress, streak, xp] = await Promise.all([
     getOrCreateLearningPath(session.user.id),
     getLearningPathProgress(session.user.id),
     getStreakData(session.user.id),
     getUserXP(session.user.id)
   ]);
+  
+  const path = pathResult as unknown as PathWithItems;
 
   const completedItems = path.items.filter(i => i.isCompleted);
   const nextItem = path.items.find(i => !i.isCompleted);

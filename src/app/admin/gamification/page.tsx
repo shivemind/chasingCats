@@ -5,36 +5,40 @@ export const metadata = {
   title: 'Gamification | Admin'
 };
 
+interface StreakWithUser {
+  id: string;
+  currentStreak: number;
+  user: { name: string | null; email: string | null };
+}
+
+interface XPWithUser {
+  id: string;
+  totalXP: number;
+  level: number;
+  user: { name: string | null; email: string | null };
+}
+
 export default async function AdminGamificationPage() {
   // Get gamification stats
-  const [
-    totalStreaks,
-    activeStreaks,
-    totalMissions,
-    completedMissions,
-    claimedMissions,
-    totalXP,
-    topStreakers,
-    topEarners
-  ] = await Promise.all([
-    prisma.userStreak.count(),
-    prisma.userStreak.count({ where: { currentStreak: { gt: 0 } } }),
-    prisma.userMission.count({ where: { expiresAt: { gte: new Date() } } }),
-    prisma.userMission.count({ where: { isCompleted: true, expiresAt: { gte: new Date() } } }),
-    prisma.userMission.count({ where: { isClaimed: true, expiresAt: { gte: new Date() } } }),
-    prisma.userXP.aggregate({ _sum: { totalXP: true } }),
-    prisma.userStreak.findMany({
-      where: { currentStreak: { gt: 0 } },
-      orderBy: { currentStreak: 'desc' },
-      take: 10,
-      include: { user: { select: { name: true, email: true } } }
-    }),
-    prisma.userXP.findMany({
-      orderBy: { totalXP: 'desc' },
-      take: 10,
-      include: { user: { select: { name: true, email: true } } }
-    })
-  ]);
+  const totalStreaks = await prisma.userStreak.count();
+  const activeStreaks = await prisma.userStreak.count({ where: { currentStreak: { gt: 0 } } });
+  const totalMissions = await prisma.userMission.count({ where: { expiresAt: { gte: new Date() } } });
+  const completedMissions = await prisma.userMission.count({ where: { isCompleted: true, expiresAt: { gte: new Date() } } });
+  const claimedMissions = await prisma.userMission.count({ where: { isClaimed: true, expiresAt: { gte: new Date() } } });
+  const totalXP = await prisma.userXP.aggregate({ _sum: { totalXP: true } });
+  
+  const topStreakers: StreakWithUser[] = await prisma.userStreak.findMany({
+    where: { currentStreak: { gt: 0 } },
+    orderBy: { currentStreak: 'desc' },
+    take: 10,
+    include: { user: { select: { name: true, email: true } } }
+  }) as unknown as StreakWithUser[];
+
+  const topEarners: XPWithUser[] = await prisma.userXP.findMany({
+    orderBy: { totalXP: 'desc' },
+    take: 10,
+    include: { user: { select: { name: true, email: true } } }
+  }) as unknown as XPWithUser[];
 
   return (
     <div>
