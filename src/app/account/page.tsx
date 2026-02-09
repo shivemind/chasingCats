@@ -83,6 +83,28 @@ async function getContentByCategory(categorySlug: string, take: number = 6) {
   });
 }
 
+async function getLatestContent(take: number = 6) {
+  return prisma.content.findMany({
+    where: {
+      publishedAt: { not: null },
+    },
+    orderBy: { publishedAt: 'desc' },
+    take,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      thumbnailUrl: true,
+      duration: true,
+      type: true,
+      publishedAt: true,
+      category: {
+        select: { name: true }
+      }
+    },
+  });
+}
+
 export default async function AccountPage() {
   const session = await auth();
 
@@ -90,11 +112,12 @@ export default async function AccountPage() {
     redirect('/login?callbackUrl=/account');
   }
 
-  const [user, nextTalk, expertsContent, fieldContent] = await Promise.all([
+  const [user, nextTalk, expertsContent, fieldContent, latestContent] = await Promise.all([
     getAccountData(session.user.id),
     getNextTalk(),
     getContentByCategory('experts', 6),
     getContentByCategory('field', 6),
+    getLatestContent(6),
   ]);
 
   if (!user) {
@@ -169,12 +192,24 @@ export default async function AccountPage() {
     duration: c.duration ? `${c.duration} min` : undefined,
   }));
 
+  const dashboardLatest = latestContent.map(c => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+    thumbnail: c.thumbnailUrl,
+    duration: c.duration ? `${c.duration} min` : undefined,
+    type: c.type,
+    category: c.category?.name,
+    publishedAt: c.publishedAt,
+  }));
+
   return (
     <AnimatedDashboard 
       user={dashboardUser} 
       nextTalk={dashboardNextTalk}
       expertsContent={dashboardExperts}
       fieldContent={dashboardField}
+      latestContent={dashboardLatest}
     />
   );
 }

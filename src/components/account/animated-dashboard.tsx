@@ -60,6 +60,16 @@ interface DashboardProps {
     author?: string;
     duration?: string;
   }>;
+  latestContent?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    thumbnail?: string | null;
+    duration?: string;
+    type: string;
+    category?: string | null;
+    publishedAt: Date | null;
+  }>;
 }
 
 // Floating particle component
@@ -214,8 +224,21 @@ function StatCard({ icon, value, label, color, glowColor, delay }: {
   );
 }
 
+// Format relative time
+function formatRelativeTime(date: Date | null): string {
+  if (!date) return '';
+  const now = new Date();
+  const diff = now.getTime() - new Date(date).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days} days ago`;
+  if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`;
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 // Main dashboard component
-export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldContent = [] }: DashboardProps) {
+export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldContent = [], latestContent = [] }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -322,6 +345,83 @@ export function AnimatedDashboard({ user, nextTalk, expertsContent = [], fieldCo
               viewAllHref="/field"
               accentColor="purple"
             />
+          </div>
+        )}
+
+        {/* Latest from the Team */}
+        {latestContent.length > 0 && (
+          <div className="mb-6 sm:mb-8">
+            <section className="rounded-2xl border border-cat-eye/30 bg-gradient-to-br from-cat-eye/5 to-transparent p-4 sm:p-6 backdrop-blur-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-cat-eye/20">
+                    <span className="text-xl sm:text-2xl">✨</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-white">Latest from the Team</h3>
+                    <p className="text-xs sm:text-sm text-gray-400">Recently uploaded content from our experts</p>
+                  </div>
+                </div>
+                <Link 
+                  href="/content" 
+                  className="text-sm font-semibold text-cat-eye hover:underline self-start sm:self-auto"
+                >
+                  View All →
+                </Link>
+              </div>
+              
+              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {latestContent.slice(0, 6).map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/${item.slug}`}
+                    className="group flex gap-3 sm:gap-4 rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 transition-all hover:border-cat-eye/40 hover:bg-white/10"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative h-16 w-24 sm:h-20 sm:w-28 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-cat-eye/20 to-neon-purple/20">
+                      {item.thumbnail ? (
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white/30" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm6.5 5L16 12l-5.5 3V9z" />
+                          </svg>
+                        </div>
+                      )}
+                      {item.duration && (
+                        <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white">
+                          {item.duration}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex flex-col justify-center min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm font-medium text-white line-clamp-2 group-hover:text-cat-eye transition-colors">
+                        {item.title}
+                      </p>
+                      <div className="mt-1 sm:mt-2 flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/60">
+                          {item.type}
+                        </span>
+                        {item.publishedAt && (
+                          <span className="text-[10px] text-white/40">
+                            {formatRelativeTime(item.publishedAt)}
+                          </span>
+                        )}
+                      </div>
+                      {item.category && (
+                        <p className="mt-1 text-[10px] text-cat-eye/70 truncate">{item.category}</p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
           </div>
         )}
 
