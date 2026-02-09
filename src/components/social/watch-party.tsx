@@ -155,8 +155,9 @@ export function WatchPartySidebar({ party, onLeave }: { party: WatchParty; onLea
     setMessage('');
   };
 
-  const sendReaction = (_emoji: string) => {
+  const sendReaction = (emoji: string) => {
     // Send reaction logic - to be implemented
+    console.log('Reaction:', emoji);
   };
 
   return (

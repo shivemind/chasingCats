@@ -29,8 +29,6 @@ interface CollaborationRoom {
 
 // Room card for listing
 export function CollaborationRoomCard({ room, onJoin }: { room: CollaborationRoom; onJoin: () => void }) {
-  const isScheduled = !room.isLive && room.scheduledFor;
-
   return (
     <div className="rounded-2xl border border-white/10 bg-deep-space/50 overflow-hidden hover:border-white/20 transition-colors">
       {/* Header */}

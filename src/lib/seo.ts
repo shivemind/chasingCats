@@ -90,11 +90,13 @@ export function generateVideoSchema({
   duration,
   publishedAt,
 }: VideoSchemaProps) {
+  const fullUrl = url.startsWith('http') ? url : `${siteUrl}${url}`;
   return {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name: title,
     description,
+    url: fullUrl,
     thumbnailUrl: thumbnailUrl ? (thumbnailUrl.startsWith('http') ? thumbnailUrl : `${siteUrl}${thumbnailUrl}`) : `${siteUrl}/og-image.svg`,
     contentUrl: videoUrl,
     embedUrl: videoUrl,
