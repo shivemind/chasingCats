@@ -7,6 +7,10 @@ import { generateEventSchema, generateBreadcrumbSchema } from '@/lib/seo';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
 
+// Enable ISR - revalidate every 60 seconds for new events
+export const revalidate = 60;
+export const dynamicParams = true;
+
 // Pre-render all event pages at build time
 export async function generateStaticParams() {
   const events = await prisma.event.findMany({
