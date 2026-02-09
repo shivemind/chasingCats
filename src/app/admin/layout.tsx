@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { AdminMobileNav } from '@/components/admin/mobile-nav';
 
 export default async function AdminLayout({
   children,
@@ -26,8 +27,11 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-midnight">
-      {/* Admin Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/10 bg-deep-space">
+      {/* Mobile Header */}
+      <AdminMobileNav />
+
+      {/* Admin Sidebar - Hidden on mobile */}
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-white/10 bg-deep-space lg:block">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-white/10 px-6">
             <Link href="/admin" className="flex items-center gap-2">
@@ -78,8 +82,8 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 min-h-screen">
-        <div className="p-8">
+      <main className="min-h-screen pt-16 lg:ml-64 lg:pt-0">
+        <div className="p-4 sm:p-6 lg:p-8">
           {children}
         </div>
       </main>

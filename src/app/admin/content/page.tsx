@@ -13,20 +13,66 @@ export default async function AdminContentPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Content Management</h1>
-          <p className="mt-2 text-white/60">Create and manage videos, articles, talks, and courses</p>
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">Content Management</h1>
+          <p className="mt-1 text-sm text-white/60 sm:mt-2 sm:text-base">Create and manage videos, articles, talks, and courses</p>
         </div>
         <Link
           href="/admin/content/new"
-          className="rounded-xl bg-gradient-to-r from-neon-cyan to-brand px-6 py-3 text-sm font-semibold text-night transition hover:shadow-glow"
+          className="rounded-xl bg-gradient-to-r from-neon-cyan to-brand px-4 py-2.5 text-center text-sm font-semibold text-night transition hover:shadow-glow sm:px-6 sm:py-3"
         >
           + Add Content
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      {/* Mobile card view */}
+      <div className="space-y-3 lg:hidden">
+        {contents.map((content) => (
+          <div key={content.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-white truncate">{content.title}</p>
+                <p className="text-xs text-white/50 truncate">{content.slug}</p>
+              </div>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                content.type === 'VIDEO' ? 'bg-neon-purple/20 text-neon-purple' :
+                content.type === 'TALK' ? 'bg-neon-cyan/20 text-neon-cyan' :
+                content.type === 'COURSE' ? 'bg-accent/20 text-accent' :
+                content.type === 'ARTICLE' ? 'bg-brand/20 text-brand-light' :
+                'bg-white/10 text-white/70'
+              }`}>
+                {content.type}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
+              <span className="text-xs text-white/50">
+                {content.publishedAt 
+                  ? new Date(content.publishedAt).toLocaleDateString()
+                  : <span className="text-accent">Draft</span>
+                }
+              </span>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/content/${content.id}`}
+                  className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+                >
+                  Edit
+                </Link>
+                <DeleteContentButton contentId={content.id} contentTitle={content.title} />
+              </div>
+            </div>
+          </div>
+        ))}
+        {contents.length === 0 && (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center">
+            <p className="text-white/50">No content yet. Create your first piece of content!</p>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden rounded-2xl border border-white/10 bg-white/5 overflow-hidden lg:block">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10 bg-white/5">

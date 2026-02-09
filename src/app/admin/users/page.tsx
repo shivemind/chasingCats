@@ -31,12 +31,12 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Users</h1>
-        <p className="mt-2 text-white/50">Manage user accounts and roles</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">Users</h1>
+        <p className="mt-1 text-sm text-white/50 sm:mt-2 sm:text-base">Manage user accounts and roles</p>
       </div>
 
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
+      <div className="mb-6 grid gap-3 grid-cols-3 sm:gap-4">
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
           <div className="text-2xl font-bold text-white">{users.length}</div>
           <div className="text-sm text-white/50">Total Users</div>
@@ -55,7 +55,34 @@ export default async function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      {/* Mobile card view */}
+      <div className="space-y-3 lg:hidden">
+        {users.map((user) => (
+          <div key={user.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="font-medium text-white">{user.name ?? 'No name'}</p>
+                <p className="text-sm text-white/50">{user.email}</p>
+              </div>
+              <UserRoleSelect userId={user.id} currentRole={user.role} />
+            </div>
+            <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
+              <span className="text-xs text-white/50">
+                Joined {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+              <DeleteUserButton userId={user.id} userName={user.name} />
+            </div>
+          </div>
+        ))}
+        {users.length === 0 && (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-white/50">
+            No users found.
+          </div>
+        )}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden rounded-2xl border border-white/10 bg-white/5 overflow-hidden lg:block">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10 text-left text-sm text-white/50">
@@ -92,7 +119,7 @@ export default async function AdminUsersPage() {
             ))}
             {users.length === 0 && (
               <tr>
-              <td colSpan={6} className="px-6 py-12 text-center text-white/50">
+                <td colSpan={6} className="px-6 py-12 text-center text-white/50">
                   No users found.
                 </td>
               </tr>
