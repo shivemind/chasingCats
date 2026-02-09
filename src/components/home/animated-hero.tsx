@@ -156,9 +156,9 @@ export function AnimatedHero() {
 
         {/* Title with gradient animation */}
         <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
-          <span className="block text-white">Master Wildlife</span>
+          <span className="block text-white">Community for</span>
           <span className="block bg-gradient-to-r from-neon-cyan via-brand to-neon-purple bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
-            Photography
+            Cat Lovers
           </span>
         </h1>
 
