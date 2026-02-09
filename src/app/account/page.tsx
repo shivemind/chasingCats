@@ -41,7 +41,7 @@ async function getAccountData(userId: string): Promise<UserWithRelations | null>
         take: 5
       }
     }
-  }) as Promise<UserWithRelations | null>;
+  }) as unknown as Promise<UserWithRelations | null>;
 }
 
 async function getNextTalk() {

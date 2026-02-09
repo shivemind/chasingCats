@@ -22,7 +22,7 @@ export default async function AskPage() {
       },
       orderBy: { createdAt: 'desc' },
       take: 6
-    }) as Promise<QuestionWithAuthor[]>
+    }) as unknown as Promise<QuestionWithAuthor[]>
   ]);
 
   return (
