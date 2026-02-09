@@ -9,7 +9,7 @@ export default async function AdminContentPage() {
   const contents = await prisma.content.findMany({
     orderBy: { createdAt: 'desc' },
     include: { category: true }
-  }) as ContentWithCategory[];
+  }) as unknown as ContentWithCategory[];
 
   return (
     <div>

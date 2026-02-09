@@ -60,7 +60,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
         take: userId ? 1 : 0
       }
     }
-  }) as ContentWithRelations | null;
+  }) as unknown as ContentWithRelations | null;
 
   if (!content) {
     notFound();

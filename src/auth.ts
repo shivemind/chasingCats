@@ -121,7 +121,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               take: 1,
             },
           },
-        }) as UserWithMemberships | null;
+        }) as unknown as UserWithMemberships | null;
         
         if (dbUser) {
           t.role = dbUser.role;
@@ -138,7 +138,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 take: 1,
               },
             },
-          }) as UserWithMemberships | null;
+          }) as unknown as UserWithMemberships | null;
           
           if (dbUser) {
             t.role = dbUser.role;

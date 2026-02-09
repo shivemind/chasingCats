@@ -27,7 +27,7 @@ export default async function AdminUsersPage() {
         }
       }
     }
-  }) as UserWithCount[];
+  }) as unknown as UserWithCount[];
 
   return (
     <div>

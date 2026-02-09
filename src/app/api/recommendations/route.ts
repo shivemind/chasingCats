@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         include: { content: { include: { category: true } } },
         take: 20,
         orderBy: { updatedAt: 'desc' },
-      }) as WatchStatusWithContent[];
+      }) as unknown as WatchStatusWithContent[];
 
       watchedContentIds = watchHistory.map(w => w.contentId);
       watchedCategories = watchHistory
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       const current = await prisma.content.findUnique({
         where: { id: contentId },
         include: { category: true },
-      }) as ContentWithCategory | null;
+      }) as unknown as ContentWithCategory | null;
 
       if (current) {
         // Get content in same category

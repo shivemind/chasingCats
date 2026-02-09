@@ -31,7 +31,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
       category: true
     },
     orderBy: { publishedAt: 'desc' }
-  }) as ContentWithCategory[];
+  }) as unknown as ContentWithCategory[];
 
   const categories = await prisma.category.findMany({
     orderBy: { name: 'asc' }
