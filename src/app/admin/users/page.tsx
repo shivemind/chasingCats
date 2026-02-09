@@ -1,6 +1,16 @@
 import { prisma } from '@/lib/prisma';
 import { UserRoleSelect } from '@/components/admin/user-role-select';
 import { DeleteUserButton } from '@/components/admin/delete-user-button';
+import type { UserRole } from '@prisma/client';
+
+type UserWithCount = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  role: UserRole;
+  createdAt: Date;
+  _count: { memberships: number };
+};
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
@@ -17,7 +27,7 @@ export default async function AdminUsersPage() {
         }
       }
     }
-  });
+  }) as UserWithCount[];
 
   return (
     <div>
