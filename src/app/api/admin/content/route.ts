@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { ContentType, SkillLevel } from '@prisma/client';
+import { autoPostEvent } from '@/lib/echoatlas/social';
 
 const contentSchema = z.object({
   title: z.string().min(1).max(200),
@@ -72,6 +73,15 @@ export async function POST(request: Request) {
         featured: data.featured ?? false,
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : null
       }
+    });
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel.app';
+    autoPostEvent({
+      eventType: 'new_content',
+      title: `New content published: ${content.title}`,
+      body: `${data.type} "${data.title}" was published on Chasing Cats Club.`,
+      url: `${siteUrl}/${content.slug}`,
+      metadata: { type: data.type, species: data.species, topic: data.topic },
     });
 
     return NextResponse.json(content);
