@@ -117,10 +117,17 @@ function getBaseUrl(request: NextRequest): string {
   return `${proto}://${host}`;
 }
 
+function normalizeBaseUrl(value: string): string {
+  const trimmed = value.trim();
+  return trimmed.replace(/\/+$/, '');
+}
+
 // --- Middleware ---
 
 export function middleware(request: NextRequest) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || getBaseUrl(request);
+  const siteUrl = normalizeBaseUrl(
+    process.env.NEXT_PUBLIC_SITE_URL || getBaseUrl(request),
+  );
 
   // API routes: security headers only, no bot logic
   if (request.nextUrl.pathname.startsWith('/api/')) {
