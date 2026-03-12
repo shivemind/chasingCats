@@ -1,0 +1,2050 @@
+openapi: 3.0.3
+info:
+  title: ChasingCats API
+  version: 1.0.0
+  description: |
+    REST API for the Chasing Cats Club platform — a cat-enthusiast social community
+    with content discovery, gamification, AI chat, and subscription management.
+  contact:
+    name: ShiveMind
+    url: https://github.com/shivemind/chasingCats
+  license:
+    name: MIT
+
+servers:
+  - url: https://chasing-cats.vercel.app
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+
+tags:
+  - name: Feed
+    description: Social feed — posts, comments, reactions
+  - name: Auth
+    description: Authentication, registration, profile management
+  - name: Content
+    description: Content discovery, search, recommendations, learning paths
+  - name: Social
+    description: Gamification — achievements, streaks, XP, missions, challenges
+  - name: Admin
+    description: Admin-only content, user, event, and challenge management
+  - name: Payments
+    description: Stripe checkout, portal, plan changes, webhooks
+  - name: System
+    description: Cron jobs, push notifications, upload, agent API, chat, digest
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: NextAuth session cookie
+    cronSecret:
+      type: http
+      scheme: bearer
+      description: CRON_SECRET env var for scheduled jobs
+    stripeSignature:
+      type: apiKey
+      in: header
+      name: stripe-signature
+      description: Stripe webhook signature
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+          nullable: true
+        profile:
+          type: object
+          nullable: true
+          properties:
+            username:
+              type: string
+            photoUrl:
+              type: string
+              nullable: true
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        authorId:
+          type: string
+        author:
+          $ref: '#/components/schemas/Author'
+        _count:
+          type: object
+          properties:
+            comments:
+              type: integer
+            reactions:
+              type: integer
+        reactionCounts:
+          type: object
+          properties:
+            purrs:
+              type: integer
+            roars:
+              type: integer
+        userReaction:
+          type: string
+          nullable: true
+          enum: [PURR, ROAR, null]
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        postId:
+          type: string
+        author:
+          $ref: '#/components/schemas/Author'
+
+    ContentItem:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        excerpt:
+          type: string
+        type:
+          type: string
+          enum: [VIDEO, ARTICLE, GUIDE, RESOURCE]
+        thumbnailUrl:
+          type: string
+          nullable: true
+        duration:
+          type: integer
+          nullable: true
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [content, event, system]
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        link:
+          type: string
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+paths:
+  # ── Feed ───────────────────────────────────────────────────────────
+  /api/feed:
+    get:
+      operationId: listFeedPosts
+      tags: [Feed]
+      summary: List feed posts
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+      responses:
+        '200':
+          description: Paginated feed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  nextCursor:
+                    type: string
+    post:
+      operationId: createFeedPost
+      tags: [Feed]
+      summary: Create a new post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                imageUrl:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/feed/{postId}:
+    get:
+      operationId: getFeedPost
+      tags: [Feed]
+      summary: Get a single post with comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Post with comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteFeedPost
+      tags: [Feed]
+      summary: Delete a post (author or admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/feed/{postId}/reactions:
+    post:
+      operationId: reactToPost
+      tags: [Feed]
+      summary: React to a post (toggle purr/roar)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type:
+                  type: string
+                  enum: [PURR, ROAR]
+      responses:
+        '200':
+          description: Updated reaction state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userReaction:
+                    type: string
+                    nullable: true
+                  reactionCounts:
+                    type: object
+                    properties:
+                      purrs:
+                        type: integer
+                      roars:
+                        type: integer
+
+  /api/feed/{postId}/comments:
+    get:
+      operationId: listPostComments
+      tags: [Feed]
+      summary: List comments on a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comments list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+    post:
+      operationId: createPostComment
+      tags: [Feed]
+      summary: Add a comment to a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+      responses:
+        '200':
+          description: Created comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+  # ── Auth ───────────────────────────────────────────────────────────
+  /api/register:
+    post:
+      operationId: registerUser
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, username]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                username:
+                  type: string
+                  minLength: 2
+      responses:
+        '200':
+          description: Registered user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+
+  /api/auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [Auth]
+      summary: Request a password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset email sent (if account exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [Auth]
+      summary: Reset password with token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/auth/role:
+    get:
+      operationId: getUserRole
+      tags: [Auth]
+      summary: Get current user role
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    type: string
+                    enum: [MEMBER, ADMIN]
+
+  /api/profile:
+    post:
+      operationId: updateProfile
+      tags: [Auth]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+                  minLength: 2
+                bio:
+                  type: string
+                location:
+                  type: string
+                favoriteCat:
+                  type: string
+                instagram:
+                  type: string
+                website:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+
+  # ── Content ────────────────────────────────────────────────────────
+  /api/search:
+    get:
+      operationId: searchContent
+      tags: [Content]
+      summary: Search content and events
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        slug:
+                          type: string
+                        host:
+                          type: string
+
+  /api/recommendations:
+    get:
+      operationId: getRecommendations
+      tags: [Content]
+      summary: Get personalized content recommendations
+      parameters:
+        - name: contentId
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 4
+      responses:
+        '200':
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        slug:
+                          type: string
+                        thumbnailUrl:
+                          type: string
+                          nullable: true
+                        excerpt:
+                          type: string
+                        duration:
+                          type: integer
+                          nullable: true
+                        matchReason:
+                          type: string
+                        matchScore:
+                          type: number
+
+  /api/progress/{contentId}:
+    get:
+      operationId: getContentProgress
+      tags: [Content]
+      summary: Get progress for a content item
+      parameters:
+        - name: contentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Progress data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  progress:
+                    type: object
+                    nullable: true
+                    properties:
+                      contentId:
+                        type: string
+                      progress:
+                        type: number
+                      lastPosition:
+                        type: number
+                      completedAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+    post:
+      operationId: updateContentProgress
+      tags: [Content]
+      summary: Update progress for a content item
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [progress, lastPosition]
+              properties:
+                progress:
+                  type: number
+                lastPosition:
+                  type: number
+                completedAt:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Updated progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  progress:
+                    type: object
+
+  /api/learning-path:
+    get:
+      operationId: getLearningPath
+      tags: [Content]
+      summary: Get the user's personalised learning path
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Learning path with items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      description:
+                        type: string
+                        nullable: true
+                      totalItems:
+                        type: integer
+                      completed:
+                        type: integer
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            order:
+                              type: integer
+                            isCompleted:
+                              type: boolean
+                            content:
+                              $ref: '#/components/schemas/ContentItem'
+    post:
+      operationId: regenerateLearningPath
+      tags: [Content]
+      summary: Regenerate the learning path
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: New learning path
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  path:
+                    type: object
+
+  /api/learning-path/complete:
+    post:
+      operationId: completeLearningItem
+      tags: [Content]
+      summary: Mark a learning path item as complete
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [contentId]
+              properties:
+                contentId:
+                  type: string
+      responses:
+        '200':
+          description: Completion progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  completed:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  progress:
+                    type: number
+
+  /api/watch:
+    post:
+      operationId: toggleWatch
+      tags: [Content]
+      summary: Mark content as watched/unwatched
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [contentId, watched]
+              properties:
+                contentId:
+                  type: string
+                watched:
+                  type: boolean
+      responses:
+        '200':
+          description: Watch record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+
+  # ── Social ─────────────────────────────────────────────────────────
+  /api/achievements:
+    get:
+      operationId: getAchievements
+      tags: [Social]
+      summary: Get user achievements and progress
+      responses:
+        '200':
+          description: Achievements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  achievements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        badgeId:
+                          type: string
+                        earnedAt:
+                          type: string
+                          format: date-time
+                  progress:
+                    type: object
+                    additionalProperties:
+                      type: number
+    post:
+      operationId: claimAchievement
+      tags: [Social]
+      summary: Claim an achievement badge
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [badgeId]
+              properties:
+                badgeId:
+                  type: string
+      responses:
+        '200':
+          description: Claimed badge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  badge:
+                    type: object
+                    properties:
+                      badgeId:
+                        type: string
+                      earnedAt:
+                        type: string
+                        format: date-time
+
+  /api/streaks:
+    get:
+      operationId: getStreaks
+      tags: [Social]
+      summary: Get current streak info
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Streak data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentStreak:
+                    type: integer
+                  longestStreak:
+                    type: integer
+                  lastActiveDate:
+                    type: string
+    post:
+      operationId: updateStreak
+      tags: [Social]
+      summary: Check in and update streak
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Updated streak
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/xp:
+    get:
+      operationId: getXP
+      tags: [Social]
+      summary: Get user XP and level
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: XP data
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/missions:
+    get:
+      operationId: getMissions
+      tags: [Social]
+      summary: Get available missions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Mission list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  missions:
+                    type: array
+                    items:
+                      type: object
+
+  /api/missions/{id}/claim:
+    post:
+      operationId: claimMissionReward
+      tags: [Social]
+      summary: Claim a mission reward
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reward claimed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/challenges/entries:
+    post:
+      operationId: submitChallengeEntry
+      tags: [Social]
+      summary: Submit a challenge entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [challengeId, imageUrl]
+              properties:
+                challengeId:
+                  type: string
+                title:
+                  type: string
+                caption:
+                  type: string
+                imageUrl:
+                  type: string
+      responses:
+        '201':
+          description: Entry created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/challenges/vote:
+    post:
+      operationId: voteChallengeEntry
+      tags: [Social]
+      summary: Vote for a challenge entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entryId]
+              properties:
+                entryId:
+                  type: string
+      responses:
+        '201':
+          description: Vote recorded
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/notifications:
+    get:
+      operationId: getNotifications
+      tags: [Social]
+      summary: Get user notifications
+      responses:
+        '200':
+          description: Notifications list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+
+  # ── Admin ──────────────────────────────────────────────────────────
+  /api/admin/content:
+    post:
+      operationId: createContent
+      tags: [Admin]
+      summary: Create content (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, slug, excerpt, body, type]
+              properties:
+                title:
+                  type: string
+                slug:
+                  type: string
+                excerpt:
+                  type: string
+                body:
+                  type: string
+                type:
+                  type: string
+                  enum: [VIDEO, ARTICLE, GUIDE, RESOURCE]
+                thumbnailUrl:
+                  type: string
+                videoUrl:
+                  type: string
+                duration:
+                  type: integer
+                level:
+                  type: string
+                featured:
+                  type: boolean
+      responses:
+        '200':
+          description: Created content
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/{id}:
+    put:
+      operationId: updateContent
+      tags: [Admin]
+      summary: Update content (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                slug:
+                  type: string
+                excerpt:
+                  type: string
+                body:
+                  type: string
+                type:
+                  type: string
+                  enum: [VIDEO, ARTICLE, GUIDE, RESOURCE]
+      responses:
+        '200':
+          description: Updated content
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      operationId: deleteContent
+      tags: [Admin]
+      summary: Delete content (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/events:
+    post:
+      operationId: createEvent
+      tags: [Admin]
+      summary: Create an event (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, slug, description, startTime, location, host]
+              properties:
+                title:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                zoomLink:
+                  type: string
+                host:
+                  type: string
+      responses:
+        '200':
+          description: Created event
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/events/{id}:
+    put:
+      operationId: updateEvent
+      tags: [Admin]
+      summary: Update an event (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated event
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      operationId: deleteEvent
+      tags: [Admin]
+      summary: Delete an event (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/users/{id}:
+    patch:
+      operationId: updateUserRole
+      tags: [Admin]
+      summary: Update a user role (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [MEMBER, ADMIN]
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+    delete:
+      operationId: deleteUser
+      tags: [Admin]
+      summary: Delete a user (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/users/{id}/educational-pass:
+    post:
+      operationId: grantEducationalPass
+      tags: [Admin]
+      summary: Grant educational pass to a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pass granted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  educationalPassExpiry:
+                    type: string
+                    format: date-time
+                  message:
+                    type: string
+    delete:
+      operationId: revokeEducationalPass
+      tags: [Admin]
+      summary: Revoke educational pass
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pass revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/challenges:
+    get:
+      operationId: listChallengesAdmin
+      tags: [Admin]
+      summary: List all challenges (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Challenges list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+    post:
+      operationId: createChallenge
+      tags: [Admin]
+      summary: Create a photo challenge (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, slug, theme, description, startDate, endDate, votingEnd]
+              properties:
+                title:
+                  type: string
+                slug:
+                  type: string
+                theme:
+                  type: string
+                description:
+                  type: string
+                rules:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                votingEnd:
+                  type: string
+                  format: date-time
+                featured:
+                  type: boolean
+      responses:
+        '201':
+          description: Challenge created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/challenges/{id}:
+    patch:
+      operationId: updateChallenge
+      tags: [Admin]
+      summary: Update a challenge (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                featured:
+                  type: boolean
+      responses:
+        '200':
+          description: Updated challenge
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      operationId: deleteChallenge
+      tags: [Admin]
+      summary: Delete a challenge (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/challenges/entries/{id}:
+    delete:
+      operationId: deleteChallengeEntry
+      tags: [Admin]
+      summary: Delete a challenge entry (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/admin/questions/{id}:
+    put:
+      operationId: answerQuestion
+      tags: [Admin]
+      summary: Answer or update a question (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: string
+                status:
+                  type: string
+                  enum: [PENDING, ANSWERED, ARCHIVED]
+      responses:
+        '200':
+          description: Updated question
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      operationId: deleteQuestion
+      tags: [Admin]
+      summary: Delete a question (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  # ── Payments ───────────────────────────────────────────────────────
+  /api/stripe/checkout:
+    post:
+      operationId: createCheckout
+      tags: [Payments]
+      summary: Create a Stripe checkout session
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan]
+              properties:
+                plan:
+                  type: string
+                  enum: [monthly, annual]
+      responses:
+        '200':
+          description: Checkout URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+
+  /api/stripe/portal:
+    post:
+      operationId: createBillingPortal
+      tags: [Payments]
+      summary: Create a Stripe billing portal session
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Portal URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+
+  /api/stripe/change-plan:
+    post:
+      operationId: changePlan
+      tags: [Payments]
+      summary: Change subscription plan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan]
+              properties:
+                plan:
+                  type: string
+                  enum: [monthly, annual]
+      responses:
+        '200':
+          description: Plan changed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  plan:
+                    type: string
+                  currentPeriodEnd:
+                    type: string
+                    format: date-time
+
+  /api/stripe/webhook:
+    post:
+      operationId: stripeWebhook
+      tags: [Payments]
+      summary: Stripe webhook receiver
+      security:
+        - stripeSignature: []
+      responses:
+        '200':
+          description: Webhook processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+
+  # ── System ─────────────────────────────────────────────────────────
+  /api/agent:
+    get:
+      operationId: agentQuery
+      tags: [System]
+      summary: Agent-friendly content search
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 5
+            maximum: 20
+      responses:
+        '200':
+          description: Search results for AI agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      type: object
+                  events:
+                    type: array
+                    items:
+                      type: object
+                  _links:
+                    type: object
+                  _meta:
+                    type: object
+    post:
+      operationId: agentQueryPost
+      tags: [System]
+      summary: Agent-friendly content search (POST)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                page:
+                  type: integer
+                limit:
+                  type: integer
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/chat:
+    get:
+      operationId: getChatHistory
+      tags: [System]
+      summary: Get chat session history
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+    post:
+      operationId: sendChatMessage
+      tags: [System]
+      summary: Send a chat message to AI assistant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                sessionId:
+                  type: string
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  sessionId:
+                    type: string
+
+  /api/upload:
+    post:
+      operationId: uploadFile
+      tags: [System]
+      summary: Upload an image or video
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Upload result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                  type:
+                    type: string
+                    enum: [image, video]
+                  size:
+                    type: integer
+                  name:
+                    type: string
+
+  /api/questions:
+    post:
+      operationId: askQuestion
+      tags: [System]
+      summary: Submit a question
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                  minLength: 10
+                contentId:
+                  type: string
+                eventId:
+                  type: string
+      responses:
+        '200':
+          description: Question submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+
+  /api/digest/preferences:
+    get:
+      operationId: getDigestPreferences
+      tags: [System]
+      summary: Get digest email preferences
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Digest preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  frequency:
+                    type: string
+                    enum: [WEEKLY, DAILY, NONE]
+                  includeNewContent:
+                    type: boolean
+                  includeChallenges:
+                    type: boolean
+                  includeTips:
+                    type: boolean
+    put:
+      operationId: updateDigestPreferences
+      tags: [System]
+      summary: Update digest email preferences
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                frequency:
+                  type: string
+                  enum: [WEEKLY, DAILY, NONE]
+                includeNewContent:
+                  type: boolean
+                includeChallenges:
+                  type: boolean
+                includeTips:
+                  type: boolean
+      responses:
+        '200':
+          description: Updated preferences
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/push/subscribe:
+    get:
+      operationId: getVapidKey
+      tags: [System]
+      summary: Get VAPID public key for push notifications
+      responses:
+        '200':
+          description: VAPID key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vapidPublicKey:
+                    type: string
+    post:
+      operationId: subscribePush
+      tags: [System]
+      summary: Subscribe to push notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subscription]
+              properties:
+                subscription:
+                  type: object
+                  properties:
+                    endpoint:
+                      type: string
+                    keys:
+                      type: object
+                      properties:
+                        p256dh:
+                          type: string
+                        auth:
+                          type: string
+      responses:
+        '200':
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+    delete:
+      operationId: unsubscribePush
+      tags: [System]
+      summary: Unsubscribe from push notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint]
+              properties:
+                endpoint:
+                  type: string
+      responses:
+        '200':
+          description: Unsubscribed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /api/cron/digest:
+    get:
+      operationId: runDigestCron
+      tags: [System]
+      summary: Trigger digest email send (cron)
+      security:
+        - cronSecret: []
+      parameters:
+        - name: frequency
+          in: query
+          schema:
+            type: string
+            enum: [DAILY, WEEKLY]
+            default: WEEKLY
+      responses:
+        '200':
+          description: Digest results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  sent:
+                    type: integer
+                  failed:
+                    type: integer
+                  total:
+                    type: integer
+
+  /api/cron/check-expiring-passes:
+    get:
+      operationId: checkExpiringPasses
+      tags: [System]
+      summary: Check and notify expiring educational passes (cron)
+      security:
+        - cronSecret: []
+      responses:
+        '200':
+          description: Check results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  checked:
+                    type: integer
+                  emailsSent:
+                    type: integer
