@@ -15,7 +15,6 @@ env:
   K8S_DEPLOYMENT: "chasing-cats"
 
 jobs:
-  # ── Gate 1: Validate & Build ──────────────────────────────────────
   validate:
     name: "Gate 1: Validate & Build"
     runs-on: ubuntu-latest
@@ -32,7 +31,6 @@ jobs:
 
       - name: Prisma generate
         run: npx prisma generate
-        continue-on-error: true
 
       - name: TypeScript type-check
         run: npx tsc --noEmit
@@ -40,13 +38,11 @@ jobs:
 
       - name: Build
         run: npm run build
-        continue-on-error: true
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
 
-  # ── Gate 2: Deploy ────────────────────────────────────────────────
   deploy:
     name: "Gate 2: Deploy"
     needs: validate
@@ -84,21 +80,16 @@ jobs:
 
       - name: Build and push Docker image
         id: meta
-        continue-on-error: true
         env:
           REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            --build-arg DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-            --build-arg NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
-            --build-arg NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
             -t $REGISTRY/$ECR_REPO:$IMAGE_TAG -t $REGISTRY/$ECR_REPO:latest .
           docker push $REGISTRY/$ECR_REPO:$IMAGE_TAG
           docker push $REGISTRY/$ECR_REPO:latest
           echo "tags=$REGISTRY/$ECR_REPO:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
-  # ── Gate 3: Kubernetes Deploy ─────────────────────────────────────
   kubernetes-deploy:
     name: "Gate 3: Kubernetes (EKS)"
     needs: deploy
