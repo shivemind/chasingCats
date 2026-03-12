@@ -6,7 +6,7 @@ metadata:
   labels:
     app: chasing-cats
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: chasing-cats
@@ -26,6 +26,11 @@ spec:
           ports:
             - containerPort: 3000
               protocol: TCP
+          env:
+            - name: POSTMAN_INSIGHTS_WORKSPACE_ID
+              value: "a50959cb-b5b5-4e89-823d-a57e88f658f4"
+            - name: POSTMAN_INSIGHTS_SYSTEM_ENV
+              value: "936898ce-cf73-4feb-827e-8a0e9d5e695e"
           resources:
             requests:
               cpu: 100m
