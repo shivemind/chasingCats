@@ -28,14 +28,17 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chasing-cats.vercel
 
 // Pre-render all published content pages at build time
 export async function generateStaticParams() {
-  const contents = await prisma.content.findMany({
-    where: { publishedAt: { not: null } },
-    select: { slug: true },
-  });
-
-  return contents.map((content) => ({
-    slug: content.slug.split('/'),
-  }));
+  try {
+    const contents = await prisma.content.findMany({
+      where: { publishedAt: { not: null } },
+      select: { slug: true },
+    });
+    return contents.map((content) => ({
+      slug: content.slug.split('/'),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: ContentPageProps) {

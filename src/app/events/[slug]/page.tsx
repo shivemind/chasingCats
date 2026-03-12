@@ -14,13 +14,16 @@ export const dynamicParams = true;
 
 // Pre-render all event pages at build time
 export async function generateStaticParams() {
-  const events = await prisma.event.findMany({
-    select: { slug: true },
-  });
-
-  return events.map((event) => ({
-    slug: event.slug,
-  }));
+  try {
+    const events = await prisma.event.findMany({
+      select: { slug: true },
+    });
+    return events.map((event) => ({
+      slug: event.slug,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 interface EventPageProps {
