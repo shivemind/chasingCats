@@ -11,7 +11,7 @@ import type { Content, Category } from '@prisma/client';
  * Revalidates every hour to pick up new content.
  */
 
-export const revalidate = 3600; // Revalidate every hour
+export const dynamic = 'force-dynamic';
 
 type ContentWithCategory = Content & { category: Pick<Category, 'name'> | null };
 

@@ -15,7 +15,7 @@ interface EpisodeWithCategory {
   category: { name: string } | null;
 }
 
-export const revalidate = 3600; // Revalidate every hour
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   // Get podcast settings or use defaults

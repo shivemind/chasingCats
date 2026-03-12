@@ -21,21 +21,24 @@ import { SITE_URL } from '@/lib/seo';
  */
 
 // Revalidate sitemap every hour (3600 seconds)
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Get all published content with caching via Prisma Accelerate
-  const content = await prisma.content.findMany({
-    where: { publishedAt: { not: null } },
-    select: { slug: true, updatedAt: true, type: true },
-    orderBy: { publishedAt: 'desc' },
-  });
-
-  // Get all events
-  const events = await prisma.event.findMany({
-    select: { slug: true, updatedAt: true, startTime: true },
-    orderBy: { startTime: 'desc' },
-  });
+  let content: { slug: string; updatedAt: Date; type: string }[] = [];
+  let events: { slug: string; updatedAt: Date; startTime: Date }[] = [];
+  try {
+    content = await prisma.content.findMany({
+      where: { publishedAt: { not: null } },
+      select: { slug: true, updatedAt: true, type: true },
+      orderBy: { publishedAt: 'desc' },
+    });
+    events = await prisma.event.findMany({
+      select: { slug: true, updatedAt: true, startTime: true },
+      orderBy: { startTime: 'desc' },
+    });
+  } catch {
+    // DB unavailable during build -- return static pages only
+  }
 
   // Static pages with stable last modified dates
   // Update these dates when the actual page content changes
