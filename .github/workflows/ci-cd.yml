@@ -11,10 +11,13 @@ permissions:
 
 env:
   NODE_VERSION: "22"
+  SPEC_PATH: openapi/openapi.yaml
+  API_NAME: "ChasingCats API"
   ECR_REPO: "empire/chasing-cats"
   K8S_DEPLOYMENT: "chasing-cats"
 
 jobs:
+  # ── Gate 1: Validate ──────────────────────────────────────────────
   validate:
     name: "Gate 1: Validate & Build"
     runs-on: ubuntu-latest
@@ -32,6 +35,13 @@ jobs:
       - name: Prisma generate
         run: npx prisma generate
 
+      - name: YAML syntax check
+        run: npx yaml-lint ${{ env.SPEC_PATH }}
+
+      - name: Spectral OpenAPI lint
+        run: npx @stoplight/spectral-cli lint ${{ env.SPEC_PATH }} --fail-severity error
+        continue-on-error: true
+
       - name: TypeScript type-check
         run: npx tsc --noEmit
         continue-on-error: true
@@ -43,9 +53,38 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
 
-  deploy:
-    name: "Gate 2: Deploy"
+  # ── Gate 2: Postman Sync ──────────────────────────────────────────
+  postman-sync:
+    name: "Gate 2: Postman Sync"
     needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install tools
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Sync to Postman API Catalog
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
+          PRODUCTION_URL: https://chasing-cats.vercel.app
+          GITHUB_REPO_URL: https://github.com/${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          chmod +x scripts/sync-to-postman.sh
+          ./scripts/sync-to-postman.sh "${{ env.SPEC_PATH }}" "${{ env.API_NAME }}"
+
+  # ── Gate 3: Deploy ────────────────────────────────────────────────
+  deploy:
+    name: "Gate 3: Deploy"
+    needs: postman-sync
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
@@ -93,8 +132,9 @@ jobs:
           docker push $REGISTRY/$ECR_REPO:latest
           echo "tags=$REGISTRY/$ECR_REPO:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
+  # ── Gate 4: Kubernetes Deploy ─────────────────────────────────────
   kubernetes-deploy:
-    name: "Gate 3: Kubernetes (EKS)"
+    name: "Gate 4: Kubernetes (EKS)"
     needs: deploy
     if: ${{ vars.EKS_ENABLED == 'true' }}
     runs-on: ubuntu-latest
@@ -137,9 +177,10 @@ jobs:
         run: |
           kubectl get pods -n atlas-production -l app=${{ env.K8S_DEPLOYMENT }} -o wide
           echo "Kubernetes deployment updated successfully"
-  # -- Gate 4: Postman Collection Run ------------------------------
+
+  # ── Gate 5: Postman Collection Run ────────────────────────────────
   postman-collection-run:
-    name: "Gate 4: Postman Collection Run"
+    name: "Gate 5: Postman Collection Run"
     needs: deploy
     if: always() && needs.deploy.result == 'success'
     runs-on: ubuntu-latest
@@ -153,9 +194,9 @@ jobs:
       - name: Resolve Collection UID
         id: resolve
         run: |
-          COLL_UID=$(curl -sf "https://api.getpostman.com/collections?workspace=a50959cb-b5b5-4e89-823d-a57e88f658f4" \
+          COLL_UID=$(curl -sf "https://api.getpostman.com/collections?workspace=${{ secrets.POSTMAN_WORKSPACE_ID }}" \
             -H "x-api-key: ${{ secrets.POSTMAN_API_KEY }}" \
-            | jq -r '.collections[] | select(.name | contains("ChasingCats API")) | .uid' | head -1)
+            | jq -r '.collections[] | select(.name | contains("ChasingCats")) | .uid' | head -1)
           echo "collection_uid=$COLL_UID" >> $GITHUB_OUTPUT
           echo "Resolved collection: $COLL_UID"
 
@@ -171,3 +212,46 @@ jobs:
           echo "### Postman Collection Run - ChasingCats API" >> $GITHUB_STEP_SUMMARY
           echo "- **Collection**: ${{ steps.resolve.outputs.collection_uid }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+
+  # ── Gate 6: API Catalog Onboard ───────────────────────────────────
+  api-catalog-onboard:
+    name: "Gate 6: API Catalog Onboard"
+    needs: deploy
+    if: always() && needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Link workspace to GitHub repo
+        env:
+          ACCESS_TOKEN: ${{ secrets.POSTMAN_ACCESS_TOKEN }}
+          TEAM_ID: ${{ secrets.POSTMAN_TEAM_ID }}
+          WORKSPACE_ID: "a50959cb-b5b5-4e89-823d-a57e88f658f4"
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: |
+          BIFROST="https://bifrost-premium-https-v4.gw.postman.com"
+          RESP=$(curl -sf -X POST "$BIFROST/ws/proxy" \
+            -H "Content-Type: application/json" \
+            -H "x-access-token: $ACCESS_TOKEN" \
+            -H "x-entity-team-id: $TEAM_ID" \
+            -d "{\"service\":\"workspaces\",\"method\":\"POST\",\"path\":\"/workspaces/$WORKSPACE_ID/filesystem\",\"body\":{\"path\":\"/\",\"repo\":\"$REPO_URL\",\"versionControl\":true}}" 2>&1) || true
+          echo "Workspace link: $RESP"
+
+      - name: Link environment to system environment
+        env:
+          ACCESS_TOKEN: ${{ secrets.POSTMAN_ACCESS_TOKEN }}
+          TEAM_ID: ${{ secrets.POSTMAN_TEAM_ID }}
+        run: |
+          curl -sf -X PUT "https://bifrost-premium-https-v4.gw.postman.com/environment/81d23a78-1fda-40ff-9481-298fe8b8b268" \
+            -H "Content-Type: application/json" \
+            -H "x-access-token: $ACCESS_TOKEN" \
+            -H "x-entity-team-id: $TEAM_ID" \
+            -d '{"systemEnvironmentId":"936898ce-cf73-4feb-827e-8a0e9d5e695e"}' || true
+          echo "Environment linked to Production system environment"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### API Catalog Onboard" >> $GITHUB_STEP_SUMMARY
+          echo "- Workspace linked to GitHub repo" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment linked to Production system environment" >> $GITHUB_STEP_SUMMARY
