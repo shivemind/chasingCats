@@ -1,0 +1,32 @@
+﻿{
+    "id":  "81d23a78-1fda-40ff-9481-298fe8b8b268",
+    "name":  "ChasingCats API - Production",
+    "owner":  "52400725",
+    "createdAt":  "2026-03-12T00:17:51.000Z",
+    "updatedAt":  "2026-03-14T03:07:29.000Z",
+    "values":  [
+                   {
+                       "key":  "baseUrl",
+                       "value":  "https://chasing-cats.vercel.app",
+                       "enabled":  true
+                   },
+                   {
+                       "key":  "apiVersion",
+                       "value":  "1.0.0",
+                       "enabled":  true
+                   },
+                   {
+                       "key":  "apiKey",
+                       "value":  "test-api-key",
+                       "enabled":  true,
+                       "type":  "secret"
+                   },
+                   {
+                       "key":  "githubRepo",
+                       "value":  "https://github.com/shivemind/chasingCats",
+                       "enabled":  true
+                   }
+               ],
+    "uid":  "52400725-81d23a78-1fda-40ff-9481-298fe8b8b268",
+    "isPublic":  false
+}
