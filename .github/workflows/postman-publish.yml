@@ -33,13 +33,13 @@ jobs:
       - name: Run Postman Collection
         uses: postmanlabs/postman-cli-action@v1
         with:
-          command: 'collection run 52400725-dc07120e-d012-4438-b130-6cad3b9034f6 -e a034caf0-b2a9-4e23-9b4d-8245a59a8c01'
+          command: 'collection run dc07120e-d012-4438-b130-6cad3b9034f6 -e a034caf0-b2a9-4e23-9b4d-8245a59a8c01'
           api-key: ${{ secrets.POSTMAN_API_KEY }}
         continue-on-error: true
 
       - name: Summary
         if: always()
         run: |
-          echo "### Postman Cloud Sync & Tests" >> $GITHUB_STEP_SUMMARY
-          echo "- Workspace synced via Native Git" >> $GITHUB_STEP_SUMMARY
-          echo "- Collection tests executed against 52400725-dc07120e-d012-4438-b130-6cad3b9034f6" >> $GITHUB_STEP_SUMMARY
+          echo "### Postman API Tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Collection: dc07120e-d012-4438-b130-6cad3b9034f6" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: a034caf0-b2a9-4e23-9b4d-8245a59a8c01" >> $GITHUB_STEP_SUMMARY
