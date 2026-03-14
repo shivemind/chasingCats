@@ -2,6 +2,6 @@ workspace:
   id: 503ba3d9-e13c-440f-9471-5a4d2aac3f7a
 cloudResources:
   collections:
-    ../postman/collections/chasingcats-api.json: 9165a4a5-56cd-46ff-a801-df8977f8e7be
+    ../postman/collections/chasingcats-api.json: dc07120e-d012-4438-b130-6cad3b9034f6
   environments:
     ../postman/environments/production.json: a034caf0-b2a9-4e23-9b4d-8245a59a8c01
